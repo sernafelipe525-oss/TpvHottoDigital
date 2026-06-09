@@ -902,6 +902,131 @@ body {
 .pedido-rechazado-body .title { font-size: 0.82rem; font-weight: 700; color: var(--danger); }
 .pedido-rechazado-body .items { font-size: 0.75rem; color: var(--text2); margin-top: 4px; line-height: 1.6; }
 
+
+/* ── PÁGINA CARTA ────────────────────────────────── */
+.carta-hero {
+  padding: 20px 16px 12px;
+  text-align: center;
+}
+.carta-hero-title {
+  font-family: var(--fh);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.carta-hero-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.carta-section {
+  padding: 0 16px 16px;
+}
+.carta-section-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  margin-top: 18px;
+}
+.carta-tipo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.carta-tipo-btn {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.carta-tipo-btn:active { transform: scale(0.97); }
+.carta-tipo-btn.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(200,80,42,0.10), var(--shadow-sm);
+  background: var(--accent-lt);
+}
+.carta-tipo-icon { font-size: 1.6rem; }
+.carta-tipo-label { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+.carta-tipo-sub   { font-size: 0.67rem; color: var(--muted); line-height: 1.3; }
+
+.carta-cats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+.carta-cat-btn {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.15s, transform 0.1s;
+  box-shadow: var(--shadow-sm);
+}
+.carta-cat-btn:active { transform: scale(0.97); }
+.carta-cat-btn:hover { border-color: var(--accent); }
+.carta-cat-icon { font-size: 1.3rem; flex-shrink: 0; }
+.carta-cat-info { flex: 1; min-width: 0; }
+.carta-cat-label { font-size: 0.8rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.carta-cat-count { font-size: 0.67rem; color: var(--muted); margin-top: 1px; }
+.carta-cat-arrow { font-size: 0.65rem; color: var(--muted); flex-shrink: 0; }
+
+.carta-pedir-cta {
+  margin: 18px 16px 24px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-lg);
+  padding: 14px 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: var(--ff);
+  width: calc(100% - 32px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(200,80,42,0.3);
+  transition: background 0.15s, transform 0.1s;
+}
+.carta-pedir-cta:active { transform: scale(0.98); background: var(--accent-dk); }
+.carta-visitor-cta {
+  margin: 18px 16px 24px;
+  background: var(--bg2);
+  color: var(--text2);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r-lg);
+  padding: 14px 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--ff);
+  width: calc(100% - 32px);
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  line-height: 1.4;
+}
 /* ── HISTORIAL ───────────────────────────────────── */
 .hist-entry {
   background: var(--white);
@@ -938,108 +1063,6 @@ body {
 .visitor-banner i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; }
 .visitor-banner-text .vb-title { font-size: 0.82rem; font-weight: 700; color: var(--accent-dk); }
 .visitor-banner-text .vb-sub   { font-size: 0.72rem; color: var(--text2); margin-top: 2px; line-height: 1.4; }
-
-/* ── FAREWELL / COBRADO SCREEN ───────────────────── */
-#farewell-screen {
-  display: none;
-  min-height: 100vh;
-  background: var(--bg);
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px 60px;
-  animation: fadeIn 0.5s ease;
-}
-#farewell-screen.show { display: flex; }
-.farewell-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-.farewell-logo {
-  width: 72px; height: 72px;
-  border-radius: 20px;
-  background: var(--success);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem;
-  margin: 0 auto 16px;
-  box-shadow: 0 8px 24px rgba(45,122,95,0.25);
-}
-.farewell-title {
-  font-family: var(--fh);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.farewell-sub {
-  font-size: 0.88rem;
-  color: var(--text2);
-  line-height: 1.5;
-  max-width: 280px;
-  margin: 0 auto;
-}
-.farewell-ticket {
-  width: 100%;
-  max-width: 420px;
-  background: var(--white);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-.farewell-ticket-header {
-  background: var(--success);
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.farewell-ticket-header-title {
-  font-family: var(--fh);
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
-}
-.farewell-ticket-header-badge {
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  padding: 3px 10px;
-  border-radius: 100px;
-  border: 1px solid rgba(255,255,255,0.35);
-}
-.farewell-ticket-body {
-  padding: 16px 20px;
-}
-.farewell-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-.farewell-item:last-child { border-bottom: none; }
-.farewell-item-name { flex: 1; font-size: 0.84rem; color: var(--text); font-weight: 500; }
-.farewell-item-qty  { font-size: 0.75rem; color: var(--muted); background: var(--bg2); padding: 2px 8px; border-radius: 100px; font-weight: 600; }
-.farewell-item-price{ font-size: 0.84rem; font-weight: 700; color: var(--text); min-width: 52px; text-align: right; }
-.farewell-total-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-top: 2px solid var(--border);
-  background: var(--bg);
-}
-.farewell-total-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; color: var(--muted); }
-.farewell-total-amount { font-size: 1.35rem; font-weight: 800; color: var(--text); font-family: var(--fh); }
-.farewell-footer-note {
-  margin-top: 20px;
-  font-size: 0.72rem;
-  color: var(--muted);
-  text-align: center;
-  line-height: 1.6;
-}
 </style>
 </head>
 <body>
@@ -1106,31 +1129,6 @@ body {
   </div>
 </div>
 
-
-<!-- FAREWELL / COBRADO -->
-<div id="farewell-screen">
-  <div class="farewell-header">
-    <div class="farewell-logo">✓</div>
-    <div class="farewell-title" id="farewell-title">¡Hasta pronto!</div>
-    <div class="farewell-sub" id="farewell-sub">Gracias por visitarnos. Ha sido un placer atenderte.</div>
-  </div>
-  <div class="farewell-ticket">
-    <div class="farewell-ticket-header">
-      <div class="farewell-ticket-header-title">Resumen de tu consumo</div>
-      <div class="farewell-ticket-header-badge"><i class="fas fa-circle-check" style="margin-right:3px"></i>Pagado</div>
-    </div>
-    <div class="farewell-ticket-body" id="farewell-items"></div>
-    <div class="farewell-total-row">
-      <div class="farewell-total-label">Total pagado</div>
-      <div class="farewell-total-amount" id="farewell-total">€0.00</div>
-    </div>
-  </div>
-  <div class="farewell-footer-note" id="farewell-footer">
-    <i class="fas fa-shield-halved" style="margin-right:4px;color:var(--muted)"></i>
-    Los precios incluyen IVA · Hotto Digital TPV
-  </div>
-</div>
-
 <!-- ERROR -->
 <div id="error-screen">
   <div class="error-icon"><i class="fas fa-triangle-exclamation" style="color:var(--danger);font-size:1.8rem"></i></div>
@@ -1155,29 +1153,24 @@ body {
 
   <!-- TABS -->
   <nav class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('ticket')" id="tab-ticket">
-      <i class="fas fa-receipt" style="font-size:0.8rem"></i> Mi Cuenta
+    <button class="tab-btn active" onclick="switchTab('carta')" id="tab-carta">
+      <i class="fas fa-book-open" style="font-size:0.8rem"></i> Carta
     </button>
     <button class="tab-btn" onclick="switchTab('pedir')" id="tab-pedir">
       <i class="fas fa-utensils" style="font-size:0.8rem"></i> Pedir
       <span class="tab-badge" id="cart-badge" style="display:none">0</span>
     </button>
-    <button class="tab-btn" onclick="switchTab('historial')" id="tab-historial">
-      <i class="fas fa-clock-rotate-left" style="font-size:0.8rem"></i> Historial
-      <span class="tab-badge" id="historial-badge" style="display:none">!</span>
+    <button class="tab-btn" onclick="switchTab('ticket')" id="tab-ticket">
+      <i class="fas fa-receipt" style="font-size:0.8rem"></i> Mi Cuenta
     </button>
     <button class="tab-btn" onclick="switchTab('cuenta')" id="tab-cuenta">
       <i class="fas fa-file-invoice-dollar" style="font-size:0.8rem"></i> Cuenta
     </button>
   </nav>
 
-  <!-- ── PAGE: TICKET ── -->
-  <section class="page active" id="page-ticket">
-    <div id="ticket-content"></div>
-    <div class="footer-note">
-      <i class="fas fa-shield-halved" style="margin-right:4px;color:var(--muted)"></i>
-      Los precios incluyen IVA · Hotto Digital TPV
-    </div>
+  <!-- ── PAGE: CARTA (inicio) ── -->
+  <section class="page active" id="page-carta">
+    <div id="carta-content"></div>
   </section>
 
   <!-- ── PAGE: PEDIR ── -->
@@ -1190,9 +1183,13 @@ body {
     </div>
   </section>
 
-  <!-- ── PAGE: HISTORIAL ── -->
-  <section class="page" id="page-historial">
-    <div id="historial-content"></div>
+  <!-- ── PAGE: TICKET ── -->
+  <section class="page" id="page-ticket">
+    <div id="ticket-content"></div>
+    <div class="footer-note">
+      <i class="fas fa-shield-halved" style="margin-right:4px;color:var(--muted)"></i>
+      Los precios incluyen IVA · Hotto Digital TPV
+    </div>
   </section>
 
   <!-- ── PAGE: CUENTA ── -->
@@ -1374,8 +1371,7 @@ function entrarModoVisitante() {
   document.getElementById('qr-scan-screen').classList.remove('show');
   document.getElementById('loading-screen').classList.remove('hidden');
 
-  // Ocultar tabs de cuenta/historial en modo visitante
-  // Se hacen tras cargar Firebase
+  // Ocultar tabs no relevantes para visitante
   connectFirebaseVisitante();
 }
 
@@ -1434,14 +1430,9 @@ function connectFirebase() {
     // 🧹 LIMPIAR /pedidosCliente/{mesa} al cobrar
     const ticketActualEstado = (db.tickets||[]).find(t => String(t.mesa) === String(mesaId));
     if (ticketActualEstado?.cobrado === true) {
-      // Borrar pedidos del cliente para esta mesa
+      // Borrar todo el nodo de pedidos del cliente para esta mesa
       rtdb.ref('/pedidosCliente/' + mesaId).remove().catch(() => {});
       pedidosCliente = [];
-      // Desconectar listener — ya no necesitamos más actualizaciones
-      rtdb.ref('/').off();
-      // Mostrar pantalla de despedida con el detalle del ticket pagado
-      showDespedida(ticketActualEstado);
-      return;
     } else {
       // 🧹 LIMPIAR PEDIDOS DE SESIONES ANTERIORES
       // Borrar de /pedidosCliente/{mesa} los pedidos cuyo qrToken no coincida con el actual
@@ -1468,7 +1459,6 @@ function connectFirebase() {
 
     hideLoading();
     updateHeader();
-    updateHistorialBadge();
     renderCurrentPage();
   }, err => {
     console.error(err);
@@ -1482,12 +1472,12 @@ function connectFirebaseVisitante() {
     db = snapshot.val() || {};
     hideLoading();
     // Ajustar UI para modo visitante
+    document.getElementById('tab-pedir').style.display     = 'none';
     document.getElementById('tab-ticket').style.display    = 'none';
-    document.getElementById('tab-historial').style.display = 'none';
     document.getElementById('tab-cuenta').style.display    = 'none';
     document.getElementById('cart-bar').style.display      = 'none';
-    // Cambiar tab inicial a pedir
-    switchTab('pedir');
+    // Visitante empieza en Carta
+    switchTab('carta');
     updateHeaderVisitante();
   }, err => {
     console.error(err);
@@ -1530,66 +1520,6 @@ function showError(title, desc) {
   document.getElementById('error-desc').textContent = desc;
 }
 
-function showDespedida(ticket) {
-  // Ocultar todo
-  document.getElementById('loading-screen').classList.add('hidden');
-  document.getElementById('main-app').classList.remove('show');
-  document.getElementById('error-screen').classList.remove('show');
-
-  // Rellenar datos del restaurante
-  const cfg = db.config || {};
-  const nombre = cfg.nombreRestaurante || 'Hotto Digital';
-  const logoEl = document.getElementById('farewell-logo-img');
-
-  const titleEl = document.getElementById('farewell-title');
-  const subEl   = document.getElementById('farewell-sub');
-  const footerEl= document.getElementById('farewell-footer');
-
-  titleEl.textContent = '¡Hasta pronto!';
-  subEl.textContent   = 'Gracias por visitarnos en ' + nombre + '. Ha sido un placer atenderte.';
-  footerEl.innerHTML  = '<i class="fas fa-shield-halved" style="margin-right:4px;color:var(--muted)"></i>' +
-                        'Los precios incluyen IVA · ' + nombre;
-
-  // Actualizar logo
-  const farewell = document.getElementById('farewell-screen');
-  const logoDiv  = farewell.querySelector('.farewell-logo');
-  if (cfg.logo) {
-    logoDiv.innerHTML = '<img src="' + cfg.logo + '" alt="Logo" style="width:48px;height:48px;object-fit:contain;border-radius:12px">';
-    logoDiv.style.background = 'transparent';
-    logoDiv.style.boxShadow  = 'none';
-  } else {
-    logoDiv.textContent = '✓';
-    logoDiv.style.background = 'var(--success)';
-  }
-
-  // Construir lista de items
-  const items = ticket.items || [];
-  const grupos = {};
-  items.forEach(i => {
-    const k = i.nombre + '||' + i.precio;
-    if (!grupos[k]) grupos[k] = { nombre: i.nombre, precio: i.precio, icono: i.icono || '', cantidad: 0 };
-    grupos[k].cantidad += Number(i.cantidad) || 1;
-  });
-
-  const total = calcTotal(items);
-  const itemsHTML = Object.values(grupos).map(g => {
-    const subtotal = round2(toCents(g.precio) * g.cantidad / 100);
-    return '<div class="farewell-item">' +
-      (g.icono ? '<span style="font-size:1.1rem;flex-shrink:0">' + g.icono + '</span>' : '') +
-      '<span class="farewell-item-name">' + escHtml(g.nombre) + '</span>' +
-      '<span class="farewell-item-qty">' + g.cantidad + '×</span>' +
-      '<span class="farewell-item-price">' + formatEur(subtotal) + '</span>' +
-      '</div>';
-  }).join('');
-
-  document.getElementById('farewell-items').innerHTML = itemsHTML ||
-    '<div style="text-align:center;padding:20px 0;color:var(--muted);font-size:0.82rem">Sin detalle disponible</div>';
-  document.getElementById('farewell-total').textContent = formatEur(total);
-
-  // Mostrar pantalla
-  farewell.classList.add('show');
-}
-
 /* ══════════════════════════════════════════════════
    HEADER
 ══════════════════════════════════════════════════ */
@@ -1626,7 +1556,7 @@ function updateHeader() {
 /* ══════════════════════════════════════════════════
    TABS
 ══════════════════════════════════════════════════ */
-let currentTab = 'ticket';
+let currentTab = 'carta';
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1636,9 +1566,9 @@ function switchTab(tab) {
   renderCurrentPage();
 }
 function renderCurrentPage() {
-  if (currentTab === 'ticket') renderTicketPage();
-  else if (currentTab === 'pedir') renderPedirPage();
-  else if (currentTab === 'historial') { renderHistorialPage(); updateHistorialBadge(); }
+  if (currentTab === 'carta')  renderCartaPage();
+  else if (currentTab === 'pedir')  renderPedirPage();
+  else if (currentTab === 'ticket') renderTicketPage();
   else if (currentTab === 'cuenta') renderCuentaPage();
 }
 
@@ -1787,73 +1717,100 @@ function renderPedidosPendientes() {
   }).join('');
 }
 
-function updateHistorialBadge() {
-  const badge = document.getElementById('historial-badge');
-  if (!badge) return;
-  const rechazados = pedidosCliente.filter(p => p.estado === 'rechazado');
-  if (rechazados.length > 0) {
-    badge.style.display = 'inline-flex';
-    badge.textContent = rechazados.length;
-    badge.style.background = 'var(--danger)';
-  } else {
-    const confirmados = pedidosCliente.filter(p => p.estado === 'confirmado');
-    if (confirmados.length > 0) {
-      badge.style.display = 'inline-flex';
-      badge.textContent = confirmados.length;
-      badge.style.background = 'var(--success)';
-    } else {
-      badge.style.display = 'none';
-    }
-  }
-}
 
 /* ══════════════════════════════════════════════════
-   PAGE: HISTORIAL
+   PAGE: CARTA — vista de solo categorías y subcategorías
 ══════════════════════════════════════════════════ */
-function renderHistorialPage() {
-  const wrap = document.getElementById('historial-content');
-  const terminados = pedidosCliente.filter(p => p.estado === 'confirmado' || p.estado === 'rechazado');
+let cartaTipoActivo = null;  // 'barra' | 'cocina' | null
 
-  if (!terminados.length) {
-    wrap.innerHTML = `
-      <div class="empty-state fade-in">
-        <div class="empty-state-icon"><i class="fas fa-clock-rotate-left"></i></div>
-        <h3>Sin historial aún</h3>
-        <p>Aquí verás los pedidos confirmados o rechazados durante esta sesión.</p>
-      </div>`;
-    return;
+function renderCartaPage() {
+  const wrap = document.getElementById('carta-content');
+  if (!wrap) return;
+
+  const cfg       = db.config    || {};
+  const productos = db.productos || [];
+  const categorias= db.categorias|| [];
+  const nombre    = cfg.nombreRestaurante || 'Nuestra carta';
+
+  const hayBarra  = productos.some(p => p.tipo === 'barra');
+  const hayCocina = productos.some(p => p.tipo === 'cocina');
+
+  // ── Subcategorías del tipo seleccionado ──
+  let catsHTML = '';
+  if (cartaTipoActivo) {
+    const cats = categorias.filter(c =>
+      c.tipo === cartaTipoActivo &&
+      productos.some(p => p.catId === c.id && p.tipo === cartaTipoActivo)
+    );
+
+    if (cats.length) {
+      const catCards = cats.map(c => {
+        const numProds = productos.filter(p => p.catId === c.id && p.tipo === cartaTipoActivo).length;
+        return `<button class="carta-cat-btn" onclick="abrirCategoria('${c.tipo}','${c.id}')">
+          <span class="carta-cat-icon">${c.icono || '📦'}</span>
+          <span class="carta-cat-info">
+            <span class="carta-cat-label">${escHtml(c.label)}</span>
+            <span class="carta-cat-count">${numProds} producto${numProds !== 1 ? 's' : ''}</span>
+          </span>
+          <i class="fas fa-chevron-right carta-cat-arrow"></i>
+        </button>`;
+      }).join('');
+
+      catsHTML = `
+        <div class="carta-section">
+          <div class="carta-section-title">Elige qué quieres</div>
+          <div class="carta-cats-grid">${catCards}</div>
+        </div>`;
+    }
   }
 
-  // Ordenar: rechazados primero, luego confirmados; dentro de cada grupo por hora desc
-  const ordenados = [...terminados].sort((a, b) => {
-    if (a.estado === 'rechazado' && b.estado !== 'rechazado') return -1;
-    if (a.estado !== 'rechazado' && b.estado === 'rechazado') return 1;
-    return (b.hora || '').localeCompare(a.hora || '');
-  });
-
-  const entriesHTML = ordenados.map(p => {
-    const esRechazado = p.estado === 'rechazado';
-    const lineas = (p.items||[]).map(i => `${i.cantidad}× ${escHtml(i.nombre)}`).join(' · ');
-    const total = formatEur(p.total || 0);
-    return `
-      <div class="hist-entry fade-in">
-        <div class="hist-entry-header">
-          <span class="hist-entry-hora"><i class="fas fa-clock" style="margin-right:4px;opacity:0.5"></i>${p.hora || '—'}</span>
-          <span class="hist-entry-badge ${p.estado}">
-            <i class="fas fa-${esRechazado ? 'xmark' : 'check'}"></i>
-            ${esRechazado ? 'Rechazado' : 'Confirmado'}
-          </span>
-        </div>
-        <div class="hist-entry-items">${lineas}</div>
-        ${p.nota ? `<div class="hist-entry-items" style="font-style:italic;color:var(--muted);padding-top:0"><i class="fas fa-pen" style="margin-right:4px;opacity:0.5"></i>${escHtml(p.nota)}</div>` : ''}
-        <div class="hist-entry-total">${esRechazado ? '<span style="color:var(--danger)">No procesado · </span>' : ''}${total}</div>
-      </div>`;
-  }).join('');
+  // ── CTA según modo ──
+  let ctaHTML = '';
+  if (!modoVisitante) {
+    if (cartaTipoActivo && catsHTML) {
+      ctaHTML = '';  // las subcategorías ya llevan a Pedir
+    }
+  } else {
+    ctaHTML = `<div class="carta-visitor-cta">
+      <i class="fas fa-qrcode"></i>
+      Escanea el QR de tu mesa para poder hacer pedidos
+    </div>`;
+  }
 
   wrap.innerHTML = `
-    <p class="seccion-titulo" style="margin-bottom:4px">Historial de pedidos</p>
-    <p class="seccion-sub">Pedidos de esta sesión confirmados o rechazados por el camarero.</p>
-    ${entriesHTML}`;
+    <div class="carta-hero">
+      <div class="carta-hero-title">${escHtml(nombre)}</div>
+      <div class="carta-hero-sub">Explora nuestra carta y pide lo que más te apetezca</div>
+    </div>
+    <div class="carta-section">
+      <div class="carta-section-title">¿Qué te apetece?</div>
+      <div class="carta-tipo-grid">
+        ${hayBarra ? `<button class="carta-tipo-btn${cartaTipoActivo==='barra'?' selected':''}" onclick="seleccionarCartaTipo('barra')">
+          <span class="carta-tipo-icon">🥃</span>
+          <span class="carta-tipo-label">Barra</span>
+          <span class="carta-tipo-sub">Bebidas, cafés, cervezas…</span>
+        </button>` : ''}
+        ${hayCocina ? `<button class="carta-tipo-btn${cartaTipoActivo==='cocina'?' selected':''}" onclick="seleccionarCartaTipo('cocina')">
+          <span class="carta-tipo-icon">🍳</span>
+          <span class="carta-tipo-label">Cocina</span>
+          <span class="carta-tipo-sub">Platos, bocadillos, raciones…</span>
+        </button>` : ''}
+      </div>
+    </div>
+    ${catsHTML}
+    ${ctaHTML}`;
+}
+
+function seleccionarCartaTipo(tipo) {
+  cartaTipoActivo = cartaTipoActivo === tipo ? null : tipo;
+  renderCartaPage();
+}
+
+function abrirCategoria(tipo, catId) {
+  // Ir a pestaña Pedir con ese tipo y subcategoría ya activos
+  tipoActivo = tipo;
+  catActiva  = catId;
+  switchTab('pedir');
 }
 
 function renderPedidoOkBanner() {
@@ -1905,17 +1862,7 @@ function renderPedirPage() {
   renderProductos();
   updateCartUI();
   if (!modoVisitante) renderPedidoOkBanner();
-  else {
-    const wrap = document.getElementById('pedido-ok-wrap');
-    if (wrap) wrap.innerHTML = `
-      <div class="visitor-banner fade-in">
-        <i class="fas fa-eye"></i>
-        <div class="visitor-banner-text">
-          <div class="vb-title">Modo solo carta</div>
-          <div class="vb-sub">Escanea el QR de tu mesa para poder hacer pedidos.</div>
-        </div>
-      </div>`;
-  }
+  // (visitante no llega a Pedir — la tab está oculta)
 }
 
 /* ── Renderiza la zona de navegación según el estado ── */
@@ -2003,8 +1950,8 @@ function seleccionarTipo(tipo) {
 function volverTipos() {
   tipoActivo = null;
   catActiva  = null;
-  renderPedirNav();
-  renderProductos();
+  cartaTipoActivo = null;
+  switchTab('carta');
 }
 
 function filtrarCat(catId) {
