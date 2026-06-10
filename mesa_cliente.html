@@ -477,14 +477,14 @@ body {
   width: 100%;
 }
 .p-icon {
-  width: 46px; height: 46px; flex-shrink: 0;
-  border-radius: 10px;
+  width: 58px; height: 58px; flex-shrink: 0;
+  border-radius: 13px;
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.9rem;
   overflow: hidden;
 }
-.p-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.p-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 13px; }
 .p-info { flex: 1; min-width: 0; }
 .p-nombre {
   font-size: 0.9rem; font-weight: 600;
@@ -1045,7 +1045,7 @@ body {
     <div class="qr-scan-sub">Apunta la cámara al código QR de tu mesa para acceder a la carta digital.</div>
   </div>
   <div class="qr-viewport-wrap">
-    <div id="qr-reader"></div>
+    <div id="qr-reader-wrap"></div>
     <div class="qr-scan-hint">
       Busca el código QR sobre la mesa<br>o en la carta del establecimiento.<br>
       <strong>Enfoca y espera unos segundos.</strong>
@@ -1271,6 +1271,14 @@ let html5QrScanner = null;
 })();
 
 function iniciarEscaner() {
+  // Crear el contenedor #qr-reader dinámicamente y montarlo en el wrap
+  const wrap = document.getElementById('qr-reader-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const readerEl = document.createElement('div');
+  readerEl.id = 'qr-reader';
+  wrap.appendChild(readerEl);
+
   html5QrScanner = new Html5Qrcode('qr-reader');
   const config = { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
 
@@ -1335,6 +1343,109 @@ function cerrarManualModal() {
   if (modal) modal.style.display = 'none';
   // Reiniciar escáner si es posible
   iniciarEscaner();
+}
+
+/* ── Modal QR desde modo visitante (carta) ─────────── */
+function abrirModalQR() {
+  // Cerrar si ya existe
+  document.getElementById('qr-visitor-modal')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'qr-visitor-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.55);display:flex;align-items:flex-end;justify-content:center';
+
+  overlay.innerHTML = `
+    <div style="background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:0 0 32px;animation:slideUp 0.3s cubic-bezier(.34,1.56,.64,1)">
+      <div style="width:40px;height:4px;border-radius:2px;background:var(--border2);margin:12px auto 0"></div>
+      <div style="padding:16px 22px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:var(--fh);font-size:1.05rem;font-weight:600"><i class="fas fa-qrcode" style="margin-right:8px;color:var(--accent)"></i>Escanea tu mesa</div>
+        <button onclick="cerrarModalQR()" style="background:var(--bg);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:0.85rem"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div style="padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:14px">
+        <div id="qr-visitor-reader-wrap" style="width:100%;max-width:280px"></div>
+        <div style="text-align:center;font-size:0.78rem;color:var(--text2);line-height:1.6">
+          Apunta la cámara al código QR de la mesa.<br>
+          <strong style="color:var(--accent)">Mantén quieto unos segundos.</strong>
+        </div>
+        <button onclick="mostrarEntradaManualDesdeVisitante()" style="background:none;border:none;font-size:0.75rem;color:var(--muted);text-decoration:underline;cursor:pointer;font-family:var(--ff)">
+          <i class="fas fa-keyboard" style="margin-right:4px"></i>Introducir número manualmente
+        </button>
+      </div>
+    </div>`;
+
+  overlay.addEventListener('click', e => { if (e.target === overlay) cerrarModalQR(); });
+  document.body.appendChild(overlay);
+
+  // Crear el lector dentro del modal
+  const wrap = document.getElementById('qr-visitor-reader-wrap');
+  const readerEl = document.createElement('div');
+  readerEl.id = 'qr-visitor-reader';
+  readerEl.style.cssText = 'width:100%;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.15)';
+  wrap.appendChild(readerEl);
+
+  const visitorScanner = new Html5Qrcode('qr-visitor-reader');
+  overlay._scanner = visitorScanner;
+
+  const config = { fps: 10, qrbox: { width: 200, height: 200 }, aspectRatio: 1.0 };
+  Html5Qrcode.getCameras().then(cameras => {
+    if (!cameras || !cameras.length) {
+      cerrarModalQR();
+      mostrarEntradaManualDesdeVisitante();
+      return;
+    }
+    const cam = cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
+    visitorScanner.start(cam.id, config, (decoded) => {
+      visitorScanner.stop().catch(() => {});
+      cerrarModalQR();
+      // Extraer mesa de la URL escaneada
+      let mesa = null;
+      try {
+        const url = new URL(decoded);
+        mesa = url.searchParams.get('mesa');
+      } catch (e) {
+        mesa = decoded.trim();
+      }
+      if (!mesa || !mesa.trim()) {
+        toast('⚠️ QR no reconocido. Inténtalo de nuevo.', 'warning', 'fa-triangle-exclamation');
+        return;
+      }
+      // Salir del modo visitante y conectarse a la mesa
+      modoVisitante = false;
+      mesaId = mesa.trim();
+      rtdb.ref('/').off();
+      document.getElementById('main-app').classList.remove('show');
+      document.getElementById('loading-screen').classList.remove('hidden');
+      // Mostrar tabs de nuevo
+      document.getElementById('tab-ticket').style.display    = '';
+      document.getElementById('tab-historial').style.display = '';
+      document.getElementById('tab-cuenta').style.display    = '';
+      document.getElementById('cart-bar').style.display      = '';
+      document.getElementById('header-total').style.display  = '';
+      switchTab('ticket');
+      connectFirebase();
+    }, () => {}).catch(() => {
+      cerrarModalQR();
+      mostrarEntradaManualDesdeVisitante();
+    });
+  }).catch(() => {
+    cerrarModalQR();
+    mostrarEntradaManualDesdeVisitante();
+  });
+}
+
+function cerrarModalQR() {
+  const overlay = document.getElementById('qr-visitor-modal');
+  if (!overlay) return;
+  if (overlay._scanner) overlay._scanner.stop().catch(() => {});
+  overlay.remove();
+}
+
+function mostrarEntradaManualDesdeVisitante() {
+  cerrarModalQR();
+  // Reutilizar el modal manual existente
+  const modal = document.getElementById('manual-modal');
+  if (modal) modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('manual-mesa-input')?.focus(), 300);
 }
 
 function entrarModoVisitante() {
@@ -1841,10 +1952,13 @@ function renderPedirPage() {
     if (wrap) wrap.innerHTML = `
       <div class="visitor-banner fade-in">
         <i class="fas fa-eye"></i>
-        <div class="visitor-banner-text">
-          <div class="vb-title">Modo solo carta</div>
-          <div class="vb-sub">Escanea el QR de tu mesa para poder hacer pedidos.</div>
+        <div class="visitor-banner-text" style="flex:1">
+          <div class="vb-title">Solo carta · Sin mesa</div>
+          <div class="vb-sub">Escanea el QR de tu mesa para hacer pedidos.</div>
         </div>
+        <button onclick="abrirModalQR()" style="flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:100px;font-family:var(--ff);font-size:0.75rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(200,80,42,0.3);white-space:nowrap">
+          <i class="fas fa-qrcode"></i> Escanear QR
+        </button>
       </div>`;
   }
 }
