@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Mi Mesa · Hotto Digital</title>
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#121110">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -18,31 +18,46 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:         #f7f5f0;
-  --bg2:        #eeeae2;
-  --white:      #ffffff;
-  --surface:    #ffffff;
-  --border:     #e5e0d8;
-  --border2:    #d4cec4;
-  --text:       #1a1714;
-  --text2:      #5a5450;
-  --muted:      #9a948e;
-  --accent:     #c8502a;
-  --accent-lt:  #f5ede9;
-  --accent-dk:  #a03d1e;
-  --success:    #2d7a5f;
-  --success-lt: #e8f5f0;
-  --danger:     #c0392b;
-  --danger-lt:  #fdeaea;
-  --warning:    #b7781a;
-  --warning-lt: #fdf3e3;
-  --gold:       #c9a227;
+  /* ── Backgrounds ── */
+  --bg:         #121110;
+  --bg2:        #1c1a18;
+  --white:      #1e1c1a;
+  --surface:    #1e1c1a;
+
+  /* ── Borders ── */
+  --border:     #2e2b28;
+  --border2:    #3a3632;
+
+  /* ── Text ── */
+  --text:       #f0ece6;
+  --text2:      #a09890;
+  --muted:      #6a635d;
+
+  /* ── Accent (terracotta) ── */
+  --accent:     #d4623a;
+  --accent-lt:  #2a1a14;
+  --accent-dk:  #b04d2c;
+
+  /* ── Semantic ── */
+  --success:    #3a9e7a;
+  --success-lt: #0d2720;
+  --danger:     #d94f42;
+  --danger-lt:  #2a0f0d;
+  --warning:    #c98c28;
+  --warning-lt: #271c09;
+  --gold:       #d4aa38;
+
+  /* ── Radii ── */
   --r:          12px;
   --r-lg:       18px;
   --r-xl:       24px;
-  --shadow-sm:  0 2px 8px rgba(0,0,0,0.07);
-  --shadow:     0 8px 32px rgba(0,0,0,0.10);
-  --shadow-lg:  0 20px 60px rgba(0,0,0,0.14);
+
+  /* ── Shadows (stronger alpha on dark) ── */
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.35);
+  --shadow:     0 8px 32px rgba(0,0,0,0.50);
+  --shadow-lg:  0 20px 60px rgba(0,0,0,0.65);
+
+  /* ── Fonts ── */
   --ff:         'DM Sans', sans-serif;
   --fh:         'Playfair Display', serif;
 }
@@ -76,8 +91,8 @@ body {
   animation: pulse-logo 1.5s ease-in-out infinite;
 }
 @keyframes pulse-logo {
-  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(200,80,42,0.3); }
-  50% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(200,80,42,0); }
+  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212,98,58,0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(212,98,58,0); }
 }
 .loading-text {
   font-family: var(--ff);
@@ -124,7 +139,7 @@ body {
 /* ── STICKY HEADER ───────────────────────────────── */
 .app-header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(247,245,240,0.92);
+  background: rgba(18,17,16,0.92);
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid var(--border);
@@ -333,7 +348,7 @@ body {
 
 .cuenta-solicitada-banner {
   background: var(--accent-lt);
-  border: 1px solid rgba(200,80,42,0.2);
+  border: 1px solid rgba(212,98,58,0.25);
   border-radius: var(--r);
   padding: 14px 16px;
   display: flex; align-items: center; gap: 12px;
@@ -381,7 +396,7 @@ body {
 .cat-pill.active {
   background: var(--accent); border-color: var(--accent);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(200,80,42,0.25);
+  box-shadow: 0 4px 12px rgba(212,98,58,0.3);
 }
 
 /* ── TIPO SELECTOR (Barra / Cocina) ──────────────── */
@@ -410,7 +425,7 @@ body {
 .tipo-card.active {
   border-color: var(--accent);
   background: var(--accent-lt);
-  box-shadow: 0 4px 16px rgba(200,80,42,0.18);
+  box-shadow: 0 4px 16px rgba(212,98,58,0.22);
 }
 .tipo-card-icon {
   font-size: 2rem;
@@ -522,7 +537,7 @@ body {
 .qty-btn.add {
   background: var(--accent); border-color: var(--accent);
   color: #fff;
-  box-shadow: 0 4px 10px rgba(200,80,42,0.3);
+  box-shadow: 0 4px 10px rgba(212,98,58,0.35);
 }
 .qty-btn.add:hover { background: var(--accent-dk); }
 .qty-num {
@@ -551,10 +566,10 @@ body {
   font-size: 0.9rem; font-weight: 700;
   cursor: pointer;
   width: 100%; max-width: 440px; margin: 0 auto; display: flex;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.55);
   transition: all 0.2s ease;
 }
-.cart-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,0.3); }
+.cart-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,0.65); }
 .cart-btn-left { display: flex; align-items: center; gap: 10px; }
 .cart-count-badge {
   background: var(--accent);
@@ -670,9 +685,9 @@ body {
 .btn-primary {
   background: var(--accent); color: #fff;
   padding: 16px 24px; width: 100%;
-  box-shadow: 0 6px 20px rgba(200,80,42,0.3);
+  box-shadow: 0 6px 20px rgba(212,98,58,0.35);
 }
-.btn-primary:hover { background: var(--accent-dk); transform: translateY(-1px); box-shadow: 0 8px 28px rgba(200,80,42,0.4); }
+.btn-primary:hover { background: var(--accent-dk); transform: translateY(-1px); box-shadow: 0 8px 28px rgba(212,98,58,0.45); }
 .btn-primary:active { transform: translateY(0); }
 .btn-primary:disabled {
   background: var(--muted); box-shadow: none; cursor: not-allowed; transform: none;
@@ -686,12 +701,12 @@ body {
 .btn-success {
   background: var(--success); color: #fff;
   padding: 16px 24px; width: 100%;
-  box-shadow: 0 6px 20px rgba(45,122,95,0.3);
+  box-shadow: 0 6px 20px rgba(58,158,122,0.35);
 }
 .btn-success:hover { background: #246650; transform: translateY(-1px); }
 .btn-danger-outline {
   background: var(--white); color: var(--danger);
-  border: 1.5px solid rgba(192,57,43,0.3);
+  border: 1.5px solid rgba(217,79,66,0.35);
   padding: 14px 24px; width: 100%;
 }
 .btn-danger-outline:hover { background: var(--danger-lt); border-color: var(--danger); }
@@ -705,7 +720,7 @@ body {
   box-shadow: var(--shadow-sm);
 }
 .cuenta-total-section {
-  background: linear-gradient(135deg, var(--text), #3a3530);
+  background: linear-gradient(135deg, #2a2724, #1a1714);
   color: #fff;
   padding: 24px 24px 20px;
   text-align: center;
@@ -741,7 +756,7 @@ body {
   display: flex; align-items: center; justify-content: center; font-size: 1rem;
 }
 .info-card-icon.warning { background: var(--warning-lt); color: var(--warning); }
-.info-card-icon.info { background: #e8f0fb; color: #2255cc; }
+.info-card-icon.info { background: #0e1a35; color: #5e8ade; }
 .info-card-icon.success { background: var(--success-lt); color: var(--success); }
 .info-card-text { flex: 1; }
 .info-card-title { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
@@ -759,7 +774,7 @@ body {
   border-radius: 100px; padding: 11px 18px;
   font-size: 0.82rem; font-weight: 600;
   display: flex; align-items: center; gap: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.55);
   animation: toast-in 0.35s cubic-bezier(.34,1.56,.64,1) forwards;
   white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
 }
@@ -773,7 +788,7 @@ body {
 /* ── PEDIDO CONFIRMADO ───────────────────────────── */
 .pedido-ok-banner {
   background: var(--success-lt);
-  border: 1.5px solid rgba(45,122,95,0.25);
+  border: 1.5px solid rgba(58,158,122,0.3);
   border-radius: var(--r-lg); padding: 16px 18px;
   display: flex; align-items: center; gap: 12px;
   margin-bottom: 16px;
@@ -805,7 +820,7 @@ body {
 /* ── PENDING PEDIDOS en ticket ────────────────────── */
 .pedido-pendiente-card {
   background: var(--warning-lt);
-  border: 1.5px solid rgba(183,120,26,0.25);
+  border: 1.5px solid rgba(201,140,40,0.28);
   border-radius: var(--r-lg); padding: 14px 16px;
   margin-bottom: 12px;
   display: flex; align-items: flex-start; gap: 12px;
@@ -820,49 +835,121 @@ body {
   font-size: 0.68rem; color: var(--muted); line-height: 1.6;
 }
 
-/* ── QR SCANNER SCREEN ───────────────────────────── */
+/* ── WELCOME SCREEN ──────────────────────────────── */
 #qr-scan-screen {
   display: none;
   position: fixed; inset: 0; z-index: 998;
-  background: var(--bg);
+  background: var(--white);
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 0;
+  overflow-y: auto;
 }
 #qr-scan-screen.show { display: flex; }
 
-.qr-scan-header {
-  width: 100%;
-  padding: 20px 24px 16px;
-  text-align: center;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
+.welcome-inner {
+  width: 100%; max-width: 400px;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 0 28px 40px;
+  position: relative;
 }
-.qr-scan-logo {
-  width: 48px; height: 48px;
-  border-radius: 14px;
+
+/* decorative top band */
+.welcome-band {
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--accent), #e8753d, var(--gold));
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.welcome-logo-wrap {
+  margin-top: 52px;
+  width: 88px; height: 88px;
+  border-radius: 24px;
   background: var(--accent);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem; margin: 0 auto 12px;
+  font-size: 2.4rem;
+  box-shadow: 0 12px 36px rgba(212,98,58,0.38);
+  overflow: hidden;
+  flex-shrink: 0;
 }
-.qr-scan-title {
+.welcome-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+.welcome-restaurant-name {
   font-family: var(--fh);
-  font-size: 1.3rem; font-weight: 700;
-  color: var(--text); margin-bottom: 4px;
-}
-.qr-scan-sub {
-  font-size: 0.78rem; color: var(--muted);
-  line-height: 1.5;
-}
-
-.qr-viewport-wrap {
-  width: 100%; max-width: 380px;
-  padding: 20px 24px;
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 16px;
+  font-size: 1.8rem; font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-top: 18px;
+  line-height: 1.2;
 }
 
+.welcome-tagline {
+  font-size: 0.82rem; color: var(--muted);
+  text-align: center; margin-top: 6px;
+  letter-spacing: 0.3px;
+}
+
+.welcome-message {
+  margin-top: 24px;
+  text-align: center;
+}
+.welcome-message h2 {
+  font-family: var(--fh);
+  font-size: 1.2rem; font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.welcome-message p {
+  font-size: 0.82rem; color: var(--text2);
+  line-height: 1.65; max-width: 300px;
+  margin: 0 auto;
+}
+
+/* CTA buttons */
+.welcome-actions {
+  width: 100%; margin-top: 32px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.welcome-btn-primary {
+  width: 100%; padding: 17px 24px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: var(--r-xl);
+  font-family: var(--ff); font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 8px 24px rgba(212,98,58,0.38);
+  transition: all 0.2s ease;
+}
+.welcome-btn-primary:hover { background: var(--accent-dk); transform: translateY(-1px); }
+.welcome-btn-secondary {
+  width: 100%; padding: 15px 24px;
+  background: var(--bg); color: var(--text);
+  border: 1.5px solid var(--border); border-radius: var(--r-xl);
+  font-family: var(--ff); font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s ease;
+}
+.welcome-btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.welcome-btn-ghost {
+  background: none; border: none;
+  font-size: 0.75rem; color: var(--muted);
+  cursor: pointer; font-family: var(--ff);
+  display: flex; align-items: center; gap: 5px;
+  margin: 0 auto; padding: 8px;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.welcome-btn-ghost:hover { color: var(--accent); }
+
+.welcome-footer {
+  margin-top: auto; padding-top: 28px;
+  font-size: 0.65rem; color: var(--muted);
+  text-align: center; letter-spacing: 0.3px;
+}
+
+/* qr-reader dinámico (sigue igual) */
 #qr-reader {
   width: 100%;
   max-width: 300px;
@@ -870,34 +957,13 @@ body {
   overflow: hidden;
   box-shadow: var(--shadow-lg);
 }
-/* Override html5-qrcode styles */
 #qr-reader > div { border-radius: var(--r-xl) !important; }
 #qr-reader__scan_region { border-radius: var(--r-xl) !important; }
-
-.qr-scan-hint {
-  text-align: center;
-  font-size: 0.8rem; color: var(--text2);
-  line-height: 1.6;
-  padding: 0 8px;
-}
-.qr-scan-hint strong { color: var(--accent); }
-
-.qr-scan-footer {
-  width: 100%; padding: 16px 24px 32px;
-  text-align: center;
-}
-.qr-scan-manual-btn {
-  background: none; border: none;
-  font-size: 0.78rem; color: var(--muted);
-  text-decoration: underline; cursor: pointer;
-  font-family: var(--ff);
-}
-.qr-scan-manual-btn:hover { color: var(--accent); }
 
 /* ── PEDIDO RECHAZADO CARD ────────────────────────── */
 .pedido-rechazado-card {
   background: var(--danger-lt);
-  border: 1.5px solid rgba(192,57,43,0.25);
+  border: 1.5px solid rgba(217,79,66,0.3);
   border-radius: var(--r-lg); padding: 14px 16px;
   margin-bottom: 12px;
   display: flex; align-items: flex-start; gap: 12px;
@@ -967,8 +1033,8 @@ body {
   position: absolute; top: 10px; right: 10px;
   font-size: 0.55rem; font-weight: 800;
   padding: 2px 7px; border-radius: 100px;
-  background: rgba(200,80,42,0.12); color: var(--accent);
-  border: 1px solid rgba(200,80,42,0.3);
+  background: rgba(212,98,58,0.15); color: var(--accent);
+  border: 1px solid rgba(212,98,58,0.3);
 }
 
 /* ── INGREDIENTES / ALÉRGENOS en producto card ── */
@@ -1004,7 +1070,7 @@ body {
   display: inline-flex; align-items: center; gap: 3px;
   background: var(--warning-lt);
   color: var(--warning);
-  border: 1px solid rgba(183,120,26,0.2);
+  border: 1px solid rgba(201,140,40,0.25);
   border-radius: 6px;
   padding: 3px 8px;
   font-size: 0.65rem; font-weight: 700;
@@ -1025,7 +1091,7 @@ body {
 /* ── VISITOR BANNER ──────────────────────────────── */
 .visitor-banner {
   background: var(--accent-lt);
-  border: 1.5px solid rgba(200,80,42,0.2);
+  border: 1.5px solid rgba(212,98,58,0.25);
   border-radius: var(--r-lg); padding: 14px 18px;
   display: flex; align-items: center; gap: 12px;
   margin-bottom: 20px;
@@ -1033,34 +1099,177 @@ body {
 .visitor-banner i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; }
 .visitor-banner-text .vb-title { font-size: 0.82rem; font-weight: 700; color: var(--accent-dk); }
 .visitor-banner-text .vb-sub   { font-size: 0.72rem; color: var(--text2); margin-top: 2px; line-height: 1.4; }
+
+/* ── WELCOME CARTA PREVIEW ──────────────────────── */
+.welcome-carta-preview {
+  width: 100%;
+  margin-top: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  background: var(--white);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+.wcp-loading {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 32px;
+  font-size: 0.8rem; color: var(--muted);
+}
+.wcp-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+.wcp-tipos {
+  display: flex; gap: 6px;
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.wcp-tipo-pill {
+  flex: 1; padding: 7px 10px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  font-size: 0.72rem; font-weight: 600;
+  color: var(--text2); cursor: pointer;
+  transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  white-space: nowrap;
+}
+.wcp-tipo-pill.active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+  box-shadow: 0 3px 10px rgba(212,98,58,0.3);
+}
+.wcp-cats-scroll {
+  display: flex; gap: 6px; overflow-x: auto;
+  padding: 8px 14px 6px;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+.wcp-cats-scroll::-webkit-scrollbar { display: none; }
+.wcp-cat-pill {
+  flex-shrink: 0; padding: 5px 11px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  font-size: 0.68rem; font-weight: 600;
+  color: var(--text2); cursor: pointer;
+  transition: all 0.18s; white-space: nowrap;
+  display: flex; align-items: center; gap: 4px;
+}
+.wcp-cat-pill.active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+.wcp-productos-list {
+  flex: 1; overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+.wcp-prod-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+}
+.wcp-prod-item:last-child { border-bottom: none; }
+.wcp-prod-icon {
+  width: 36px; height: 36px; flex-shrink: 0;
+  border-radius: 8px; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; overflow: hidden;
+}
+.wcp-prod-icon img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
+.wcp-prod-nombre {
+  flex: 1; font-size: 0.82rem; font-weight: 600;
+  color: var(--text); min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.wcp-prod-precio {
+  font-size: 0.78rem; font-weight: 700;
+  color: var(--accent); flex-shrink: 0;
+}
+.wcp-empty {
+  text-align: center; padding: 24px 16px;
+  font-size: 0.78rem; color: var(--muted); opacity: 0.7;
+}
+.wcp-cta-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 64px;
+  background: linear-gradient(to top, var(--white) 60%, transparent);
+  pointer-events: none;
+  border-radius: 0 0 var(--r-xl) var(--r-xl);
+}
+/* wrapper needs relative for cta-overlay */
+.welcome-carta-preview { position: relative; }
 </style>
 </head>
 <body>
 
-<!-- QR SCANNER -->
+<!-- WELCOME / QR SCANNER -->
 <div id="qr-scan-screen">
-  <div class="qr-scan-header">
-    <div class="qr-scan-logo">🔥</div>
-    <div class="qr-scan-title">Escanea tu mesa</div>
-    <div class="qr-scan-sub">Apunta la cámara al código QR de tu mesa para acceder a la carta digital.</div>
-  </div>
-  <div class="qr-viewport-wrap">
-    <div id="qr-reader-wrap"></div>
-    <div class="qr-scan-hint">
-      Busca el código QR sobre la mesa<br>o en la carta del establecimiento.<br>
-      <strong>Enfoca y espera unos segundos.</strong>
+  <div class="welcome-band"></div>
+  <div class="welcome-inner">
+
+    <!-- Logo (se actualiza desde Firebase) -->
+    <div class="welcome-logo-wrap" id="welcome-logo">🔥</div>
+
+    <!-- Nombre del restaurante (se actualiza desde Firebase) -->
+    <div class="welcome-restaurant-name" id="welcome-nombre">Hotto Digital</div>
+    <div class="welcome-tagline" id="welcome-tagline">Carta digital · Pedidos desde tu mesa</div>
+
+    <!-- Carta en modo visitante: preview interactivo de categorías y productos -->
+    <div id="welcome-carta-preview" class="welcome-carta-preview">
+      <div class="wcp-loading" id="wcp-loading">
+        <div class="wcp-spinner"></div>
+        <span>Cargando carta…</span>
+      </div>
+      <div id="wcp-content" style="display:none;width:100%">
+        <!-- Tipo selector pills -->
+        <div id="wcp-tipos" class="wcp-tipos"></div>
+        <!-- Categorías horizontales -->
+        <div id="wcp-cats" class="wcp-cats-scroll" style="display:none"></div>
+        <!-- Productos scroll -->
+        <div id="wcp-productos" class="wcp-productos-list"></div>
+      </div>
     </div>
-  </div>
-  <div class="qr-scan-footer">
-    <button class="qr-scan-manual-btn" onclick="mostrarEntradaManual()">
-      <i class="fas fa-keyboard" style="margin-right:4px"></i>
-      Introducir número de mesa manualmente
-    </button>
-    <br>
-    <button class="qr-scan-manual-btn" onclick="entrarModoVisitante()" style="margin-top:8px;color:var(--text2)">
-      <i class="fas fa-eye" style="margin-right:4px"></i>
-      Solo ver la carta
-    </button>
+
+    <!-- Mensaje de bienvenida -->
+    <div class="welcome-message">
+      <h2>¡Bienvenido!</h2>
+      <p>Explora la carta y escanea el QR de tu mesa para hacer pedidos directamente desde aquí.</p>
+    </div>
+
+    <!-- Acciones -->
+    <div class="welcome-actions">
+      <button class="welcome-btn-primary" onclick="iniciarEscaner()">
+        <i class="fas fa-qrcode"></i>
+        Escanear QR de mi mesa
+      </button>
+      <button class="welcome-btn-secondary" onclick="mostrarEntradaManual()">
+        <i class="fas fa-keyboard"></i>
+        Introducir número de mesa
+      </button>
+      <button class="welcome-btn-ghost" onclick="entrarModoVisitante()">
+        <i class="fas fa-eye"></i>
+        Solo ver la carta
+      </button>
+    </div>
+
+    <!-- qr-reader-wrap oculto, se muestra al escanear -->
+    <div id="qr-reader-wrap" style="display:none;width:100%;max-width:300px;margin-top:20px"></div>
+
+    <div class="welcome-footer">
+      Powered by Hotto Digital TPV &nbsp;·&nbsp; <i class="fas fa-shield-halved"></i> Conexión segura
+    </div>
+
   </div>
 </div>
 
@@ -1079,7 +1288,7 @@ body {
     <button onclick="confirmarMesaManual()"
       style="width:100%;padding:16px;background:var(--accent);color:#fff;border:none;border-radius:var(--r-xl);
              font-family:var(--ff);font-size:0.9rem;font-weight:700;cursor:pointer;
-             box-shadow:0 6px 20px rgba(200,80,42,0.3);margin-bottom:10px">
+             box-shadow:0 6px 20px rgba(212,98,58,0.35);margin-bottom:10px">
       <i class="fas fa-arrow-right" style="margin-right:6px"></i>Ir a mi mesa
     </button>
     <button onclick="cerrarManualModal()"
@@ -1264,38 +1473,188 @@ let html5QrScanner = null;
     return;
   }
 
-  // No hay mesa en URL → mostrar pantalla de escáner
+  // No hay mesa en URL → pantalla de bienvenida (sin escáner automático)
   document.getElementById('loading-screen').classList.add('hidden');
   document.getElementById('qr-scan-screen').classList.add('show');
-  iniciarEscaner();
+  // Cargar nombre/logo del restaurante desde Firebase antes de mostrar
+  cargarDatosBienvenida();
 })();
 
+/* Precarga config del restaurante en pantalla de bienvenida (sin mesa aún) */
+function cargarDatosBienvenida() {
+  rtdb.ref('/').once('value').then(snap => {
+    const data = snap.val() || {};
+    applyConfig(data.config || {});
+    renderWelcomeCarta(data);
+  }).catch(() => { /* falla silenciosa */ });
+}
+
+/* ── WELCOME CARTA PREVIEW ──────────────────────── */
+let wcpTipo    = null;   // 'barra' | 'cocina'
+let wcpCat     = null;   // catId activa
+let wcpDbCache = null;   // snapshot de Firebase para el preview
+
+function renderWelcomeCarta(data) {
+  wcpDbCache = data;
+  const productos  = data.productos  || [];
+  const categorias = data.categorias || [];
+
+  const loading = document.getElementById('wcp-loading');
+  const content = document.getElementById('wcp-content');
+  if (!loading || !content) return;
+
+  if (!productos.length) {
+    loading.innerHTML = '<span style="font-size:0.78rem;color:var(--muted);text-align:center;padding:8px">Sin productos disponibles</span>';
+    return;
+  }
+
+  loading.style.display = 'none';
+  content.style.display = 'block';
+
+  // Set default tipo
+  const hayBarra  = productos.some(p => p.tipo === 'barra');
+  const hayCocina = productos.some(p => p.tipo === 'cocina');
+  if (!wcpTipo) {
+    wcpTipo = hayBarra ? 'barra' : (hayCocina ? 'cocina' : null);
+  }
+
+  // ── Tipo pills ──
+  const tiposEl = document.getElementById('wcp-tipos');
+  if (tiposEl) {
+    tiposEl.innerHTML = [
+      hayBarra  ? `<button class="wcp-tipo-pill ${wcpTipo==='barra'  ? 'active':''}" onclick="wcpSetTipo('barra')">🥃 Barra</button>`  : '',
+      hayCocina ? `<button class="wcp-tipo-pill ${wcpTipo==='cocina' ? 'active':''}" onclick="wcpSetTipo('cocina')">🍳 Cocina</button>` : '',
+    ].join('');
+  }
+
+  // ── Categorías del tipo ──
+  const catsDelTipo = categorias.filter(c =>
+    c.tipo === wcpTipo && productos.some(p => p.catId === c.id && p.tipo === wcpTipo)
+  );
+
+  const catsEl = document.getElementById('wcp-cats');
+  if (catsEl) {
+    if (catsDelTipo.length > 1) {
+      if (!wcpCat) wcpCat = catsDelTipo[0].id;
+      catsEl.style.display = 'flex';
+      catsEl.innerHTML = catsDelTipo.map(c =>
+        `<button class="wcp-cat-pill ${wcpCat===c.id ? 'active':''}" onclick="wcpSetCat('${c.id}')">
+          ${c.icono||''} ${escHtml(c.label)}
+        </button>`
+      ).join('');
+    } else {
+      catsEl.style.display = 'none';
+      if (catsDelTipo.length === 1 && !wcpCat) wcpCat = catsDelTipo[0].id;
+    }
+  }
+
+  // ── Productos ──
+  const prodsEl = document.getElementById('wcp-productos');
+  if (!prodsEl) return;
+
+  const filtrados = productos
+    .filter(p => p.tipo === wcpTipo)
+    .filter(p => !wcpCat || p.catId === wcpCat)
+    .slice(0, 30);
+
+  if (!filtrados.length) {
+    prodsEl.innerHTML = '<div class="wcp-empty">Sin productos en esta sección</div>';
+    return;
+  }
+
+  prodsEl.innerHTML = filtrados.map(p => `
+    <div class="wcp-prod-item">
+      <div class="wcp-prod-icon">${p.imagen
+        ? `<img src="${escHtml(p.imagen)}" alt="">`
+        : (p.icono || '🍽️')
+      }</div>
+      <div class="wcp-prod-nombre">${escHtml(p.nombre)}</div>
+      <div class="wcp-prod-precio">${formatEur(p.precio)}</div>
+    </div>`).join('');
+
+  // Gradient fade at bottom
+  const oldOverlay = document.querySelector('.wcp-cta-overlay');
+  if (!oldOverlay) {
+    const overlay = document.createElement('div');
+    overlay.className = 'wcp-cta-overlay';
+    document.querySelector('.welcome-carta-preview').appendChild(overlay);
+  }
+}
+
+function wcpSetTipo(tipo) {
+  wcpTipo = tipo;
+  wcpCat  = null;
+  if (wcpDbCache) renderWelcomeCarta(wcpDbCache);
+}
+
+function wcpSetCat(catId) {
+  wcpCat = catId;
+  if (wcpDbCache) renderWelcomeCarta(wcpDbCache);
+}
+
 function iniciarEscaner() {
-  // Crear el contenedor #qr-reader dinámicamente y montarlo en el wrap
+  // Si estamos en la pantalla de bienvenida, mostrar el lector inline y ocultar acciones
   const wrap = document.getElementById('qr-reader-wrap');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  const readerEl = document.createElement('div');
-  readerEl.id = 'qr-reader';
-  wrap.appendChild(readerEl);
+  const actions = document.querySelector('.welcome-actions');
+  const welcomeMsg = document.querySelector('.welcome-message');
+
+  if (wrap) {
+    wrap.style.display = 'block';
+    wrap.innerHTML = '';
+    if (actions) actions.style.display = 'none';
+    const preview = document.getElementById('welcome-carta-preview');
+    if (preview) preview.style.display = 'none';
+    if (welcomeMsg) welcomeMsg.style.display = 'none';
+
+    // Añadir cabecera mini + botón cancelar
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;width:100%';
+    header.innerHTML = `
+      <div style="font-family:var(--fh);font-size:1rem;font-weight:600;color:var(--text)"><i class="fas fa-qrcode" style="margin-right:7px;color:var(--accent)"></i>Apunta al código QR</div>
+      <button onclick="cancelarEscaner()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:100px;padding:5px 12px;font-size:0.75rem;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">Cancelar</button>`;
+    wrap.appendChild(header);
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:0.75rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6';
+    hint.innerHTML = 'Busca el QR sobre la mesa o en la carta.<br><strong style="color:var(--accent)">Enfoca y espera unos segundos.</strong>';
+
+    const readerEl = document.createElement('div');
+    readerEl.id = 'qr-reader';
+    readerEl.style.cssText = 'width:100%;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-lg)';
+    wrap.appendChild(readerEl);
+    wrap.appendChild(hint);
+  }
 
   html5QrScanner = new Html5Qrcode('qr-reader');
   const config = { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
 
   Html5Qrcode.getCameras().then(cameras => {
     if (!cameras || cameras.length === 0) {
-      // No hay cámara disponible
+      cancelarEscaner();
       mostrarEntradaManual();
       return;
     }
-    // Preferir cámara trasera
     const cam = cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
     html5QrScanner.start(cam.id, config, onQRScaneado, () => {}).catch(() => {
+      cancelarEscaner();
       mostrarEntradaManual();
     });
   }).catch(() => {
+    cancelarEscaner();
     mostrarEntradaManual();
   });
+}
+
+function cancelarEscaner() {
+  if (html5QrScanner) html5QrScanner.stop().catch(() => {});
+  const wrap = document.getElementById('qr-reader-wrap');
+  const actions = document.querySelector('.welcome-actions');
+  const welcomeMsg = document.querySelector('.welcome-message');
+  if (wrap) { wrap.style.display = 'none'; wrap.innerHTML = ''; }
+  if (actions) actions.style.display = 'flex';
+  const preview = document.getElementById('welcome-carta-preview');
+  if (preview) preview.style.display = '';
+  if (welcomeMsg) welcomeMsg.style.display = '';
 }
 
 function onQRScaneado(decodedText) {
@@ -1341,8 +1700,8 @@ function mostrarEntradaManual() {
 function cerrarManualModal() {
   const modal = document.getElementById('manual-modal');
   if (modal) modal.style.display = 'none';
-  // Reiniciar escáner si es posible
-  iniciarEscaner();
+  // Volver a la pantalla de bienvenida (sin relanzar el escáner)
+  cancelarEscaner();
 }
 
 /* ── Modal QR desde modo visitante (carta) ─────────── */
@@ -1380,7 +1739,7 @@ function abrirModalQR() {
   const wrap = document.getElementById('qr-visitor-reader-wrap');
   const readerEl = document.createElement('div');
   readerEl.id = 'qr-visitor-reader';
-  readerEl.style.cssText = 'width:100%;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.15)';
+  readerEl.style.cssText = 'width:100%;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.45)';
   wrap.appendChild(readerEl);
 
   const visitorScanner = new Html5Qrcode('qr-visitor-reader');
@@ -1587,12 +1946,18 @@ function connectFirebaseVisitante() {
 function updateHeaderVisitante() {
   const cfg = db.config || {};
   const nombre = cfg.nombreRestaurante || 'Hotto Digital';
+
+  // Sincronizar tema completo desde Firebase config
+  applyConfig(cfg);
+
   const logoEl = document.getElementById('header-logo');
   if (cfg.logo) {
     logoEl.innerHTML = `<img src="${cfg.logo}" alt="Logo">`;
+    logoEl.style.background = cfg.logoBgColor || 'var(--accent)';
   } else {
-    logoEl.textContent = '🔥';
-    logoEl.style.background = cfg.colorAccent || 'var(--accent)';
+    logoEl.innerHTML = '🔥';
+    logoEl.style.background = cfg.logoBgColor || cfg.colorAccent || 'var(--accent)';
+    logoEl.style.color = cfg.logoFgColor || '#ffffff';
   }
   document.getElementById('header-nombre').textContent = nombre;
   document.getElementById('header-mesa').textContent = 'Solo carta · Sin mesa';
@@ -1600,8 +1965,13 @@ function updateHeaderVisitante() {
   document.title = 'Carta · ' + nombre;
   const ll = document.getElementById('loading-logo');
   if (ll) {
-    if (cfg.logo) ll.innerHTML = `<img src="${cfg.logo}" style="width:100%;height:100%;object-fit:contain;border-radius:12px">`;
-    else ll.textContent = '🔥';
+    if (cfg.logo) {
+      ll.innerHTML = `<img src="${cfg.logo}" style="width:100%;height:100%;object-fit:contain;border-radius:12px">`;
+      ll.style.background = cfg.logoBgColor || 'var(--accent)';
+    } else {
+      ll.textContent = '🔥';
+      ll.style.background = cfg.logoBgColor || cfg.colorAccent || 'var(--accent)';
+    }
   }
 }
 
@@ -1620,19 +1990,101 @@ function showError(title, desc) {
 }
 
 /* ══════════════════════════════════════════════════
+   APPLY CONFIG — sincroniza config Firebase → UI cliente
+   Campos: nombreRestaurante, logo, logoBgColor, logoFgColor,
+           fondo, colorAccent, colorSuccess, colorDanger
+══════════════════════════════════════════════════ */
+function applyConfig(cfg) {
+  if (!cfg) return;
+
+  // ── 1. Variables CSS del tema ──────────────────────────────────
+  // Para dark theme: -lt es una mezcla hacia negro, no hacia blanco
+  let cssVars = '';
+  if (cfg.colorAccent)  cssVars += `--accent: ${cfg.colorAccent}; --accent-dk: ${darken(cfg.colorAccent, 15)}; --accent-lt: ${darkenTowards(cfg.colorAccent, 85)};`;
+  if (cfg.colorSuccess) cssVars += `--success: ${cfg.colorSuccess}; --success-lt: ${darkenTowards(cfg.colorSuccess, 85)};`;
+  if (cfg.colorDanger)  cssVars += `--danger: ${cfg.colorDanger}; --danger-lt: ${darkenTowards(cfg.colorDanger, 88)};`;
+
+  let styleEl = document.getElementById('config-theme-style');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'config-theme-style';
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = cssVars ? `:root { ${cssVars} }` : '';
+
+  // ── 2. Imagen de fondo ─────────────────────────────────────────
+  if (cfg.fondo) {
+    document.body.style.backgroundImage = `url('${cfg.fondo}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+  } else {
+    document.body.style.backgroundImage = '';
+  }
+
+  // ── 3. Logo en pantalla de bienvenida ──────────────────────────
+  const wLogo = document.getElementById('welcome-logo');
+  if (wLogo) {
+    if (cfg.logo) {
+      wLogo.innerHTML = `<img src="${cfg.logo}" alt="Logo">`;
+      wLogo.style.background = cfg.logoBgColor || 'var(--accent)';
+    } else {
+      wLogo.innerHTML = '🔥';
+      wLogo.style.background = cfg.logoBgColor || cfg.colorAccent || 'var(--accent)';
+      wLogo.style.color = cfg.logoFgColor || '#ffffff';
+    }
+  }
+  const wNombre = document.getElementById('welcome-nombre');
+  if (wNombre) wNombre.textContent = cfg.nombreRestaurante || 'Hotto Digital';
+  const wTag = document.getElementById('welcome-tagline');
+  if (wTag) wTag.textContent = 'Carta digital · Pedidos desde tu mesa';
+
+  // ── 4. Banda superior de bienvenida en color acento ────────────
+  const band = document.querySelector('.welcome-band');
+  if (band && cfg.colorAccent) {
+    band.style.background = `linear-gradient(90deg, ${cfg.colorAccent}, ${lighten(cfg.colorAccent, 20)}, ${cfg.colorAccent})`;
+  }
+}
+
+/* Utilidades de color mínimas (hex #rrggbb) */
+function hexToRgb(hex) {
+  const h = hex.replace('#','');
+  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+}
+function rgbToHex(r,g,b) {
+  return '#' + [r,g,b].map(v => Math.min(255,Math.max(0,Math.round(v))).toString(16).padStart(2,'0')).join('');
+}
+function darken(hex, pct) {
+  try { const [r,g,b] = hexToRgb(hex); return rgbToHex(r*(1-pct/100), g*(1-pct/100), b*(1-pct/100)); } catch(e) { return hex; }
+}
+/* Mezcla el color hacia negro (para generar --accent-lt en dark theme) */
+function darkenTowards(hex, pct) {
+  try { const [r,g,b] = hexToRgb(hex); const f = pct/100; return rgbToHex(r*(1-f), g*(1-f), b*(1-f)); } catch(e) { return hex; }
+}
+function lighten(hex, lightness) {
+  // mezcla con blanco hasta el porcentaje indicado (92 → muy claro)
+  try { const [r,g,b] = hexToRgb(hex); const f = lightness/100; return rgbToHex(r+(255-r)*f, g+(255-g)*f, b+(255-b)*f); } catch(e) { return hex; }
+}
+
+/* ══════════════════════════════════════════════════
    HEADER
 ══════════════════════════════════════════════════ */
 function updateHeader() {
   const cfg = db.config || {};
   const nombre = cfg.nombreRestaurante || 'Hotto Digital';
 
-  // Logo
+  // Sincronizar tema completo desde Firebase config
+  applyConfig(cfg);
+
+  // Logo en header
   const logoEl = document.getElementById('header-logo');
   if (cfg.logo) {
     logoEl.innerHTML = `<img src="${cfg.logo}" alt="Logo">`;
+    logoEl.style.background = cfg.logoBgColor || 'var(--accent)';
   } else {
-    logoEl.textContent = '🔥';
-    logoEl.style.background = cfg.colorAccent || 'var(--accent)';
+    logoEl.innerHTML = '🔥';
+    logoEl.style.background = cfg.logoBgColor || cfg.colorAccent || 'var(--accent)';
+    logoEl.style.color = cfg.logoFgColor || '#ffffff';
   }
   document.getElementById('header-nombre').textContent = nombre;
   document.getElementById('header-mesa').textContent = 'Mesa ' + mesaId;
@@ -1644,11 +2096,16 @@ function updateHeader() {
   const totalEl = document.getElementById('header-total');
   totalEl.textContent = formatEur(tot);
 
-  // Loading logo
+  // Logo en loading screen
   const ll = document.getElementById('loading-logo');
   if (ll) {
-    if (cfg.logo) ll.innerHTML = `<img src="${cfg.logo}" style="width:100%;height:100%;object-fit:contain;border-radius:12px">`;
-    else ll.textContent = '🔥';
+    if (cfg.logo) {
+      ll.innerHTML = `<img src="${cfg.logo}" style="width:100%;height:100%;object-fit:contain;border-radius:12px">`;
+      ll.style.background = cfg.logoBgColor || 'var(--accent)';
+    } else {
+      ll.textContent = '🔥';
+      ll.style.background = cfg.logoBgColor || cfg.colorAccent || 'var(--accent)';
+    }
   }
 }
 
@@ -1848,7 +2305,7 @@ function renderHistorialPage() {
 
   // Banner de sesión cerrada (solo si cobrado)
   const cobradoBannerHTML = cobradoLimpiado ? `
-    <div class="info-card fade-in" style="border-color:rgba(45,122,95,0.25);background:var(--success-lt);margin-bottom:16px">
+    <div class="info-card fade-in" style="border-color:rgba(58,158,122,0.3);background:var(--success-lt);margin-bottom:16px">
       <div class="info-card-icon success"><i class="fas fa-circle-check"></i></div>
       <div class="info-card-text">
         <div class="info-card-title" style="color:var(--success)">Sesión cerrada · Cuenta saldada</div>
@@ -1906,7 +2363,7 @@ function renderPedidoOkBanner() {
 
   if (pedidoEnviado && pendientes.length > 0) {
     wrap.innerHTML = `
-      <div class="pedido-ok-banner fade-in" style="background:var(--warning-lt);border-color:rgba(183,120,26,0.25)">
+      <div class="pedido-ok-banner fade-in" style="background:var(--warning-lt);border-color:rgba(201,140,40,0.28)">
         <div class="pedido-ok-icon">⏳</div>
         <div class="pedido-ok-text">
           <div class="title" style="color:var(--warning)">Pedido enviado · Pendiente de confirmación</div>
@@ -1915,7 +2372,7 @@ function renderPedidoOkBanner() {
       </div>`;
   } else if (rechazados.length > 0) {
     wrap.innerHTML = `
-      <div class="pedido-ok-banner fade-in" style="background:var(--danger-lt);border-color:rgba(192,57,43,0.25)">
+      <div class="pedido-ok-banner fade-in" style="background:var(--danger-lt);border-color:rgba(217,79,66,0.28)">
         <div class="pedido-ok-icon">❌</div>
         <div class="pedido-ok-text">
           <div class="title" style="color:var(--danger)">Pedido no aceptado</div>
@@ -1956,7 +2413,7 @@ function renderPedirPage() {
           <div class="vb-title">Solo carta · Sin mesa</div>
           <div class="vb-sub">Escanea el QR de tu mesa para hacer pedidos.</div>
         </div>
-        <button onclick="abrirModalQR()" style="flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:100px;font-family:var(--ff);font-size:0.75rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(200,80,42,0.3);white-space:nowrap">
+        <button onclick="abrirModalQR()" style="flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:100px;font-family:var(--ff);font-size:0.75rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(212,98,58,0.35);white-space:nowrap">
           <i class="fas fa-qrcode"></i> Escanear QR
         </button>
       </div>`;
@@ -1990,14 +2447,14 @@ function renderPedirNav() {
           <div class="tipo-card-icon">🥃</div>
           <div class="tipo-card-label">Barra</div>
           <div class="tipo-card-sub">Bebidas, cafés, cervezas…</div>
-          ${cartBarra > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(200,80,42,0.12);color:var(--accent);border:1px solid rgba(200,80,42,0.3)">${cartBarra} en carrito</span>` : ''}
+          ${cartBarra > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(212,98,58,0.15);color:var(--accent);border:1px solid rgba(212,98,58,0.3)">${cartBarra} en carrito</span>` : ''}
         </button>` : ''}
         ${hayCocina ? `
         <button class="tipo-card" onclick="seleccionarTipo('cocina')">
           <div class="tipo-card-icon">🍳</div>
           <div class="tipo-card-label">Cocina</div>
           <div class="tipo-card-sub">Platos, bocadillos, raciones…</div>
-          ${cartCocina > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(200,80,42,0.12);color:var(--accent);border:1px solid rgba(200,80,42,0.3)">${cartCocina} en carrito</span>` : ''}
+          ${cartCocina > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(212,98,58,0.15);color:var(--accent);border:1px solid rgba(212,98,58,0.3)">${cartCocina} en carrito</span>` : ''}
         </button>` : ''}
       </div>`;
     return;
@@ -2042,7 +2499,7 @@ function renderPedirNav() {
         const cartQty = Object.values(carrito).filter(e => e.producto.catId === c.id).reduce((s,e)=>s+e.qty,0);
         return `<button class="cat-pill ${catActiva === c.id ? 'active' : ''}" onclick="filtrarCat('${c.id}')">
           <span>${c.icono||'📦'}</span> ${escHtml(c.label)}
-          ${cartQty > 0 ? `<span style="background:rgba(200,80,42,0.2);color:var(--accent);border-radius:100px;font-size:0.58rem;font-weight:800;padding:1px 6px">${cartQty}</span>` : ''}
+          ${cartQty > 0 ? `<span style="background:rgba(212,98,58,0.2);color:var(--accent);border-radius:100px;font-size:0.58rem;font-weight:800;padding:1px 6px">${cartQty}</span>` : ''}
         </button>`;
       }).join('');
       pillsHTML = `<div class="cats-scroll">${pills}</div>`;
@@ -2661,7 +3118,7 @@ function renderCuentaPage() {
 
   if (esCobrado) {
     wrap.innerHTML = `
-      <div class="info-card fade-in" style="border-color:rgba(45,122,95,0.25);background:var(--success-lt)">
+      <div class="info-card fade-in" style="border-color:rgba(58,158,122,0.3);background:var(--success-lt)">
         <div class="info-card-icon success"><i class="fas fa-circle-check"></i></div>
         <div class="info-card-text">
           <div class="info-card-title" style="color:var(--success)">Tu cuenta ya fue saldada</div>
@@ -2706,8 +3163,8 @@ function renderCuentaPage() {
         </div>
         <div class="cuenta-items-section">${lineasHTML}</div>
       </div>
-      <div class="info-card" style="border-color:rgba(200,80,42,0.25);background:var(--accent-lt)">
-        <div class="info-card-icon" style="background:rgba(200,80,42,0.12);color:var(--accent)">
+      <div class="info-card" style="border-color:rgba(212,98,58,0.28);background:var(--accent-lt)">
+        <div class="info-card-icon" style="background:rgba(212,98,58,0.15);color:var(--accent)">
           <i class="fas fa-bell"></i>
         </div>
         <div class="info-card-text">
