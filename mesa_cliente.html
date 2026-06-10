@@ -467,11 +467,15 @@ body {
   border: 1.5px solid var(--border);
   border-radius: var(--r-lg);
   padding: 14px 16px;
-  display: flex; align-items: center; gap: 14px;
+  display: flex; flex-direction: column;
   transition: all 0.2s ease;
   cursor: default;
 }
 .producto-card:hover { border-color: var(--border2); box-shadow: var(--shadow-sm); }
+.prod-main-row {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%;
+}
 .p-icon {
   width: 46px; height: 46px; flex-shrink: 0;
   border-radius: 10px;
@@ -926,6 +930,97 @@ body {
 .hist-entry-badge.rechazado  { background: var(--danger-lt);  color: var(--danger);  }
 .hist-entry-items { padding: 10px 16px; font-size: 0.82rem; color: var(--text2); line-height: 1.8; }
 .hist-entry-total { padding: 8px 16px 12px; font-size: 0.8rem; font-weight: 700; color: var(--text); }
+
+/* ── SUBCATEGORÍAS COMO CARDS (nivel 2 sin catActiva) ── */
+.subcats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.subcat-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px 12px 14px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  position: relative;
+}
+.subcat-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+.subcat-card-icon { font-size: 2rem; line-height: 1; }
+.subcat-card-label {
+  font-family: var(--fh); font-size: 0.9rem; font-weight: 600;
+  color: var(--text); line-height: 1.2;
+}
+.subcat-card-count {
+  font-size: 0.65rem; color: var(--muted); font-weight: 500;
+}
+.subcat-card-badge {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 0.55rem; font-weight: 800;
+  padding: 2px 7px; border-radius: 100px;
+  background: rgba(200,80,42,0.12); color: var(--accent);
+  border: 1px solid rgba(200,80,42,0.3);
+}
+
+/* ── INGREDIENTES / ALÉRGENOS en producto card ── */
+.producto-card.expandida { align-items: flex-start; flex-direction: column; }
+.prod-main-row {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%;
+}
+.prod-detail {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  animation: fadeInUp 0.2s ease both;
+}
+.prod-detail-section {
+  margin-bottom: 8px;
+}
+.prod-detail-section:last-child { margin-bottom: 0; }
+.prod-detail-label {
+  font-size: 0.6rem; font-weight: 800; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 5px;
+  display: flex; align-items: center; gap: 4px;
+}
+.ingredientes-text {
+  font-size: 0.75rem; color: var(--text2); line-height: 1.5;
+}
+.alergenos-wrap {
+  display: flex; flex-wrap: wrap; gap: 5px;
+}
+.alergen-tag {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: var(--warning-lt);
+  color: var(--warning);
+  border: 1px solid rgba(183,120,26,0.2);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.65rem; font-weight: 700;
+}
+.alergen-tag i { font-size: 0.6rem; }
+.prod-info-btn {
+  flex-shrink: 0; margin-left: auto;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--bg); border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; color: var(--muted);
+  cursor: pointer; transition: all 0.15s;
+}
+.prod-info-btn:hover, .prod-info-btn.active {
+  background: var(--accent-lt); border-color: var(--accent); color: var(--accent);
+}
 
 /* ── VISITOR BANNER ──────────────────────────────── */
 .visitor-banner {
@@ -1780,26 +1875,44 @@ function renderPedirNav() {
       ${catActiva ? `<span class="bc-sep">›</span><span class="bc-current">${catLabel}</span>` : ''}
     </div>`;
 
-  // Subcategory pills — sin botón "Todo", siempre hay que elegir subcategoría
-  let pillsHTML = '';
-  if (catsDelTipo.length > 0) {
-    const pills = catsDelTipo.map(c => {
-      const cartQty = Object.values(carrito).filter(e => e.producto.catId === c.id).reduce((s,e)=>s+e.qty,0);
-      return `<button class="cat-pill ${catActiva === c.id ? 'active' : ''}" onclick="filtrarCat('${c.id}')">
-        <span>${c.icono||'📦'}</span> ${escHtml(c.label)}
-        ${cartQty > 0 ? `<span style="background:rgba(200,80,42,0.2);color:var(--accent);border-radius:100px;font-size:0.58rem;font-weight:800;padding:1px 6px">${cartQty}</span>` : ''}
-      </button>`;
-    }).join('');
-
-    pillsHTML = `<div class="cats-scroll">${pills}</div>`;
+  if (!catActiva) {
+    // ── Sin categoría activa: mostrar subcategorías como cards grandes 2×N ──
+    let catsHTML = '';
+    if (catsDelTipo.length > 0) {
+      const cards = catsDelTipo.map(c => {
+        const numProds = productos.filter(p => p.catId === c.id && p.tipo === tipoActivo).length;
+        const cartQty = Object.values(carrito).filter(e => e.producto.catId === c.id).reduce((s,e)=>s+e.qty,0);
+        return `<button class="subcat-card" onclick="filtrarCat('${c.id}')">
+          ${cartQty > 0 ? `<span class="subcat-card-badge">${cartQty} en pedido</span>` : ''}
+          <div class="subcat-card-icon">${c.icono||'📦'}</div>
+          <div class="subcat-card-label">${escHtml(c.label)}</div>
+          <div class="subcat-card-count">${numProds} artículo${numProds!==1?'s':''}</div>
+        </button>`;
+      }).join('');
+      catsHTML = `<div class="subcats-grid">${cards}</div>`;
+    }
+    wrap.innerHTML = breadcrumbHTML + catsHTML;
+  } else {
+    // ── Con categoría activa: pills compactas como selector arriba ──
+    let pillsHTML = '';
+    if (catsDelTipo.length > 0) {
+      const pills = catsDelTipo.map(c => {
+        const cartQty = Object.values(carrito).filter(e => e.producto.catId === c.id).reduce((s,e)=>s+e.qty,0);
+        return `<button class="cat-pill ${catActiva === c.id ? 'active' : ''}" onclick="filtrarCat('${c.id}')">
+          <span>${c.icono||'📦'}</span> ${escHtml(c.label)}
+          ${cartQty > 0 ? `<span style="background:rgba(200,80,42,0.2);color:var(--accent);border-radius:100px;font-size:0.58rem;font-weight:800;padding:1px 6px">${cartQty}</span>` : ''}
+        </button>`;
+      }).join('');
+      pillsHTML = `<div class="cats-scroll">${pills}</div>`;
+    }
+    wrap.innerHTML = breadcrumbHTML + pillsHTML;
   }
-
-  wrap.innerHTML = breadcrumbHTML + pillsHTML;
 }
 
 function seleccionarTipo(tipo) {
   tipoActivo = tipo;
   catActiva  = null;
+  expandedCards.clear();
   renderPedirNav();
   renderProductos();
 }
@@ -1807,12 +1920,14 @@ function seleccionarTipo(tipo) {
 function volverTipos() {
   tipoActivo = null;
   catActiva  = null;
+  expandedCards.clear();
   renderPedirNav();
   renderProductos();
 }
 
 function filtrarCat(catId) {
   catActiva = catId;
+  expandedCards.clear();
   renderPedirNav();
   renderProductos();
 }
@@ -1883,6 +1998,266 @@ function renderProductos() {
   container.innerHTML = html;
 }
 
+/* ══════════════════════════════════════════════════
+   INFO_PRODUCTO — ingredientes y alérgenos por nombre
+   Clave: nombre normalizado (minúsculas, sin tildes)
+══════════════════════════════════════════════════ */
+const INFO_PRODUCTO = {
+  // ── PLATOS COMBINADOS ──────────────────────────
+  "cinta de lomo 2 huevos fritos y patatas fritas": {
+    ingredientes: "Cinta de lomo, huevos fritos, patatas fritas",
+    alergenos: ["gluten","huevo"]
+  },
+  "filete de ternera patatas fritas y ensalada": {
+    ingredientes: "Filete de ternera, patatas fritas, lechuga, tomate",
+    alergenos: []
+  },
+  "filete de pollo patatas fritas y ensalada": {
+    ingredientes: "Filete de pollo a la plancha, patatas fritas, ensalada mixta",
+    alergenos: []
+  },
+  "pollo empanado patatas fritas y ensalada": {
+    ingredientes: "Pollo empanado, patatas fritas, ensalada",
+    alergenos: ["gluten","huevo"]
+  },
+  "chuleta de pavo con huevo cocido y ensalada": {
+    ingredientes: "Chuleta de pavo, huevo cocido, ensalada mixta",
+    alergenos: ["huevo"]
+  },
+  "calamares con patatas fritas y ensalada": {
+    ingredientes: "Calamares, harina, patatas fritas, ensalada",
+    alergenos: ["gluten","moluscos"]
+  },
+  "entrecot de ternera con patatas fritas y ensalada": {
+    ingredientes: "Entrecot de ternera, patatas fritas, ensalada",
+    alergenos: []
+  },
+  "milanesa de ternera con patatas y ensalada": {
+    ingredientes: "Ternera empanada, patatas, ensalada",
+    alergenos: ["gluten","huevo"]
+  },
+  // ── RACIONES ──────────────────────────────────
+  "boquerones fritos": {
+    ingredientes: "Boquerones frescos, harina, aceite de oliva",
+    alergenos: ["gluten","pescado"]
+  },
+  "salchipapa": {
+    ingredientes: "Salchicha, patatas fritas",
+    alergenos: ["gluten"]
+  },
+  "verbena": {
+    ingredientes: "Mezcla de raciones de la casa, pan",
+    alergenos: ["gluten"]
+  },
+  "patatas bravas": {
+    ingredientes: "Patatas fritas, salsa brava (tomate, pimentón, vinagre)",
+    alergenos: []
+  },
+  "alitas de pollo": {
+    ingredientes: "Alitas de pollo, especias, aceite",
+    alergenos: []
+  },
+  "croquetas": {
+    ingredientes: "Bechamel, jamón ibérico, pan rallado, huevo",
+    alergenos: ["gluten","leche","huevo"]
+  },
+  "oreja": {
+    ingredientes: "Oreja de cerdo a la plancha, pimentón",
+    alergenos: []
+  },
+  "lagrimas de pollo": {
+    ingredientes: "Tiras de pollo empanadas, alioli",
+    alergenos: ["gluten","huevo"]
+  },
+  "huevos rotos con jamon o chorizo frito o gulas": {
+    ingredientes: "Huevos fritos, patatas, jamón serrano / chorizo / gulas al ajillo",
+    alergenos: ["huevo","pescado"]
+  },
+  "gambon": {
+    ingredientes: "Gambón al ajillo, aceite de oliva, ajo, guindilla",
+    alergenos: ["crustaceos"]
+  },
+  "calamares": {
+    ingredientes: "Calamares frescos, harina, aceite",
+    alergenos: ["gluten","moluscos"]
+  },
+  "revuelto de setas": {
+    ingredientes: "Huevos, setas de temporada, aceite de oliva, ajo",
+    alergenos: ["huevo"]
+  },
+  "cachopo de ternera": {
+    ingredientes: "Ternera, jamón serrano, queso, pan rallado, huevo",
+    alergenos: ["gluten","leche","huevo"]
+  },
+  "pincho moruno": {
+    ingredientes: "Carne de cerdo, especias moriscas (comino, pimentón, cilantro)",
+    alergenos: []
+  },
+  "palito de queso con salsa arandano": {
+    ingredientes: "Queso empanado, salsa de arándanos",
+    alergenos: ["gluten","leche","huevo"]
+  },
+  "patatas chips bacon": {
+    ingredientes: "Patatas fritas tipo chips, bacon crujiente",
+    alergenos: []
+  },
+  "berenjena miel": {
+    ingredientes: "Berenjena rebozada, miel de caña",
+    alergenos: ["gluten","huevo"]
+  },
+  "setas empanada con ali oli": {
+    ingredientes: "Setas rebozadas, alioli casero (ajo, aceite, huevo)",
+    alergenos: ["gluten","huevo"]
+  },
+  "parrillada de verduras": {
+    ingredientes: "Pimiento, berenjena, calabacín, cebolla, espárragos, aceite de oliva",
+    alergenos: []
+  },
+  "cazon": {
+    ingredientes: "Cazón adobado, harina, aceite",
+    alergenos: ["gluten","pescado"]
+  },
+  "parrillada de carne": {
+    ingredientes: "Solomillo, entrecot, chuleta de cerdo, chorizo, morcilla",
+    alergenos: []
+  },
+  "fritura pescado": {
+    ingredientes: "Surtido de pescado (boquerones, calamares, gambas), harina",
+    alergenos: ["gluten","pescado","crustaceos","moluscos"]
+  },
+  "sepia": {
+    ingredientes: "Sepia a la plancha, aceite de oliva, ajo, perejil",
+    alergenos: ["moluscos"]
+  },
+  "rejos": {
+    ingredientes: "Patas de pulpo / pota a la plancha",
+    alergenos: ["moluscos"]
+  },
+  "rabas": {
+    ingredientes: "Tiras de calamar rebozadas, harina",
+    alergenos: ["gluten","moluscos"]
+  },
+  // ── ENSALADAS ─────────────────────────────────
+  "ensalada mixta": {
+    ingredientes: "Lechuga, tomate, cebolla, espárrago, huevo duro, atún",
+    alergenos: ["huevo","pescado"]
+  },
+  "ensalada cesar": {
+    ingredientes: "Lechuga romana, pollo crujiente, pan tostado, queso parmesano, tomate cherry, salsa César",
+    alergenos: ["gluten","leche","huevo","pescado"]
+  },
+  "ensalada casa blanca": {
+    ingredientes: "Lechuga, tomate cherry, aguacate, atún",
+    alergenos: ["pescado"]
+  },
+  "ensalada burrata": {
+    ingredientes: "Lechuga, tomate, queso burrata, jamón serrano, frutos secos, salsa mostaza-miel",
+    alergenos: ["leche","frutos secos","mostaza"]
+  },
+  // ── TOSTAS ────────────────────────────────────
+  "rulo de cabra con mermelada de tomate": {
+    ingredientes: "Pan artesano, queso de cabra, mermelada de tomate casera",
+    alergenos: ["gluten","leche"]
+  },
+  "solomillo de cerdo con salsa de queso con cebolla caramelizada": {
+    ingredientes: "Solomillo de cerdo, salsa de queso, cebolla caramelizada, pan",
+    alergenos: ["gluten","leche"]
+  },
+  "tumaca de jamon iberico": {
+    ingredientes: "Pan con tomate y aceite, jamón ibérico",
+    alergenos: ["gluten"]
+  },
+  "gulas y cangrejo al ajillo con huevo a caballo": {
+    ingredientes: "Gulas, palito de cangrejo, ajo, guindilla, huevo",
+    alergenos: ["gluten","huevo","pescado","crustaceos"]
+  },
+  "secreto con salsa de boletus salsa de queso": {
+    ingredientes: "Secreto ibérico, salsa de boletus / salsa de queso, pan",
+    alergenos: ["gluten","leche"]
+  },
+  "tosta toque asturiana": {
+    ingredientes: "Pan, morcilla asturiana, cebolla, queso",
+    alergenos: ["gluten","leche"]
+  },
+  "tosta salmon ahumado con aguacate": {
+    ingredientes: "Pan tostado, salmón ahumado, aguacate, queso crema",
+    alergenos: ["gluten","pescado","leche"]
+  },
+  // ── HAMBURGUESAS ──────────────────────────────
+  "hamburguesa normal": {
+    ingredientes: "Carne de ternera / pollo crujiente, lechuga, tomate, cebolla, salsas, pan brioche",
+    alergenos: ["gluten","huevo","mostaza"]
+  },
+  "hamburguesa de la casa": {
+    ingredientes: "Carne, pollo crujiente, lechuga, tomate, cebolla, huevo frito, bacon, queso, salsas, pan brioche",
+    alergenos: ["gluten","huevo","leche","mostaza"]
+  },
+  "hamburguesa especial": {
+    ingredientes: "Base de la casa con ingredientes adicionales a elegir (+0,50€ c/u)",
+    alergenos: ["gluten","huevo","leche","mostaza"]
+  },
+  // ── SÁNDWICHES ────────────────────────────────
+  "sandwich mixto": {
+    ingredientes: "Pan de molde, jamón york, queso",
+    alergenos: ["gluten","leche"]
+  },
+  "sandwich mixto con huevo": {
+    ingredientes: "Pan de molde, jamón york, queso, huevo",
+    alergenos: ["gluten","leche","huevo"]
+  },
+  "sandwich vegetal": {
+    ingredientes: "Pan de molde, lechuga, tomate, espárrago, huevo duro, mayonesa",
+    alergenos: ["gluten","huevo"]
+  },
+  "sandwich de la casa": {
+    ingredientes: "Pan de molde (2 pisos), lechuga, tomate, york, queso, bacon, huevo",
+    alergenos: ["gluten","leche","huevo"]
+  },
+  "sandwich de pollo": {
+    ingredientes: "Pan de molde, lechuga, tomate, pollo a la plancha, salsas",
+    alergenos: ["gluten","huevo"]
+  },
+};
+
+/* Normalizar nombre para buscar en INFO_PRODUCTO */
+function normalizarNombre(n) {
+  return (n||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9 ]/g,'')
+    .replace(/\s+/g,' ').trim();
+}
+
+const ALERGENO_ICONS = {
+  gluten:    { icon: 'fa-wheat-awn',   label: 'Gluten' },
+  leche:     { icon: 'fa-droplet',     label: 'Lácteos' },
+  huevo:     { icon: 'fa-egg',         label: 'Huevo' },
+  pescado:   { icon: 'fa-fish',        label: 'Pescado' },
+  crustaceos:{ icon: 'fa-shrimp',      label: 'Crustáceos' },
+  moluscos:  { icon: 'fa-fish-fins',   label: 'Moluscos' },
+  soja:      { icon: 'fa-seedling',    label: 'Soja' },
+  'frutos secos':{ icon: 'fa-tree',    label: 'Frutos secos' },
+  mostaza:   { icon: 'fa-pepper-hot',  label: 'Mostaza' },
+  apio:      { icon: 'fa-leaf',        label: 'Apio' },
+  sesamo:    { icon: 'fa-circle-dot',  label: 'Sésamo' },
+};
+
+/* Set de cards expandidas actualmente */
+const expandedCards = new Set();
+
+function toggleProductoDetail(prodId) {
+  if (expandedCards.has(prodId)) {
+    expandedCards.delete(prodId);
+  } else {
+    expandedCards.add(prodId);
+  }
+  // Re-render solo esa card
+  const card = document.getElementById('pcard-' + prodId);
+  if (!card) return;
+  const p = (db.productos||[]).find(x => x.id === prodId);
+  if (!p) return;
+  card.outerHTML = buildProductoCard(p);
+}
+
 function buildProductoCard(p) {
   const qty = carrito[p.id] ? carrito[p.id].qty : 0;
   const qtyCtrl = modoVisitante
@@ -1894,14 +2269,54 @@ function buildProductoCard(p) {
         ` : '<span style="width:30px"></span><span style="width:18px"></span>'}
         <button class="qty-btn add" onclick="qtyChange(${p.id}, 1)" aria-label="Añadir">+</button>
       </div>`;
+
+  const info = INFO_PRODUCTO[normalizarNombre(p.nombre)];
+  const isExpanded = expandedCards.has(p.id);
+  const hasInfo = !!(info && (info.ingredientes || (info.alergenos && info.alergenos.length)));
+
+  let detailHTML = '';
+  if (isExpanded && info) {
+    const ingHTML = info.ingredientes
+      ? `<div class="prod-detail-section">
+          <div class="prod-detail-label"><i class="fas fa-list"></i> Ingredientes</div>
+          <div class="ingredientes-text">${escHtml(info.ingredientes)}</div>
+        </div>`
+      : '';
+    const alerHTML = (info.alergenos && info.alergenos.length)
+      ? `<div class="prod-detail-section">
+          <div class="prod-detail-label"><i class="fas fa-triangle-exclamation"></i> Alérgenos</div>
+          <div class="alergenos-wrap">
+            ${info.alergenos.map(a => {
+              const meta = ALERGENO_ICONS[a] || { icon: 'fa-circle-exclamation', label: a };
+              return `<span class="alergen-tag"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+            }).join('')}
+          </div>
+        </div>`
+      : `<div class="prod-detail-section">
+          <div class="prod-detail-label"><i class="fas fa-circle-check" style="color:var(--success)"></i> Alérgenos</div>
+          <div class="ingredientes-text" style="color:var(--success)">Sin alérgenos comunes declarados</div>
+        </div>`;
+    detailHTML = `<div class="prod-detail">${ingHTML}${alerHTML}</div>`;
+  }
+
+  const infoBtn = hasInfo || info !== undefined
+    ? `<button class="prod-info-btn ${isExpanded ? 'active' : ''}" onclick="toggleProductoDetail(${p.id})" aria-label="Info">
+        <i class="fas fa-${isExpanded ? 'xmark' : 'circle-info'}"></i>
+      </button>`
+    : '';
+
   return `
-    <div class="producto-card" id="pcard-${p.id}">
-      <div class="p-icon">${p.imagen ? `<img src="${escHtml(p.imagen)}" alt="">` : (p.icono||'🍽️')}</div>
-      <div class="p-info">
-        <div class="p-nombre">${escHtml(p.nombre)}</div>
-        <div class="p-precio">${formatEur(p.precio)}</div>
+    <div class="producto-card ${isExpanded ? 'expandida' : ''}" id="pcard-${p.id}">
+      <div class="prod-main-row">
+        <div class="p-icon">${p.imagen ? `<img src="${escHtml(p.imagen)}" alt="">` : (p.icono||'🍽️')}</div>
+        <div class="p-info">
+          <div class="p-nombre">${escHtml(p.nombre)}</div>
+          <div class="p-precio">${formatEur(p.precio)}</div>
+        </div>
+        ${infoBtn}
+        ${qtyCtrl}
       </div>
-      ${qtyCtrl}
+      ${detailHTML}
     </div>`;
 }
 
