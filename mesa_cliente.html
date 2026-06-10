@@ -902,131 +902,6 @@ body {
 .pedido-rechazado-body .title { font-size: 0.82rem; font-weight: 700; color: var(--danger); }
 .pedido-rechazado-body .items { font-size: 0.75rem; color: var(--text2); margin-top: 4px; line-height: 1.6; }
 
-
-/* ── PÁGINA CARTA ────────────────────────────────── */
-.carta-hero {
-  padding: 20px 16px 12px;
-  text-align: center;
-}
-.carta-hero-title {
-  font-family: var(--fh);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-.carta-hero-sub {
-  font-size: 0.8rem;
-  color: var(--muted);
-  line-height: 1.5;
-}
-.carta-section {
-  padding: 0 16px 16px;
-}
-.carta-section-title {
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--muted);
-  margin-bottom: 10px;
-  margin-top: 18px;
-}
-.carta-tipo-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-.carta-tipo-btn {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 16px 12px;
-  cursor: pointer;
-  text-align: center;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.carta-tipo-btn:active { transform: scale(0.97); }
-.carta-tipo-btn.selected {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(200,80,42,0.10), var(--shadow-sm);
-  background: var(--accent-lt);
-}
-.carta-tipo-icon { font-size: 1.6rem; }
-.carta-tipo-label { font-size: 0.82rem; font-weight: 700; color: var(--text); }
-.carta-tipo-sub   { font-size: 0.67rem; color: var(--muted); line-height: 1.3; }
-
-.carta-cats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 4px;
-}
-.carta-cat-btn {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--r);
-  padding: 12px 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: border-color 0.15s, transform 0.1s;
-  box-shadow: var(--shadow-sm);
-}
-.carta-cat-btn:active { transform: scale(0.97); }
-.carta-cat-btn:hover { border-color: var(--accent); }
-.carta-cat-icon { font-size: 1.3rem; flex-shrink: 0; }
-.carta-cat-info { flex: 1; min-width: 0; }
-.carta-cat-label { font-size: 0.8rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.carta-cat-count { font-size: 0.67rem; color: var(--muted); margin-top: 1px; }
-.carta-cat-arrow { font-size: 0.65rem; color: var(--muted); flex-shrink: 0; }
-
-.carta-pedir-cta {
-  margin: 18px 16px 24px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--r-lg);
-  padding: 14px 20px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  font-family: var(--ff);
-  width: calc(100% - 32px);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 16px rgba(200,80,42,0.3);
-  transition: background 0.15s, transform 0.1s;
-}
-.carta-pedir-cta:active { transform: scale(0.98); background: var(--accent-dk); }
-.carta-visitor-cta {
-  margin: 18px 16px 24px;
-  background: var(--bg2);
-  color: var(--text2);
-  border: 1.5px solid var(--border2);
-  border-radius: var(--r-lg);
-  padding: 14px 20px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  font-family: var(--ff);
-  width: calc(100% - 32px);
-  cursor: default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-align: center;
-  line-height: 1.4;
-}
 /* ── HISTORIAL ───────────────────────────────────── */
 .hist-entry {
   background: var(--white);
@@ -1063,6 +938,31 @@ body {
 .visitor-banner i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; }
 .visitor-banner-text .vb-title { font-size: 0.82rem; font-weight: 700; color: var(--accent-dk); }
 .visitor-banner-text .vb-sub   { font-size: 0.72rem; color: var(--text2); margin-top: 2px; line-height: 1.4; }
+
+/* ── DESCRIPCIÓN E ALÉRGENOS (solo visual, datos locales) ── */
+.p-descripcion {
+  font-size: 0.70rem;
+  color: var(--text2);
+  margin-top: 3px;
+  line-height: 1.4;
+  font-style: italic;
+}
+.p-alergenos {
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.p-alergeno-tag {
+  font-size: 0.62rem;
+  background: #fff3e0;
+  color: #b7600a;
+  border: 1px solid rgba(183,120,26,0.25);
+  border-radius: 100px;
+  padding: 1px 7px;
+  font-weight: 600;
+  white-space: nowrap;
+}
 </style>
 </head>
 <body>
@@ -1153,24 +1053,29 @@ body {
 
   <!-- TABS -->
   <nav class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('carta')" id="tab-carta">
-      <i class="fas fa-book-open" style="font-size:0.8rem"></i> Carta
+    <button class="tab-btn active" onclick="switchTab('ticket')" id="tab-ticket">
+      <i class="fas fa-receipt" style="font-size:0.8rem"></i> Mi Cuenta
     </button>
     <button class="tab-btn" onclick="switchTab('pedir')" id="tab-pedir">
       <i class="fas fa-utensils" style="font-size:0.8rem"></i> Pedir
       <span class="tab-badge" id="cart-badge" style="display:none">0</span>
     </button>
-    <button class="tab-btn" onclick="switchTab('ticket')" id="tab-ticket">
-      <i class="fas fa-receipt" style="font-size:0.8rem"></i> Mi Cuenta
+    <button class="tab-btn" onclick="switchTab('historial')" id="tab-historial">
+      <i class="fas fa-clock-rotate-left" style="font-size:0.8rem"></i> Historial
+      <span class="tab-badge" id="historial-badge" style="display:none">!</span>
     </button>
     <button class="tab-btn" onclick="switchTab('cuenta')" id="tab-cuenta">
       <i class="fas fa-file-invoice-dollar" style="font-size:0.8rem"></i> Cuenta
     </button>
   </nav>
 
-  <!-- ── PAGE: CARTA (inicio) ── -->
-  <section class="page active" id="page-carta">
-    <div id="carta-content"></div>
+  <!-- ── PAGE: TICKET ── -->
+  <section class="page active" id="page-ticket">
+    <div id="ticket-content"></div>
+    <div class="footer-note">
+      <i class="fas fa-shield-halved" style="margin-right:4px;color:var(--muted)"></i>
+      Los precios incluyen IVA · Hotto Digital TPV
+    </div>
   </section>
 
   <!-- ── PAGE: PEDIR ── -->
@@ -1183,13 +1088,9 @@ body {
     </div>
   </section>
 
-  <!-- ── PAGE: TICKET ── -->
-  <section class="page" id="page-ticket">
-    <div id="ticket-content"></div>
-    <div class="footer-note">
-      <i class="fas fa-shield-halved" style="margin-right:4px;color:var(--muted)"></i>
-      Los precios incluyen IVA · Hotto Digital TPV
-    </div>
+  <!-- ── PAGE: HISTORIAL ── -->
+  <section class="page" id="page-historial">
+    <div id="historial-content"></div>
   </section>
 
   <!-- ── PAGE: CUENTA ── -->
@@ -1221,6 +1122,88 @@ const _FB_URL_DEFAULT = "https://tpv-hottodigital-default-rtdb.europe-west1.fire
 const firebaseConfig = { databaseURL: _FB_URL_DEFAULT };
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb = firebase.database();
+
+/* ══════════════════════════════════════════════════
+   DATOS LOCALES: INGREDIENTES Y ALÉRGENOS
+   Solo informativos — no viajan por Firebase
+   Clave = id del producto en PRODUCTOS_INTEGRADOS
+══════════════════════════════════════════════════ */
+const INFO_PRODUCTO = {
+  // ── PLATOS COMBINADOS ──
+  200: { desc: "Cinta de lomo, 2 huevos fritos, patatas fritas",                            aler: ["🥚 Huevo"] },
+  201: { desc: "Filete de ternera, patatas fritas, lechuga, tomate",                        aler: [] },
+  202: { desc: "Filete de pollo, patatas fritas, lechuga, tomate",                          aler: [] },
+  203: { desc: "Pollo empanado, patatas fritas, lechuga, tomate",                           aler: ["🌾 Gluten","🥚 Huevo"] },
+  204: { desc: "Chuleta de pavo, huevo cocido, lechuga, tomate",                            aler: ["🥚 Huevo"] },
+  205: { desc: "Calamares rebozados, patatas fritas, lechuga, tomate",                      aler: ["🌾 Gluten","🦑 Moluscos"] },
+  206: { desc: "Entrecot de ternera, patatas fritas, lechuga, tomate",                      aler: [] },
+  207: { desc: "Milanesa de ternera rebozada, patatas fritas, lechuga, tomate",             aler: ["🌾 Gluten","🥚 Huevo"] },
+  // ── RACIONES ──
+  208: { desc: "Boquerones fritos rebozados",                                               aler: ["🐟 Pescado","🌾 Gluten"] },
+  209: { desc: "Salchicha, patatas fritas",                                                 aler: ["🌾 Gluten"] },
+  210: { desc: "Surtido de fritos de temporada",                                            aler: ["🌾 Gluten","🐟 Pescado*","🦐 Marisco*"] },
+  211: { desc: "Patatas fritas con salsa brava",                                            aler: [] },
+  212: { desc: "Alitas de pollo a la plancha",                                              aler: [] },
+  213: { desc: "Croquetas caseras (jamón / bacalao / pollo)",                               aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo"] },
+  214: { desc: "Oreja de cerdo a la plancha",                                               aler: [] },
+  215: { desc: "Tiras de pollo rebozadas",                                                  aler: ["🌾 Gluten","🥚 Huevo"] },
+  216: { desc: "Patatas fritas, huevos rotos, jamón serrano / chorizo / gulas (a elegir)",  aler: ["🥚 Huevo"] },
+  217: { desc: "Gambones a la plancha",                                                     aler: ["🦐 Marisco"] },
+  218: { desc: "Calamares rebozados",                                                       aler: ["🌾 Gluten","🦑 Moluscos"] },
+  219: { desc: "Huevos revueltos con setas",                                                aler: ["🥚 Huevo"] },
+  220: { desc: "Ternera rellena de jamón y queso, rebozada",                                aler: ["🌾 Gluten","🥚 Huevo","🥛 Lácteos"] },
+  221: { desc: "Brocheta de cerdo con especias",                                            aler: ["🌿 Mostaza*"] },
+  222: { desc: "Palitos de queso rebozados con salsa de arándanos",                         aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo"] },
+  223: { desc: "Patatas fritas con bacon crujiente",                                        aler: [] },
+  224: { desc: "Berenjena rebozada con miel de caña",                                       aler: ["🌾 Gluten","🥚 Huevo"] },
+  225: { desc: "Setas empanadas con salsa ali oli",                                         aler: ["🌾 Gluten","🥚 Huevo"] },
+  226: { desc: "Pimientos, calabacín, berenjena, champiñones y espárragos a la parrilla",   aler: [] },
+  227: { desc: "Cazón en adobo frito",                                                      aler: ["🐟 Pescado","🌾 Gluten"] },
+  228: { desc: "Surtido de carnes a la parrilla",                                           aler: [] },
+  229: { desc: "Surtido de pescado frito rebozado",                                         aler: ["🐟 Pescado","🌾 Gluten"] },
+  230: { desc: "Sepia a la plancha",                                                        aler: ["🦑 Moluscos"] },
+  231: { desc: "Patas de calamar a la plancha",                                             aler: ["🦑 Moluscos"] },
+  232: { desc: "Tiras de calamar rebozadas",                                                aler: ["🌾 Gluten","🦑 Moluscos"] },
+  // ── ENSALADAS ──
+  233: { desc: "Lechuga, tomate, cebolla, espárrago, huevo y atún",                         aler: ["🥚 Huevo","🐟 Pescado"] },
+  234: { desc: "Lechuga, pollo crujiente, pan, queso, tomate cherry y salsa César",         aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo","🐟 Pescado*"] },
+  235: { desc: "Lechuga, tomate cherry, aguacate y atún",                                   aler: ["🐟 Pescado"] },
+  236: { desc: "Lechuga, tomate, queso burrata, jamón, frutos secos y salsa mostaza miel",  aler: ["🥛 Lácteos","🥜 Frutos secos","🌿 Mostaza"] },
+  // ── TOSTAS ──
+  237: { desc: "Pan tostado, rulo de queso de cabra, mermelada de tomate",                  aler: ["🌾 Gluten","🥛 Lácteos"] },
+  238: { desc: "Pan tostado, solomillo de cerdo, salsa de queso, cebolla caramelizada",     aler: ["🌾 Gluten","🥛 Lácteos"] },
+  239: { desc: "Pan tostado con tomate, jamón ibérico",                                     aler: ["🌾 Gluten"] },
+  240: { desc: "Pan tostado, gulas, palitos de cangrejo al ajillo, huevo frito",            aler: ["🌾 Gluten","🥚 Huevo","🦐 Marisco"] },
+  241: { desc: "Pan tostado, secreto de cerdo, salsa de boletus o salsa de queso",          aler: ["🌾 Gluten","🥛 Lácteos"] },
+  242: { desc: "Pan tostado con productos típicos asturianos",                              aler: ["🌾 Gluten","🥛 Lácteos"] },
+  243: { desc: "Pan tostado, salmón ahumado, aguacate, queso crema",                        aler: ["🌾 Gluten","🐟 Pescado","🥛 Lácteos"] },
+  // ── HAMBURGUESAS ──
+  244: { desc: "Carne, pollo crujiente, lechuga, tomate, cebolla y salsas",                 aler: ["🌾 Gluten"] },
+  245: { desc: "Carne, pollo crujiente, lechuga, tomate, cebolla, huevo frito, bacon, queso y salsas", aler: ["🌾 Gluten","🥚 Huevo","🥛 Lácteos"] },
+  246: { desc: "Carne, pollo crujiente, lechuga, tomate, cebolla y salsas · ingredientes extra +0,50€", aler: ["🌾 Gluten"] },
+  // ── SANDWICHES ──
+  247: { desc: "Jamón y queso",                                                             aler: ["🌾 Gluten","🥛 Lácteos"] },
+  248: { desc: "Jamón, queso y huevo",                                                      aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo"] },
+  249: { desc: "Lechuga, tomate, espárrago, huevo duro y mayonesa",                         aler: ["🌾 Gluten","🥚 Huevo"] },
+  250: { desc: "Lechuga, tomate, york, queso, bacon y huevo (2 pisos)",                     aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo"] },
+  251: { desc: "Lechuga, tomate, pollo a la plancha y salsas",                              aler: ["🌾 Gluten"] },
+  // ── BOCADILLOS ──
+  252: { desc: "Jamón ibérico",          aler: ["🌾 Gluten"] },
+  253: { desc: "Jamón serrano",          aler: ["🌾 Gluten"] },
+  254: { desc: "Chorizo ibérico",        aler: ["🌾 Gluten"] },
+  255: { desc: "Salchichón ibérico",     aler: ["🌾 Gluten"] },
+  256: { desc: "Calamares rebozados",    aler: ["🌾 Gluten","🦑 Moluscos"] },
+  257: { desc: "Panceta a la plancha",   aler: ["🌾 Gluten"] },
+  258: { desc: "Oreja de cerdo",         aler: ["🌾 Gluten"] },
+  259: { desc: "Bacon a la plancha",     aler: ["🌾 Gluten"] },
+  260: { desc: "Cinta de lomo",          aler: ["🌾 Gluten"] },
+  261: { desc: "Tortilla de patata",     aler: ["🌾 Gluten","🥚 Huevo"] },
+  262: { desc: "Tortilla francesa",      aler: ["🌾 Gluten","🥚 Huevo"] },
+  263: { desc: "Pollo a la plancha con salsa rosa",       aler: ["🌾 Gluten"] },
+  264: { desc: "Ternera a la plancha",   aler: ["🌾 Gluten"] },
+  265: { desc: "Chorizo frito",          aler: ["🌾 Gluten"] },
+  266: { desc: "Pollo empanado",         aler: ["🌾 Gluten","🥚 Huevo"] },
+};
 
 /* ══════════════════════════════════════════════════
    ESTADO
@@ -1371,7 +1354,8 @@ function entrarModoVisitante() {
   document.getElementById('qr-scan-screen').classList.remove('show');
   document.getElementById('loading-screen').classList.remove('hidden');
 
-  // Ocultar tabs no relevantes para visitante
+  // Ocultar tabs de cuenta/historial en modo visitante
+  // Se hacen tras cargar Firebase
   connectFirebaseVisitante();
 }
 
@@ -1459,6 +1443,7 @@ function connectFirebase() {
 
     hideLoading();
     updateHeader();
+    updateHistorialBadge();
     renderCurrentPage();
   }, err => {
     console.error(err);
@@ -1472,12 +1457,12 @@ function connectFirebaseVisitante() {
     db = snapshot.val() || {};
     hideLoading();
     // Ajustar UI para modo visitante
-    document.getElementById('tab-pedir').style.display     = 'none';
     document.getElementById('tab-ticket').style.display    = 'none';
+    document.getElementById('tab-historial').style.display = 'none';
     document.getElementById('tab-cuenta').style.display    = 'none';
     document.getElementById('cart-bar').style.display      = 'none';
-    // Visitante empieza en Carta
-    switchTab('carta');
+    // Cambiar tab inicial a pedir
+    switchTab('pedir');
     updateHeaderVisitante();
   }, err => {
     console.error(err);
@@ -1556,7 +1541,7 @@ function updateHeader() {
 /* ══════════════════════════════════════════════════
    TABS
 ══════════════════════════════════════════════════ */
-let currentTab = 'carta';
+let currentTab = 'ticket';
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1566,9 +1551,9 @@ function switchTab(tab) {
   renderCurrentPage();
 }
 function renderCurrentPage() {
-  if (currentTab === 'carta')  renderCartaPage();
-  else if (currentTab === 'pedir')  renderPedirPage();
-  else if (currentTab === 'ticket') renderTicketPage();
+  if (currentTab === 'ticket') renderTicketPage();
+  else if (currentTab === 'pedir') renderPedirPage();
+  else if (currentTab === 'historial') { renderHistorialPage(); updateHistorialBadge(); }
   else if (currentTab === 'cuenta') renderCuentaPage();
 }
 
@@ -1717,100 +1702,73 @@ function renderPedidosPendientes() {
   }).join('');
 }
 
+function updateHistorialBadge() {
+  const badge = document.getElementById('historial-badge');
+  if (!badge) return;
+  const rechazados = pedidosCliente.filter(p => p.estado === 'rechazado');
+  if (rechazados.length > 0) {
+    badge.style.display = 'inline-flex';
+    badge.textContent = rechazados.length;
+    badge.style.background = 'var(--danger)';
+  } else {
+    const confirmados = pedidosCliente.filter(p => p.estado === 'confirmado');
+    if (confirmados.length > 0) {
+      badge.style.display = 'inline-flex';
+      badge.textContent = confirmados.length;
+      badge.style.background = 'var(--success)';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
 
 /* ══════════════════════════════════════════════════
-   PAGE: CARTA — vista de solo categorías y subcategorías
+   PAGE: HISTORIAL
 ══════════════════════════════════════════════════ */
-let cartaTipoActivo = null;  // 'barra' | 'cocina' | null
+function renderHistorialPage() {
+  const wrap = document.getElementById('historial-content');
+  const terminados = pedidosCliente.filter(p => p.estado === 'confirmado' || p.estado === 'rechazado');
 
-function renderCartaPage() {
-  const wrap = document.getElementById('carta-content');
-  if (!wrap) return;
+  if (!terminados.length) {
+    wrap.innerHTML = `
+      <div class="empty-state fade-in">
+        <div class="empty-state-icon"><i class="fas fa-clock-rotate-left"></i></div>
+        <h3>Sin historial aún</h3>
+        <p>Aquí verás los pedidos confirmados o rechazados durante esta sesión.</p>
+      </div>`;
+    return;
+  }
 
-  const cfg       = db.config    || {};
-  const productos = db.productos || [];
-  const categorias= db.categorias|| [];
-  const nombre    = cfg.nombreRestaurante || 'Nuestra carta';
+  // Ordenar: rechazados primero, luego confirmados; dentro de cada grupo por hora desc
+  const ordenados = [...terminados].sort((a, b) => {
+    if (a.estado === 'rechazado' && b.estado !== 'rechazado') return -1;
+    if (a.estado !== 'rechazado' && b.estado === 'rechazado') return 1;
+    return (b.hora || '').localeCompare(a.hora || '');
+  });
 
-  const hayBarra  = productos.some(p => p.tipo === 'barra');
-  const hayCocina = productos.some(p => p.tipo === 'cocina');
-
-  // ── Subcategorías del tipo seleccionado ──
-  let catsHTML = '';
-  if (cartaTipoActivo) {
-    const cats = categorias.filter(c =>
-      c.tipo === cartaTipoActivo &&
-      productos.some(p => p.catId === c.id && p.tipo === cartaTipoActivo)
-    );
-
-    if (cats.length) {
-      const catCards = cats.map(c => {
-        const numProds = productos.filter(p => p.catId === c.id && p.tipo === cartaTipoActivo).length;
-        return `<button class="carta-cat-btn" onclick="abrirCategoria('${c.tipo}','${c.id}')">
-          <span class="carta-cat-icon">${c.icono || '📦'}</span>
-          <span class="carta-cat-info">
-            <span class="carta-cat-label">${escHtml(c.label)}</span>
-            <span class="carta-cat-count">${numProds} producto${numProds !== 1 ? 's' : ''}</span>
+  const entriesHTML = ordenados.map(p => {
+    const esRechazado = p.estado === 'rechazado';
+    const lineas = (p.items||[]).map(i => `${i.cantidad}× ${escHtml(i.nombre)}`).join(' · ');
+    const total = formatEur(p.total || 0);
+    return `
+      <div class="hist-entry fade-in">
+        <div class="hist-entry-header">
+          <span class="hist-entry-hora"><i class="fas fa-clock" style="margin-right:4px;opacity:0.5"></i>${p.hora || '—'}</span>
+          <span class="hist-entry-badge ${p.estado}">
+            <i class="fas fa-${esRechazado ? 'xmark' : 'check'}"></i>
+            ${esRechazado ? 'Rechazado' : 'Confirmado'}
           </span>
-          <i class="fas fa-chevron-right carta-cat-arrow"></i>
-        </button>`;
-      }).join('');
-
-      catsHTML = `
-        <div class="carta-section">
-          <div class="carta-section-title">Elige qué quieres</div>
-          <div class="carta-cats-grid">${catCards}</div>
-        </div>`;
-    }
-  }
-
-  // ── CTA según modo ──
-  let ctaHTML = '';
-  if (!modoVisitante) {
-    if (cartaTipoActivo && catsHTML) {
-      ctaHTML = '';  // las subcategorías ya llevan a Pedir
-    }
-  } else {
-    ctaHTML = `<div class="carta-visitor-cta">
-      <i class="fas fa-qrcode"></i>
-      Escanea el QR de tu mesa para poder hacer pedidos
-    </div>`;
-  }
+        </div>
+        <div class="hist-entry-items">${lineas}</div>
+        ${p.nota ? `<div class="hist-entry-items" style="font-style:italic;color:var(--muted);padding-top:0"><i class="fas fa-pen" style="margin-right:4px;opacity:0.5"></i>${escHtml(p.nota)}</div>` : ''}
+        <div class="hist-entry-total">${esRechazado ? '<span style="color:var(--danger)">No procesado · </span>' : ''}${total}</div>
+      </div>`;
+  }).join('');
 
   wrap.innerHTML = `
-    <div class="carta-hero">
-      <div class="carta-hero-title">${escHtml(nombre)}</div>
-      <div class="carta-hero-sub">Explora nuestra carta y pide lo que más te apetezca</div>
-    </div>
-    <div class="carta-section">
-      <div class="carta-section-title">¿Qué te apetece?</div>
-      <div class="carta-tipo-grid">
-        ${hayBarra ? `<button class="carta-tipo-btn${cartaTipoActivo==='barra'?' selected':''}" onclick="seleccionarCartaTipo('barra')">
-          <span class="carta-tipo-icon">🥃</span>
-          <span class="carta-tipo-label">Barra</span>
-          <span class="carta-tipo-sub">Bebidas, cafés, cervezas…</span>
-        </button>` : ''}
-        ${hayCocina ? `<button class="carta-tipo-btn${cartaTipoActivo==='cocina'?' selected':''}" onclick="seleccionarCartaTipo('cocina')">
-          <span class="carta-tipo-icon">🍳</span>
-          <span class="carta-tipo-label">Cocina</span>
-          <span class="carta-tipo-sub">Platos, bocadillos, raciones…</span>
-        </button>` : ''}
-      </div>
-    </div>
-    ${catsHTML}
-    ${ctaHTML}`;
-}
-
-function seleccionarCartaTipo(tipo) {
-  cartaTipoActivo = cartaTipoActivo === tipo ? null : tipo;
-  renderCartaPage();
-}
-
-function abrirCategoria(tipo, catId) {
-  // Ir a pestaña Pedir con ese tipo y subcategoría ya activos
-  tipoActivo = tipo;
-  catActiva  = catId;
-  switchTab('pedir');
+    <p class="seccion-titulo" style="margin-bottom:4px">Historial de pedidos</p>
+    <p class="seccion-sub">Pedidos de esta sesión confirmados o rechazados por el camarero.</p>
+    ${entriesHTML}`;
 }
 
 function renderPedidoOkBanner() {
@@ -1862,7 +1820,17 @@ function renderPedirPage() {
   renderProductos();
   updateCartUI();
   if (!modoVisitante) renderPedidoOkBanner();
-  // (visitante no llega a Pedir — la tab está oculta)
+  else {
+    const wrap = document.getElementById('pedido-ok-wrap');
+    if (wrap) wrap.innerHTML = `
+      <div class="visitor-banner fade-in">
+        <i class="fas fa-eye"></i>
+        <div class="visitor-banner-text">
+          <div class="vb-title">Modo solo carta</div>
+          <div class="vb-sub">Escanea el QR de tu mesa para poder hacer pedidos.</div>
+        </div>
+      </div>`;
+  }
 }
 
 /* ── Renderiza la zona de navegación según el estado ── */
@@ -1950,8 +1918,8 @@ function seleccionarTipo(tipo) {
 function volverTipos() {
   tipoActivo = null;
   catActiva  = null;
-  cartaTipoActivo = null;
-  switchTab('carta');
+  renderPedirNav();
+  renderProductos();
 }
 
 function filtrarCat(catId) {
@@ -2037,12 +2005,24 @@ function buildProductoCard(p) {
         ` : '<span style="width:30px"></span><span style="width:18px"></span>'}
         <button class="qty-btn add" onclick="qtyChange(${p.id}, 1)" aria-label="Añadir">+</button>
       </div>`;
+
+  // Datos locales — no vienen de Firebase
+  const info = INFO_PRODUCTO[p.id] || {};
+  const descHTML = info.desc
+    ? `<div class="p-descripcion">${escHtml(info.desc)}</div>`
+    : '';
+  const alerHTML = (info.aler && info.aler.length)
+    ? `<div class="p-alergenos">${info.aler.map(a => `<span class="p-alergeno-tag">${escHtml(a)}</span>`).join('')}</div>`
+    : '';
+
   return `
     <div class="producto-card" id="pcard-${p.id}">
       <div class="p-icon">${p.imagen ? `<img src="${escHtml(p.imagen)}" alt="">` : (p.icono||'🍽️')}</div>
       <div class="p-info">
         <div class="p-nombre">${escHtml(p.nombre)}</div>
         <div class="p-precio">${formatEur(p.precio)}</div>
+        ${descHTML}
+        ${alerHTML}
       </div>
       ${qtyCtrl}
     </div>`;
