@@ -938,31 +938,6 @@ body {
 .visitor-banner i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; }
 .visitor-banner-text .vb-title { font-size: 0.82rem; font-weight: 700; color: var(--accent-dk); }
 .visitor-banner-text .vb-sub   { font-size: 0.72rem; color: var(--text2); margin-top: 2px; line-height: 1.4; }
-
-/* ── DESCRIPCIÓN E ALÉRGENOS (solo visual, datos locales) ── */
-.p-descripcion {
-  font-size: 0.70rem;
-  color: var(--text2);
-  margin-top: 3px;
-  line-height: 1.4;
-  font-style: italic;
-}
-.p-alergenos {
-  margin-top: 5px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-}
-.p-alergeno-tag {
-  font-size: 0.62rem;
-  background: #fff3e0;
-  color: #b7600a;
-  border: 1px solid rgba(183,120,26,0.25);
-  border-radius: 100px;
-  padding: 1px 7px;
-  font-weight: 600;
-  white-space: nowrap;
-}
 </style>
 </head>
 <body>
@@ -1122,88 +1097,6 @@ const _FB_URL_DEFAULT = "https://tpv-hottodigital-default-rtdb.europe-west1.fire
 const firebaseConfig = { databaseURL: _FB_URL_DEFAULT };
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb = firebase.database();
-
-/* ══════════════════════════════════════════════════
-   DATOS LOCALES: INGREDIENTES Y ALÉRGENOS
-   Solo informativos — no viajan por Firebase
-   Clave = id del producto en PRODUCTOS_INTEGRADOS
-══════════════════════════════════════════════════ */
-const INFO_PRODUCTO = {
-  // ── PLATOS COMBINADOS ──
-  200: { desc: "Cinta de lomo, 2 huevos fritos, patatas fritas",                            aler: ["🥚 Huevo"] },
-  201: { desc: "Filete de ternera, patatas fritas, lechuga, tomate",                        aler: [] },
-  202: { desc: "Filete de pollo, patatas fritas, lechuga, tomate",                          aler: [] },
-  203: { desc: "Pollo empanado, patatas fritas, lechuga, tomate",                           aler: ["🌾 Gluten","🥚 Huevo"] },
-  204: { desc: "Chuleta de pavo, huevo cocido, lechuga, tomate",                            aler: ["🥚 Huevo"] },
-  205: { desc: "Calamares rebozados, patatas fritas, lechuga, tomate",                      aler: ["🌾 Gluten","🦑 Moluscos"] },
-  206: { desc: "Entrecot de ternera, patatas fritas, lechuga, tomate",                      aler: [] },
-  207: { desc: "Milanesa de ternera rebozada, patatas fritas, lechuga, tomate",             aler: ["🌾 Gluten","🥚 Huevo"] },
-  // ── RACIONES ──
-  208: { desc: "Boquerones fritos rebozados",                                               aler: ["🐟 Pescado","🌾 Gluten"] },
-  209: { desc: "Salchicha, patatas fritas",                                                 aler: ["🌾 Gluten"] },
-  210: { desc: "Surtido de fritos de temporada",                                            aler: ["🌾 Gluten","🐟 Pescado*","🦐 Marisco*"] },
-  211: { desc: "Patatas fritas con salsa brava",                                            aler: [] },
-  212: { desc: "Alitas de pollo a la plancha",                                              aler: [] },
-  213: { desc: "Croquetas caseras (jamón / bacalao / pollo)",                               aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo"] },
-  214: { desc: "Oreja de cerdo a la plancha",                                               aler: [] },
-  215: { desc: "Tiras de pollo rebozadas",                                                  aler: ["🌾 Gluten","🥚 Huevo"] },
-  216: { desc: "Patatas fritas, huevos rotos, jamón serrano / chorizo / gulas (a elegir)",  aler: ["🥚 Huevo"] },
-  217: { desc: "Gambones a la plancha",                                                     aler: ["🦐 Marisco"] },
-  218: { desc: "Calamares rebozados",                                                       aler: ["🌾 Gluten","🦑 Moluscos"] },
-  219: { desc: "Huevos revueltos con setas",                                                aler: ["🥚 Huevo"] },
-  220: { desc: "Ternera rellena de jamón y queso, rebozada",                                aler: ["🌾 Gluten","🥚 Huevo","🥛 Lácteos"] },
-  221: { desc: "Brocheta de cerdo con especias",                                            aler: ["🌿 Mostaza*"] },
-  222: { desc: "Palitos de queso rebozados con salsa de arándanos",                         aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo"] },
-  223: { desc: "Patatas fritas con bacon crujiente",                                        aler: [] },
-  224: { desc: "Berenjena rebozada con miel de caña",                                       aler: ["🌾 Gluten","🥚 Huevo"] },
-  225: { desc: "Setas empanadas con salsa ali oli",                                         aler: ["🌾 Gluten","🥚 Huevo"] },
-  226: { desc: "Pimientos, calabacín, berenjena, champiñones y espárragos a la parrilla",   aler: [] },
-  227: { desc: "Cazón en adobo frito",                                                      aler: ["🐟 Pescado","🌾 Gluten"] },
-  228: { desc: "Surtido de carnes a la parrilla",                                           aler: [] },
-  229: { desc: "Surtido de pescado frito rebozado",                                         aler: ["🐟 Pescado","🌾 Gluten"] },
-  230: { desc: "Sepia a la plancha",                                                        aler: ["🦑 Moluscos"] },
-  231: { desc: "Patas de calamar a la plancha",                                             aler: ["🦑 Moluscos"] },
-  232: { desc: "Tiras de calamar rebozadas",                                                aler: ["🌾 Gluten","🦑 Moluscos"] },
-  // ── ENSALADAS ──
-  233: { desc: "Lechuga, tomate, cebolla, espárrago, huevo y atún",                         aler: ["🥚 Huevo","🐟 Pescado"] },
-  234: { desc: "Lechuga, pollo crujiente, pan, queso, tomate cherry y salsa César",         aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo","🐟 Pescado*"] },
-  235: { desc: "Lechuga, tomate cherry, aguacate y atún",                                   aler: ["🐟 Pescado"] },
-  236: { desc: "Lechuga, tomate, queso burrata, jamón, frutos secos y salsa mostaza miel",  aler: ["🥛 Lácteos","🥜 Frutos secos","🌿 Mostaza"] },
-  // ── TOSTAS ──
-  237: { desc: "Pan tostado, rulo de queso de cabra, mermelada de tomate",                  aler: ["🌾 Gluten","🥛 Lácteos"] },
-  238: { desc: "Pan tostado, solomillo de cerdo, salsa de queso, cebolla caramelizada",     aler: ["🌾 Gluten","🥛 Lácteos"] },
-  239: { desc: "Pan tostado con tomate, jamón ibérico",                                     aler: ["🌾 Gluten"] },
-  240: { desc: "Pan tostado, gulas, palitos de cangrejo al ajillo, huevo frito",            aler: ["🌾 Gluten","🥚 Huevo","🦐 Marisco"] },
-  241: { desc: "Pan tostado, secreto de cerdo, salsa de boletus o salsa de queso",          aler: ["🌾 Gluten","🥛 Lácteos"] },
-  242: { desc: "Pan tostado con productos típicos asturianos",                              aler: ["🌾 Gluten","🥛 Lácteos"] },
-  243: { desc: "Pan tostado, salmón ahumado, aguacate, queso crema",                        aler: ["🌾 Gluten","🐟 Pescado","🥛 Lácteos"] },
-  // ── HAMBURGUESAS ──
-  244: { desc: "Carne, pollo crujiente, lechuga, tomate, cebolla y salsas",                 aler: ["🌾 Gluten"] },
-  245: { desc: "Carne, pollo crujiente, lechuga, tomate, cebolla, huevo frito, bacon, queso y salsas", aler: ["🌾 Gluten","🥚 Huevo","🥛 Lácteos"] },
-  246: { desc: "Carne, pollo crujiente, lechuga, tomate, cebolla y salsas · ingredientes extra +0,50€", aler: ["🌾 Gluten"] },
-  // ── SANDWICHES ──
-  247: { desc: "Jamón y queso",                                                             aler: ["🌾 Gluten","🥛 Lácteos"] },
-  248: { desc: "Jamón, queso y huevo",                                                      aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo"] },
-  249: { desc: "Lechuga, tomate, espárrago, huevo duro y mayonesa",                         aler: ["🌾 Gluten","🥚 Huevo"] },
-  250: { desc: "Lechuga, tomate, york, queso, bacon y huevo (2 pisos)",                     aler: ["🌾 Gluten","🥛 Lácteos","🥚 Huevo"] },
-  251: { desc: "Lechuga, tomate, pollo a la plancha y salsas",                              aler: ["🌾 Gluten"] },
-  // ── BOCADILLOS ──
-  252: { desc: "Jamón ibérico",          aler: ["🌾 Gluten"] },
-  253: { desc: "Jamón serrano",          aler: ["🌾 Gluten"] },
-  254: { desc: "Chorizo ibérico",        aler: ["🌾 Gluten"] },
-  255: { desc: "Salchichón ibérico",     aler: ["🌾 Gluten"] },
-  256: { desc: "Calamares rebozados",    aler: ["🌾 Gluten","🦑 Moluscos"] },
-  257: { desc: "Panceta a la plancha",   aler: ["🌾 Gluten"] },
-  258: { desc: "Oreja de cerdo",         aler: ["🌾 Gluten"] },
-  259: { desc: "Bacon a la plancha",     aler: ["🌾 Gluten"] },
-  260: { desc: "Cinta de lomo",          aler: ["🌾 Gluten"] },
-  261: { desc: "Tortilla de patata",     aler: ["🌾 Gluten","🥚 Huevo"] },
-  262: { desc: "Tortilla francesa",      aler: ["🌾 Gluten","🥚 Huevo"] },
-  263: { desc: "Pollo a la plancha con salsa rosa",       aler: ["🌾 Gluten"] },
-  264: { desc: "Ternera a la plancha",   aler: ["🌾 Gluten"] },
-  265: { desc: "Chorizo frito",          aler: ["🌾 Gluten"] },
-  266: { desc: "Pollo empanado",         aler: ["🌾 Gluten","🥚 Huevo"] },
-};
 
 /* ══════════════════════════════════════════════════
    ESTADO
@@ -1887,13 +1780,9 @@ function renderPedirNav() {
       ${catActiva ? `<span class="bc-sep">›</span><span class="bc-current">${catLabel}</span>` : ''}
     </div>`;
 
-  // Subcategory pills
+  // Subcategory pills — sin botón "Todo", siempre hay que elegir subcategoría
   let pillsHTML = '';
   if (catsDelTipo.length > 0) {
-    const todaBtn = !catActiva
-      ? `<button class="cat-pill active" onclick="filtrarCat(null)"><span>${tipoActivo === 'barra' ? '🥃' : '🍳'}</span> Todo</button>`
-      : `<button class="cat-pill" onclick="filtrarCat(null)"><span>${tipoActivo === 'barra' ? '🥃' : '🍳'}</span> Todo</button>`;
-
     const pills = catsDelTipo.map(c => {
       const cartQty = Object.values(carrito).filter(e => e.producto.catId === c.id).reduce((s,e)=>s+e.qty,0);
       return `<button class="cat-pill ${catActiva === c.id ? 'active' : ''}" onclick="filtrarCat('${c.id}')">
@@ -1902,7 +1791,7 @@ function renderPedirNav() {
       </button>`;
     }).join('');
 
-    pillsHTML = `<div class="cats-scroll">${todaBtn}${pills}</div>`;
+    pillsHTML = `<div class="cats-scroll">${pills}</div>`;
   }
 
   wrap.innerHTML = breadcrumbHTML + pillsHTML;
@@ -1932,8 +1821,8 @@ function renderProductos() {
   const container = document.getElementById('productos-container');
   if (!container) return;
 
-  // Si no hay tipo seleccionado, no mostrar productos
-  if (!tipoActivo) {
+  // Sin tipo o sin subcategoría seleccionada, no mostrar productos
+  if (!tipoActivo || !catActiva) {
     container.innerHTML = '';
     return;
   }
@@ -2005,24 +1894,12 @@ function buildProductoCard(p) {
         ` : '<span style="width:30px"></span><span style="width:18px"></span>'}
         <button class="qty-btn add" onclick="qtyChange(${p.id}, 1)" aria-label="Añadir">+</button>
       </div>`;
-
-  // Datos locales — no vienen de Firebase
-  const info = INFO_PRODUCTO[p.id] || {};
-  const descHTML = info.desc
-    ? `<div class="p-descripcion">${escHtml(info.desc)}</div>`
-    : '';
-  const alerHTML = (info.aler && info.aler.length)
-    ? `<div class="p-alergenos">${info.aler.map(a => `<span class="p-alergeno-tag">${escHtml(a)}</span>`).join('')}</div>`
-    : '';
-
   return `
     <div class="producto-card" id="pcard-${p.id}">
       <div class="p-icon">${p.imagen ? `<img src="${escHtml(p.imagen)}" alt="">` : (p.icono||'🍽️')}</div>
       <div class="p-info">
         <div class="p-nombre">${escHtml(p.nombre)}</div>
         <div class="p-precio">${formatEur(p.precio)}</div>
-        ${descHTML}
-        ${alerHTML}
       </div>
       ${qtyCtrl}
     </div>`;
