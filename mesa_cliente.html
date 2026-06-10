@@ -1204,6 +1204,8 @@ let tipoActivo = null;         // 'barra' | 'cocina' | null = mostrar selector d
 let catActiva = null;          // subcategoría filtrada (catId)
 let pedidoEnviado = false;    // bandera para UI
 let pedidosCliente = [];      // pedidos pendientes enviados por el cliente
+let historialLocal = [];      // copia local del historial (persiste aunque Firebase se limpie al cobrar)
+let cobradoLimpiado = false;  // flag: evita llamar remove() en cada tick del listener
 let modoVisitante = false;    // true = sin mesa, solo carta de lectura
 
 /* ══════════════════════════════════════════════════
@@ -1402,8 +1404,16 @@ function connectFirebase() {
     // 🧹 LIMPIAR /pedidosCliente/{mesa} al cobrar
     const ticketActualEstado = (db.tickets||[]).find(t => String(t.mesa) === String(mesaId));
     if (ticketActualEstado?.cobrado === true) {
-      // Borrar todo el nodo de pedidos del cliente para esta mesa
-      rtdb.ref('/pedidosCliente/' + mesaId).remove().catch(() => {});
+      // Guardar historial antes de limpiar (solo si aún no se ha limpiado)
+      if (!cobradoLimpiado) {
+        // Preservar en historialLocal los pedidos confirmados/rechazados que tengamos
+        if (pedidosCliente.length > 0) {
+          historialLocal = [...pedidosCliente];
+        }
+        // Borrar nodo de Firebase una sola vez
+        rtdb.ref('/pedidosCliente/' + mesaId).remove().catch(() => {});
+        cobradoLimpiado = true;
+      }
       pedidosCliente = [];
     } else {
       // 🧹 LIMPIAR PEDIDOS DE SESIONES ANTERIORES
@@ -1426,6 +1436,11 @@ function connectFirebase() {
         pedidosCliente = allPedidos.filter(p => p && (!qrToken || p.qrToken === qrToken));
       } else {
         pedidosCliente = [];
+      }
+      // Mantener historialLocal sincronizado con los terminados de la sesión activa
+      const terminadosActuales = pedidosCliente.filter(p => p.estado === 'confirmado' || p.estado === 'rechazado');
+      if (terminadosActuales.length > historialLocal.length) {
+        historialLocal = [...terminadosActuales];
       }
     }
 
@@ -1715,10 +1730,23 @@ function updateHistorialBadge() {
 ══════════════════════════════════════════════════ */
 function renderHistorialPage() {
   const wrap = document.getElementById('historial-content');
-  const terminados = pedidosCliente.filter(p => p.estado === 'confirmado' || p.estado === 'rechazado');
+
+  // Al cobrar: usar historialLocal (copia guardada antes de limpiar Firebase)
+  const fuente = cobradoLimpiado ? historialLocal : pedidosCliente;
+  const terminados = fuente.filter(p => p.estado === 'confirmado' || p.estado === 'rechazado');
+
+  // Banner de sesión cerrada (solo si cobrado)
+  const cobradoBannerHTML = cobradoLimpiado ? `
+    <div class="info-card fade-in" style="border-color:rgba(45,122,95,0.25);background:var(--success-lt);margin-bottom:16px">
+      <div class="info-card-icon success"><i class="fas fa-circle-check"></i></div>
+      <div class="info-card-text">
+        <div class="info-card-title" style="color:var(--success)">Sesión cerrada · Cuenta saldada</div>
+        <div class="info-card-desc">Tu historial de pedidos se conserva aquí como referencia. ¡Gracias por tu visita!</div>
+      </div>
+    </div>` : '';
 
   if (!terminados.length) {
-    wrap.innerHTML = `
+    wrap.innerHTML = cobradoBannerHTML + `
       <div class="empty-state fade-in">
         <div class="empty-state-icon"><i class="fas fa-clock-rotate-left"></i></div>
         <h3>Sin historial aún</h3>
@@ -1753,7 +1781,7 @@ function renderHistorialPage() {
       </div>`;
   }).join('');
 
-  wrap.innerHTML = `
+  wrap.innerHTML = cobradoBannerHTML + `
     <p class="seccion-titulo" style="margin-bottom:4px">Historial de pedidos</p>
     <p class="seccion-sub">Pedidos de esta sesión confirmados o rechazados por el camarero.</p>
     ${entriesHTML}`;
