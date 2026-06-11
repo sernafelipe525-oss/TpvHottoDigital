@@ -388,45 +388,83 @@ body {
 .tipo-selector {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 20px;
 }
 .tipo-card {
   background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 18px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 28px 16px 22px;
   display: flex; flex-direction: column;
-  align-items: center; gap: 8px;
+  align-items: center; gap: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.22s ease;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.tipo-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(200,80,42,0.04) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.22s;
 }
 .tipo-card:hover {
   border-color: var(--accent);
-  box-shadow: var(--shadow-sm);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(200,80,42,0.14);
+  transform: translateY(-3px);
 }
+.tipo-card:hover::before { opacity: 1; }
 .tipo-card.active {
   border-color: var(--accent);
   background: var(--accent-lt);
-  box-shadow: 0 4px 16px rgba(200,80,42,0.18);
+  box-shadow: 0 6px 22px rgba(200,80,42,0.22);
+}
+.tipo-card.active::before { opacity: 1; }
+.tipo-card-icon-wrap {
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.8rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.tipo-card:hover .tipo-card-icon-wrap { transform: scale(1.08); }
+.tipo-card.active .tipo-card-icon-wrap {
+  background: rgba(200,80,42,0.12);
 }
 .tipo-card-icon {
-  font-size: 2rem;
+  font-size: 2.8rem;
   line-height: 1;
+}
+.tipo-card-badge {
+  font-size: 0.55rem; font-weight: 800;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  background: var(--bg2); color: var(--muted);
+  padding: 3px 9px; border-radius: 100px;
+  margin-bottom: -4px;
+}
+.tipo-card.active .tipo-card-badge {
+  background: rgba(200,80,42,0.15); color: var(--accent-dk);
 }
 .tipo-card-label {
   font-family: var(--fh);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--text);
+  line-height: 1.2;
 }
 .tipo-card-sub {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--muted);
+  line-height: 1.4;
+  max-width: 110px;
 }
 .tipo-card.active .tipo-card-label { color: var(--accent-dk); }
+.tipo-card.active .tipo-card-sub { color: rgba(160,61,30,0.7); }
 
 /* ── BREADCRUMB ───────────────────────────────────── */
 .nav-breadcrumb {
@@ -477,14 +515,15 @@ body {
   width: 100%;
 }
 .p-icon {
-  width: 58px; height: 58px; flex-shrink: 0;
-  border-radius: 13px;
+  width: 80px; height: 80px; flex-shrink: 0;
+  border-radius: 16px;
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.9rem;
+  font-size: 2.4rem;
   overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
 }
-.p-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 13px; }
+.p-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
 .p-info { flex: 1; min-width: 0; }
 .p-nombre {
   font-size: 0.9rem; font-weight: 600;
@@ -2412,16 +2451,18 @@ function renderPedirNav() {
       <div class="tipo-selector">
         ${hayBarra ? `
         <button class="tipo-card" onclick="seleccionarTipo('barra')">
-          <div class="tipo-card-icon">🥃</div>
+          <div class="tipo-card-badge">Para tomar</div>
+          <div class="tipo-card-icon-wrap"><span class="tipo-card-icon">🥃</span></div>
           <div class="tipo-card-label">Barra</div>
-          <div class="tipo-card-sub">Bebidas, cafés, cervezas…</div>
+          <div class="tipo-card-sub">Bebidas, cafés, cervezas, cócteles…</div>
           ${cartBarra > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(200,80,42,0.12);color:var(--accent);border:1px solid rgba(200,80,42,0.3)">${cartBarra} en carrito</span>` : ''}
         </button>` : ''}
         ${hayCocina ? `
         <button class="tipo-card" onclick="seleccionarTipo('cocina')">
-          <div class="tipo-card-icon">🍳</div>
+          <div class="tipo-card-badge">Para comer</div>
+          <div class="tipo-card-icon-wrap"><span class="tipo-card-icon">🍳</span></div>
           <div class="tipo-card-label">Cocina</div>
-          <div class="tipo-card-sub">Platos, bocadillos, raciones…</div>
+          <div class="tipo-card-sub">Platos, raciones, bocadillos…</div>
           ${cartCocina > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(200,80,42,0.12);color:var(--accent);border:1px solid rgba(200,80,42,0.3)">${cartCocina} en carrito</span>` : ''}
         </button>` : ''}
       </div>`;
