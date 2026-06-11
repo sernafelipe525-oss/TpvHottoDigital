@@ -820,11 +820,13 @@ body {
   font-size: 0.68rem; color: var(--muted); line-height: 1.6;
 }
 
-/* ── WELCOME SCREEN ──────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   WELCOME SCREEN — rediseño profesional
+══════════════════════════════════════════════════ */
 #qr-scan-screen {
   display: none;
   position: fixed; inset: 0; z-index: 998;
-  background: var(--white);
+  background: #f9f6f1;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -832,114 +834,246 @@ body {
 }
 #qr-scan-screen.show { display: flex; }
 
-.welcome-inner {
-  width: 100%; max-width: 400px;
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center;
-  padding: 0 28px 40px;
-  position: relative;
-}
-
-/* decorative top band */
-.welcome-band {
+/* Hero superior con fondo oscuro */
+.welcome-hero-bg {
   width: 100%;
-  height: 6px;
-  background: linear-gradient(90deg, var(--accent), #e8753d, var(--gold));
+  background: linear-gradient(160deg, #1c1714 0%, #2e2620 60%, #1a100c 100%);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 52px 28px 40px;
+  position: relative;
+  overflow: hidden;
   flex-shrink: 0;
-  align-self: stretch;
+}
+.welcome-hero-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 90% 60% at 50% 0%, rgba(200,80,42,0.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+/* línea superior acento */
+.welcome-band {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--gold) 60%, transparent 100%);
 }
 
 .welcome-logo-wrap {
-  margin-top: 52px;
-  width: 88px; height: 88px;
-  border-radius: 24px;
-  background: var(--accent);
+  width: 76px; height: 76px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(200,80,42,0.9), rgba(160,61,30,1));
   display: flex; align-items: center; justify-content: center;
-  font-size: 2.4rem;
-  box-shadow: 0 12px 36px rgba(200,80,42,0.32);
+  font-size: 2.1rem;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 12px 32px rgba(0,0,0,0.45), 0 0 40px rgba(200,80,42,0.25);
   overflow: hidden;
   flex-shrink: 0;
+  position: relative; z-index: 1;
 }
 .welcome-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
 .welcome-restaurant-name {
   font-family: var(--fh);
-  font-size: 1.8rem; font-weight: 700;
-  color: var(--text);
+  font-size: 2rem; font-weight: 700;
+  color: #f5efe8;
   text-align: center;
-  margin-top: 18px;
-  line-height: 1.2;
+  margin-top: 16px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  position: relative; z-index: 1;
 }
-
 .welcome-tagline {
-  font-size: 0.82rem; color: var(--muted);
-  text-align: center; margin-top: 6px;
-  letter-spacing: 0.3px;
-}
-
-/* illustration */
-.welcome-illustration {
-  margin-top: 32px;
-  width: 200px; height: 160px;
-  opacity: 0.88;
-  flex-shrink: 0;
-}
-
-.welcome-message {
-  margin-top: 24px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.38);
   text-align: center;
-}
-.welcome-message h2 {
-  font-family: var(--fh);
-  font-size: 1.2rem; font-weight: 600;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-.welcome-message p {
-  font-size: 0.82rem; color: var(--text2);
-  line-height: 1.65; max-width: 300px;
-  margin: 0 auto;
+  margin-top: 6px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+  position: relative; z-index: 1;
 }
 
-/* CTA buttons */
+/* Ilustración en el hero */
+.welcome-hero-illustration {
+  margin-top: 28px;
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px;
+}
+.hero-feat-pill {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  padding: 7px 14px;
+  font-size: 0.72rem; font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  backdrop-filter: blur(8px);
+}
+.hero-feat-pill i { color: var(--accent); font-size: 0.7rem; }
+
+/* ── Cuerpo blanco/crema ─────────────── */
+.welcome-body {
+  width: 100%; max-width: 420px;
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 0 22px 52px;
+  flex: 1;
+}
+
+/* Tarjeta carta — card principal destacada */
+.welcome-carta-card {
+  width: 100%;
+  margin-top: -1px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  padding: 20px 20px;
+  display: flex; align-items: center; gap: 16px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+  position: relative;
+  overflow: hidden;
+  margin-top: 20px;
+}
+.welcome-carta-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(200,80,42,0.04) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.22s;
+}
+.welcome-carta-card:hover { box-shadow: 0 8px 36px rgba(200,80,42,0.18); border-color: rgba(200,80,42,0.4); transform: translateY(-1px); }
+.welcome-carta-card:hover::after { opacity: 1; }
+.welcome-carta-card:active { transform: translateY(0); }
+
+.carta-icon-wrap {
+  width: 54px; height: 54px; flex-shrink: 0;
+  border-radius: 15px;
+  background: linear-gradient(145deg, var(--accent-lt), rgba(200,80,42,0.06));
+  border: 1px solid rgba(200,80,42,0.2);
+  display: flex; align-items: center; justify-content: center;
+}
+.carta-icon-svg { width: 28px; height: 28px; }
+
+.carta-card-text { flex: 1; }
+.carta-card-title {
+  font-family: var(--fh);
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text);
+}
+.carta-card-sub {
+  font-size: 0.72rem; color: var(--text2);
+  margin-top: 3px; line-height: 1.45;
+}
+.carta-card-badge {
+  font-size: 0.58rem; font-weight: 800;
+  background: var(--accent); color: #fff;
+  padding: 3px 8px; border-radius: 100px;
+  letter-spacing: 0.3px;
+  margin-top: 6px; display: inline-block;
+}
+.carta-card-arrow {
+  color: var(--accent);
+  font-size: 0.9rem; flex-shrink: 0;
+  opacity: 0.6;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.welcome-carta-card:hover .carta-card-arrow { transform: translateX(3px); opacity: 1; }
+
+/* ── Divisor con texto ── */
+.welcome-divider {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; margin: 22px 0 0;
+}
+.welcome-divider-line { flex: 1; height: 1px; background: var(--border); }
+.welcome-divider-text {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ── Acciones QR y manual ── */
 .welcome-actions {
-  width: 100%; margin-top: 32px;
-  display: flex; flex-direction: column; gap: 12px;
+  width: 100%; margin-top: 16px;
+  display: flex; flex-direction: column; gap: 10px;
 }
 .welcome-btn-primary {
-  width: 100%; padding: 17px 24px;
-  background: var(--accent); color: #fff;
+  width: 100%; padding: 16px 22px;
+  background: var(--text); color: #fff;
   border: none; border-radius: var(--r-xl);
-  font-family: var(--ff); font-size: 0.95rem; font-weight: 700;
+  font-family: var(--ff); font-size: 0.9rem; font-weight: 700;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 8px 24px rgba(200,80,42,0.32);
-  transition: all 0.2s ease;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.22);
+  transition: all 0.2s ease; letter-spacing: 0.1px;
 }
-.welcome-btn-primary:hover { background: var(--accent-dk); transform: translateY(-1px); }
+.welcome-btn-primary:hover { background: #2e2620; transform: translateY(-1px); box-shadow: 0 10px 30px rgba(0,0,0,0.28); }
+.welcome-btn-primary:active { transform: translateY(0); }
+
 .welcome-btn-secondary {
-  width: 100%; padding: 15px 24px;
-  background: var(--bg); color: var(--text);
+  width: 100%; padding: 14px 22px;
+  background: var(--white);
+  color: var(--text2);
   border: 1.5px solid var(--border); border-radius: var(--r-xl);
   font-family: var(--ff); font-size: 0.88rem; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
   transition: all 0.2s ease;
 }
-.welcome-btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.welcome-btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+
 .welcome-btn-ghost {
   background: none; border: none;
-  font-size: 0.75rem; color: var(--muted);
+  font-size: 0.73rem; color: var(--muted);
   cursor: pointer; font-family: var(--ff);
   display: flex; align-items: center; gap: 5px;
   margin: 0 auto; padding: 8px;
-  text-decoration: underline; text-underline-offset: 2px;
+  transition: color 0.2s;
 }
 .welcome-btn-ghost:hover { color: var(--accent); }
 
+/* ── Features en 3 columnas ── */
+.welcome-features {
+  width: 100%;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 22px;
+}
+.welcome-feat {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 8px 14px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  transition: border-color 0.2s;
+}
+.welcome-feat:hover { border-color: var(--border2); }
+.welcome-feat-icon {
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  background: var(--accent-lt);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.88rem; color: var(--accent);
+}
+.welcome-feat-label {
+  font-size: 0.62rem; font-weight: 600;
+  color: var(--text2);
+  line-height: 1.35; letter-spacing: 0.1px;
+}
+
+/* ── Footer ── */
 .welcome-footer {
-  margin-top: auto; padding-top: 28px;
-  font-size: 0.65rem; color: var(--muted);
+  margin-top: 28px;
+  font-size: 0.62rem; color: var(--muted);
   text-align: center; letter-spacing: 0.3px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.welcome-footer-dot { opacity: 0.4; }
+
+/* ── Inner contenedor para el QR reader ── */
+.welcome-inner {
+  width: 100%; max-width: 420px;
+  display: flex; flex-direction: column;
+  align-items: center;
 }
 
 /* qr-reader dinámico (sigue igual) */
@@ -1098,90 +1232,95 @@ body {
 
 <!-- WELCOME / QR SCANNER -->
 <div id="qr-scan-screen">
-  <div class="welcome-band"></div>
   <div class="welcome-inner">
 
-    <!-- Logo (se actualiza desde Firebase) -->
-    <div class="welcome-logo-wrap" id="welcome-logo">🔥</div>
+    <!-- ── Hero oscuro con logo ── -->
+    <div class="welcome-hero-bg" id="welcome-hero-bg">
+      <div class="welcome-band"></div>
 
-    <!-- Nombre del restaurante (se actualiza desde Firebase) -->
-    <div class="welcome-restaurant-name" id="welcome-nombre">Hotto Digital</div>
-    <div class="welcome-tagline" id="welcome-tagline">Carta digital · Pedidos desde tu mesa</div>
+      <div class="welcome-logo-wrap" id="welcome-logo">🔥</div>
+      <div class="welcome-restaurant-name" id="welcome-nombre">Hotto Digital</div>
+      <div class="welcome-tagline" id="welcome-tagline">Carta digital · Pedidos desde tu mesa</div>
 
-    <!-- Ilustración SVG -->
-    <svg class="welcome-illustration" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- plato base -->
-      <ellipse cx="100" cy="128" rx="72" ry="12" fill="#e5e0d8" opacity="0.6"/>
-      <!-- plato -->
-      <ellipse cx="100" cy="118" rx="62" ry="9" fill="#eeeae2"/>
-      <ellipse cx="100" cy="118" rx="62" ry="9" fill="none" stroke="#d4cec4" stroke-width="1.5"/>
-      <!-- copa de vino -->
-      <path d="M68 42 Q60 68 68 80 H84 Q92 68 84 42 Z" fill="#f7f5f0" stroke="#d4cec4" stroke-width="1.5"/>
-      <ellipse cx="76" cy="42" rx="8" ry="4" fill="#f7f5f0" stroke="#d4cec4" stroke-width="1.5"/>
-      <line x1="76" y1="80" x2="76" y2="106" stroke="#d4cec4" stroke-width="1.5"/>
-      <ellipse cx="76" cy="108" rx="10" ry="3" fill="#eeeae2" stroke="#d4cec4" stroke-width="1"/>
-      <!-- vino dentro -->
-      <path d="M70 56 Q68 68 72 76 H80 Q84 68 82 56 Z" fill="rgba(200,80,42,0.18)"/>
-      <!-- tapa / campana -->
-      <path d="M116 118 Q116 72 100 72 Q84 72 84 118" fill="#f7f5f0" stroke="#d4cec4" stroke-width="1.5"/>
-      <ellipse cx="100" cy="118" rx="16" ry="4" fill="#eeeae2" stroke="#d4cec4" stroke-width="1"/>
-      <circle cx="100" cy="70" r="4" fill="#d4cec4"/>
-      <!-- tenedor -->
-      <line x1="138" y1="40" x2="138" y2="108" stroke="#d4cec4" stroke-width="2" stroke-linecap="round"/>
-      <line x1="134" y1="40" x2="134" y2="58" stroke="#d4cec4" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="138" y1="40" x2="138" y2="58" stroke="#d4cec4" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="142" y1="40" x2="142" y2="58" stroke="#d4cec4" stroke-width="1.5" stroke-linecap="round"/>
-      <!-- cuchillo -->
-      <line x1="150" y1="40" x2="150" y2="108" stroke="#d4cec4" stroke-width="2" stroke-linecap="round"/>
-      <path d="M150 40 Q156 48 150 58" fill="#d4cec4"/>
-      <!-- QR mini decorativo -->
-      <rect x="88" y="20" width="24" height="24" rx="4" fill="rgba(200,80,42,0.08)" stroke="rgba(200,80,42,0.3)" stroke-width="1"/>
-      <rect x="91" y="23" width="7" height="7" rx="1" fill="rgba(200,80,42,0.5)"/>
-      <rect x="102" y="23" width="7" height="7" rx="1" fill="rgba(200,80,42,0.5)"/>
-      <rect x="91" y="34" width="7" height="7" rx="1" fill="rgba(200,80,42,0.5)"/>
-      <rect x="102" y="32" width="3" height="3" rx="0.5" fill="rgba(200,80,42,0.4)"/>
-      <rect x="107" y="32" width="3" height="3" rx="0.5" fill="rgba(200,80,42,0.4)"/>
-      <rect x="102" y="37" width="3" height="3" rx="0.5" fill="rgba(200,80,42,0.4)"/>
-    </svg>
 
-    <!-- Mensaje de bienvenida -->
-    <div class="welcome-message">
-      <h2>¡Bienvenido!</h2>
-      <p>Escanea el código QR de tu mesa para ver la carta y hacer pedidos directamente desde aquí.</p>
     </div>
 
-    <!-- Acciones -->
-    <div class="welcome-actions">
-      <button class="welcome-btn-primary" onclick="iniciarEscaner()">
-        <i class="fas fa-qrcode"></i>
-        Escanear QR de mi mesa
-      </button>
-      <button class="welcome-btn-secondary" onclick="mostrarEntradaManual()">
-        <i class="fas fa-keyboard"></i>
-        Introducir número de mesa
-      </button>
-      <button class="welcome-btn-ghost" onclick="entrarModoVisitante()">
-        <i class="fas fa-eye"></i>
-        Solo ver la carta
-      </button>
-    </div>
+    <!-- ── Cuerpo claro ── -->
+    <div class="welcome-body">
 
-    <!-- qr-reader-wrap oculto, se muestra al escanear -->
-    <div id="qr-reader-wrap" style="display:none;width:100%;max-width:300px;margin-top:20px"></div>
+      <!-- Tarjeta Ver la carta → modo visitante -->
+      <div class="welcome-carta-card" onclick="entrarModoVisitante()" role="button" tabindex="0"
+           aria-label="Ver la carta del restaurante sin mesa">
+        <div class="carta-icon-wrap">
+          <svg class="carta-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Portada menú -->
+            <rect x="4" y="2" width="18" height="24" rx="3" fill="rgba(200,80,42,0.12)" stroke="rgba(200,80,42,0.55)" stroke-width="1.2"/>
+            <!-- Lomo -->
+            <rect x="4" y="2" width="4" height="24" rx="2" fill="rgba(200,80,42,0.35)"/>
+            <!-- Líneas simuladas -->
+            <line x1="11" y1="8"  x2="19" y2="8"  stroke="rgba(200,80,42,0.75)" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="11" y1="12" x2="19" y2="12" stroke="rgba(26,23,20,0.2)"   stroke-width="1"   stroke-linecap="round"/>
+            <line x1="11" y1="15" x2="17" y2="15" stroke="rgba(26,23,20,0.18)"  stroke-width="1"   stroke-linecap="round"/>
+            <line x1="11" y1="18" x2="19" y2="18" stroke="rgba(26,23,20,0.15)"  stroke-width="1"   stroke-linecap="round"/>
+            <line x1="11" y1="21" x2="15" y2="21" stroke="rgba(26,23,20,0.12)"  stroke-width="1"   stroke-linecap="round"/>
+            <!-- Icono cubiertos mini -->
+            <line x1="17" y1="19" x2="17" y2="24" stroke="rgba(200,80,42,0.6)" stroke-width="0.9" stroke-linecap="round"/>
+            <line x1="19" y1="19" x2="19" y2="24" stroke="rgba(200,80,42,0.6)" stroke-width="0.9" stroke-linecap="round"/>
+            <path d="M19 19 Q21 21 19 23" fill="rgba(200,80,42,0.45)"/>
+            <line x1="16.3" y1="19" x2="16.3" y2="21" stroke="rgba(200,80,42,0.4)" stroke-width="0.7" stroke-linecap="round"/>
+            <line x1="17"   y1="19" x2="17"   y2="21" stroke="rgba(200,80,42,0.4)" stroke-width="0.7" stroke-linecap="round"/>
+            <line x1="17.7" y1="19" x2="17.7" y2="21" stroke="rgba(200,80,42,0.4)" stroke-width="0.7" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="carta-card-text">
+          <div class="carta-card-title">Ver la carta</div>
+          <div class="carta-card-sub">Platos, bebidas, ingredientes y alérgenos</div>
+          <div class="carta-card-badge">Sin necesidad de mesa</div>
+        </div>
+        <i class="fas fa-chevron-right carta-card-arrow"></i>
+      </div>
 
-    <div class="welcome-footer">
-      Powered by Hotto Digital TPV &nbsp;·&nbsp; <i class="fas fa-shield-halved"></i> Conexión segura
-    </div>
+      <!-- Divisor -->
+      <div class="welcome-divider">
+        <div class="welcome-divider-line"></div>
+        <div class="welcome-divider-text">¿Estás en tu mesa?</div>
+        <div class="welcome-divider-line"></div>
+      </div>
 
-  </div>
+      <!-- Acciones QR / manual -->
+      <div class="welcome-actions">
+        <button class="welcome-btn-primary" onclick="iniciarEscaner()">
+          <i class="fas fa-qrcode"></i>
+          Escanear QR de mi mesa
+        </button>
+        <button class="welcome-btn-secondary" onclick="mostrarEntradaManual()">
+          <i class="fas fa-keyboard"></i>
+          Introducir número de mesa
+        </button>
+      </div>
+
+
+
+      <!-- qr-reader-wrap oculto -->
+      <div id="qr-reader-wrap" style="display:none;width:100%;max-width:300px;margin-top:20px"></div>
+
+      <div class="welcome-footer">
+        <i class="fas fa-shield-halved"></i>
+        <span>Hotto Digital TPV</span>
+        <span class="welcome-footer-dot">·</span>
+        <span>Conexión segura</span>
+      </div>
+
+    </div><!-- /welcome-body -->
+  </div><!-- /welcome-inner -->
 </div>
 
 <!-- MODAL ENTRADA MANUAL -->
 <div id="manual-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.45);align-items:flex-end;justify-content:center">
   <div style="background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px;animation:slideUp 0.3s cubic-bezier(.34,1.56,.64,1)">
     <div style="width:40px;height:4px;border-radius:2px;background:var(--border2);margin:0 auto 18px"></div>
-    <div style="font-family:var(--fh);font-size:1.1rem;font-weight:600;margin-bottom:6px">Número de mesa</div>
-    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:16px">Introduce el número o código de tu mesa.</div>
+    <div style="font-family:var(--fh);font-size:1.15rem;font-weight:600;margin-bottom:5px;color:var(--text)">Número de mesa</div>
+    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:18px">Introduce el número o código de tu mesa.</div>
     <input id="manual-mesa-input" type="text" placeholder="Ej: 5 o A3"
       style="width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--r-lg);
              font-family:var(--ff);font-size:1rem;background:var(--bg);color:var(--text);outline:none;
@@ -1381,6 +1520,13 @@ let html5QrScanner = null;
   document.getElementById('qr-scan-screen').classList.add('show');
   // Cargar nombre/logo del restaurante desde Firebase antes de mostrar
   cargarDatosBienvenida();
+
+  // Accesibilidad teclado en carta card
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.activeElement?.classList.contains('welcome-carta-card')) {
+      entrarModoVisitante();
+    }
+  });
 })();
 
 /* Precarga config del restaurante en pantalla de bienvenida (sin mesa aún) */
@@ -1393,68 +1539,79 @@ function cargarDatosBienvenida() {
 }
 
 function iniciarEscaner() {
-  // Si estamos en la pantalla de bienvenida, mostrar el lector inline y ocultar acciones
   const wrap = document.getElementById('qr-reader-wrap');
-  const actions = document.querySelector('.welcome-actions');
-  const illustration = document.querySelector('.welcome-illustration');
-  const welcomeMsg = document.querySelector('.welcome-message');
+  if (!wrap) return;
 
-  if (wrap) {
-    wrap.style.display = 'block';
-    wrap.innerHTML = '';
-    if (actions) actions.style.display = 'none';
-    if (illustration) illustration.style.display = 'none';
-    if (welcomeMsg) welcomeMsg.style.display = 'none';
+  const actions  = document.querySelector('.welcome-actions');
+  const cartaCard = document.querySelector('.welcome-carta-card');
+  const divider  = document.querySelector('.welcome-divider');
 
-    // Añadir cabecera mini + botón cancelar
-    const header = document.createElement('div');
-    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;width:100%';
-    header.innerHTML = `
-      <div style="font-family:var(--fh);font-size:1rem;font-weight:600;color:var(--text)"><i class="fas fa-qrcode" style="margin-right:7px;color:var(--accent)"></i>Apunta al código QR</div>
-      <button onclick="cancelarEscaner()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:100px;padding:5px 12px;font-size:0.75rem;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">Cancelar</button>`;
-    wrap.appendChild(header);
+  // 1. Preparar DOM antes de instanciar el lector
+  wrap.innerHTML = '';
+  wrap.style.display = 'block';
+  if (actions)    actions.style.display   = 'none';
+  if (cartaCard)  cartaCard.style.display = 'none';
+  if (divider)    divider.style.display   = 'none';
 
-    const hint = document.createElement('div');
-    hint.style.cssText = 'font-size:0.75rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6';
-    hint.innerHTML = 'Busca el QR sobre la mesa o en la carta.<br><strong style="color:var(--accent)">Enfoca y espera unos segundos.</strong>';
+  const header = document.createElement('div');
+  header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;width:100%';
+  header.innerHTML = `
+    <div style="font-family:var(--fh);font-size:1rem;font-weight:600;color:var(--text)"><i class="fas fa-qrcode" style="margin-right:7px;color:var(--accent)"></i>Apunta al código QR</div>
+    <button onclick="cancelarEscaner()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:100px;padding:5px 12px;font-size:0.75rem;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">Cancelar</button>`;
+  wrap.appendChild(header);
 
-    const readerEl = document.createElement('div');
-    readerEl.id = 'qr-reader';
-    readerEl.style.cssText = 'width:100%;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-lg)';
-    wrap.appendChild(readerEl);
-    wrap.appendChild(hint);
-  }
+  const readerEl = document.createElement('div');
+  readerEl.id = 'qr-reader';
+  readerEl.style.cssText = 'width:100%;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-lg)';
+  wrap.appendChild(readerEl);
 
+  const hint = document.createElement('div');
+  hint.style.cssText = 'font-size:0.75rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6';
+  hint.innerHTML = 'Busca el QR sobre la mesa o en la carta.<br><strong style="color:var(--accent)">Enfoca y espera unos segundos.</strong>';
+  wrap.appendChild(hint);
+
+  // 2. Instanciar DESPUÉS de que el div#qr-reader está en el DOM
+  if (html5QrScanner) { html5QrScanner.stop().catch(() => {}); html5QrScanner = null; }
   html5QrScanner = new Html5Qrcode('qr-reader');
   const config = { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
 
-  Html5Qrcode.getCameras().then(cameras => {
-    if (!cameras || cameras.length === 0) {
-      cancelarEscaner();
-      mostrarEntradaManual();
-      return;
-    }
-    const cam = cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
-    html5QrScanner.start(cam.id, config, onQRScaneado, () => {}).catch(() => {
+  // 3. Usar facingMode:environment directamente — evita getCameras() que falla
+  //    en iOS/Safari sin permiso previo. Si falla, fallback a getCameras().
+  html5QrScanner.start(
+    { facingMode: 'environment' },
+    config,
+    onQRScaneado,
+    () => {}
+  ).catch(() => {
+    // Fallback: intentar con getCameras()
+    Html5Qrcode.getCameras().then(cameras => {
+      if (!cameras || cameras.length === 0) {
+        cancelarEscaner();
+        mostrarEntradaManual();
+        return;
+      }
+      const cam = cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
+      html5QrScanner.start(cam.id, config, onQRScaneado, () => {}).catch(() => {
+        cancelarEscaner();
+        mostrarEntradaManual();
+      });
+    }).catch(() => {
       cancelarEscaner();
       mostrarEntradaManual();
     });
-  }).catch(() => {
-    cancelarEscaner();
-    mostrarEntradaManual();
   });
 }
 
 function cancelarEscaner() {
   if (html5QrScanner) html5QrScanner.stop().catch(() => {});
   const wrap = document.getElementById('qr-reader-wrap');
-  const actions = document.querySelector('.welcome-actions');
-  const illustration = document.querySelector('.welcome-illustration');
-  const welcomeMsg = document.querySelector('.welcome-message');
-  if (wrap) { wrap.style.display = 'none'; wrap.innerHTML = ''; }
-  if (actions) actions.style.display = 'flex';
-  if (illustration) illustration.style.display = '';
-  if (welcomeMsg) welcomeMsg.style.display = '';
+  const actions  = document.querySelector('.welcome-actions');
+  const cartaCard= document.querySelector('.welcome-carta-card');
+  const divider  = document.querySelector('.welcome-divider');
+  if (wrap)      { wrap.style.display = 'none'; wrap.innerHTML = ''; }
+  if (actions)    actions.style.display   = 'flex';
+  if (cartaCard)  cartaCard.style.display = 'flex';
+  if (divider)    divider.style.display   = 'flex';
 }
 
 function onQRScaneado(decodedText) {
@@ -1483,6 +1640,12 @@ function onQRScaneado(decodedText) {
   }
 
   mesaId = mesa.trim();
+  // Extraer también el token de la URL escaneada (si lo tiene)
+  try {
+    const urlToken = new URL(decodedText);
+    const t = urlToken.searchParams.get('token');
+    if (t) qrToken = t;
+  } catch(e) {}
   document.getElementById('qr-scan-screen').classList.remove('show');
   document.getElementById('loading-screen').classList.remove('hidden');
   connectFirebase();
@@ -1636,9 +1799,25 @@ function confirmarMesaManual() {
 /* ══════════════════════════════════════════════════
    FIREBASE — listener en tiempo real
 ══════════════════════════════════════════════════ */
+let sesionInicializada = false; // limpieza inicial ejecutada una sola vez
+
 function connectFirebase() {
+  // 🧹 LIMPIEZA AL INICIO DE SESIÓN — borrar TODO /pedidosCliente/{mesa}
+  // antes de escuchar. El cliente nuevo no verá pedidos de sesiones anteriores
+  // y Firebase no acumula basura indefinidamente.
+  if (!sesionInicializada) {
+    sesionInicializada = true;
+    rtdb.ref('/pedidosCliente/' + mesaId).remove().catch(() => {});
+  }
+
   rtdb.ref('/').on('value', snapshot => {
     db = snapshot.val() || {};
+    // Normalizar /tickets a array (puede llegar como objeto con push-keys o array numérico)
+    if (db.tickets && !Array.isArray(db.tickets)) {
+      db.tickets = Object.values(db.tickets).filter(Boolean);
+    } else if (!db.tickets) {
+      db.tickets = [];
+    }
 
     // Validar que la mesa existe en la configuración
     const mesas = db.mesas?.salones || [];
@@ -1683,23 +1862,15 @@ function connectFirebase() {
         // Borrar nodo de Firebase una sola vez
         rtdb.ref('/pedidosCliente/' + mesaId).remove().catch(() => {});
         cobradoLimpiado = true;
+        console.log('[TPV] Mesa', mesaId, '— pedidosCliente limpiados al cobrar');
       }
       pedidosCliente = [];
+    } else if (!ticketActualEstado && cobradoLimpiado) {
+      // El ticket fue eliminado tras cobrar (flujo normal del TPV)
+      // El nodo ya fue limpiado, nada más que hacer
+      pedidosCliente = [];
     } else {
-      // 🧹 LIMPIAR PEDIDOS DE SESIONES ANTERIORES
-      // Borrar de /pedidosCliente/{mesa} los pedidos cuyo qrToken no coincida con el actual
-      if (qrToken && db.pedidosCliente && db.pedidosCliente[mesaId]) {
-        const rawPedidos = db.pedidosCliente[mesaId];
-        if (!Array.isArray(rawPedidos)) {
-          Object.entries(rawPedidos).forEach(([key, ped]) => {
-            if (ped && ped.qrToken && ped.qrToken !== qrToken) {
-              rtdb.ref('/pedidosCliente/' + mesaId + '/' + key).remove().catch(() => {});
-            }
-          });
-        }
-      }
-
-      // Leer pedidos del cliente para esta mesa (solo sesión actual)
+      // Leer pedidos del cliente para esta mesa (sesión actual — ya limpiada al conectar)
       const rawNode = db.pedidosCliente ? db.pedidosCliente[mesaId] : null;
       if (rawNode) {
         const allPedidos = Array.isArray(rawNode) ? rawNode : Object.values(rawNode);
@@ -1840,10 +2011,10 @@ function applyConfig(cfg) {
   const wTag = document.getElementById('welcome-tagline');
   if (wTag) wTag.textContent = 'Carta digital · Pedidos desde tu mesa';
 
-  // ── 4. Banda superior de bienvenida en color acento ────────────
+  // ── 4. Banda y hero de bienvenida en color acento ─────────────
   const band = document.querySelector('.welcome-band');
   if (band && cfg.colorAccent) {
-    band.style.background = `linear-gradient(90deg, ${cfg.colorAccent}, ${lighten(cfg.colorAccent, 20)}, ${cfg.colorAccent})`;
+    band.style.background = `linear-gradient(90deg, transparent 0%, ${cfg.colorAccent} 30%, ${lighten(cfg.colorAccent,20)} 60%, transparent 100%)`;
   }
 }
 
@@ -2613,6 +2784,374 @@ const INFO_PRODUCTO = {
     ingredientes: "Pan de molde, lechuga, tomate, pollo a la plancha, salsas",
     alergenos: ["gluten","huevo"]
   },
+  // ── BOCADILLOS ────────────────────────────────
+  "bocadillo de lomo": {
+    ingredientes: "Pan de barra, cinta de lomo a la plancha",
+    alergenos: ["gluten"]
+  },
+  "bocadillo de lomo con queso": {
+    ingredientes: "Pan de barra, cinta de lomo a la plancha, queso fundido",
+    alergenos: ["gluten","leche"]
+  },
+  "bocadillo de calamares": {
+    ingredientes: "Pan de barra, calamares rebozados, harina, limón",
+    alergenos: ["gluten","moluscos"]
+  },
+  "bocadillo de tortilla": {
+    ingredientes: "Pan de barra, tortilla de patata (huevo, patata, cebolla, aceite)",
+    alergenos: ["gluten","huevo"]
+  },
+  "bocadillo de jamon": {
+    ingredientes: "Pan de barra, jamón serrano",
+    alergenos: ["gluten"]
+  },
+  "bocadillo de jamon york": {
+    ingredientes: "Pan de barra, jamón york",
+    alergenos: ["gluten"]
+  },
+  "bocadillo de chorizo": {
+    ingredientes: "Pan de barra, chorizo a la plancha",
+    alergenos: ["gluten"]
+  },
+  "bocadillo de pollo": {
+    ingredientes: "Pan de barra, pechuga de pollo a la plancha, lechuga, tomate",
+    alergenos: ["gluten"]
+  },
+  "bocadillo de pollo empanado": {
+    ingredientes: "Pan de barra, pollo empanado, lechuga, tomate, mayonesa",
+    alergenos: ["gluten","huevo"]
+  },
+  "bocadillo de salchicha": {
+    ingredientes: "Pan de barra, salchicha a la plancha",
+    alergenos: ["gluten"]
+  },
+  "bocadillo de morcilla": {
+    ingredientes: "Pan de barra, morcilla a la plancha",
+    alergenos: ["gluten"]
+  },
+  "bocadillo de hamburguesa": {
+    ingredientes: "Pan de barra, hamburguesa de ternera, lechuga, tomate",
+    alergenos: ["gluten","huevo"]
+  },
+  "bocadillo de pechuga": {
+    ingredientes: "Pan de barra, pechuga a la plancha",
+    alergenos: ["gluten"]
+  },
+  "bocadillo de revuelto": {
+    ingredientes: "Pan de barra, huevo revuelto con jamón o verduras",
+    alergenos: ["gluten","huevo"]
+  },
+  // ── PLATOS DEL DÍA / MENÚ ─────────────────────
+  "sopa del dia": {
+    ingredientes: "Caldo de verduras o carne, verduras de temporada, fideos o arroz",
+    alergenos: ["gluten"]
+  },
+  "crema de verduras": {
+    ingredientes: "Verduras de temporada (calabaza, zanahoria, puerro), nata, aceite de oliva",
+    alergenos: ["leche"]
+  },
+  "ensalada de temporada": {
+    ingredientes: "Mezcla de lechugas, tomate, pepino, zanahoria, aceitunas",
+    alergenos: []
+  },
+  "lentejas": {
+    ingredientes: "Lentejas, zanahoria, pimiento, cebolla, ajo, chorizo, morcilla, aceite de oliva",
+    alergenos: []
+  },
+  "cocido madrileno": {
+    ingredientes: "Garbanzos, carne de vacuno, tocino, chorizo, morcilla, verduras, fideos",
+    alergenos: ["gluten"]
+  },
+  "potaje de garbanzos": {
+    ingredientes: "Garbanzos, espinacas, bacalao, cebolla, tomate, pimentón",
+    alergenos: ["pescado"]
+  },
+  "fabada asturiana": {
+    ingredientes: "Fabes de la granja, chorizo, morcilla asturiana, tocino, lacón",
+    alergenos: []
+  },
+  "pollo asado": {
+    ingredientes: "Pollo asado al horno con patatas, ajo, romero, aceite de oliva",
+    alergenos: []
+  },
+  "pollo al ajillo": {
+    ingredientes: "Pollo troceado, ajo, vino blanco, aceite de oliva, perejil",
+    alergenos: []
+  },
+  "carrillera al vino tinto": {
+    ingredientes: "Carrillera de cerdo o ternera, vino tinto, cebolla, zanahoria, tomillo",
+    alergenos: ["sulfitos"]
+  },
+  "rabo de toro": {
+    ingredientes: "Rabo de toro estofado, vino tinto, cebolla, zanahoria, patatas",
+    alergenos: ["sulfitos"]
+  },
+  "callos a la madrilena": {
+    ingredientes: "Callos de ternera, chorizo, morcilla, pata de cerdo, pimentón, guindilla",
+    alergenos: []
+  },
+  "carne guisada": {
+    ingredientes: "Ternera guisada, patatas, zanahoria, cebolla, vino tinto",
+    alergenos: ["sulfitos"]
+  },
+  "merluza a la plancha": {
+    ingredientes: "Merluza fresca, aceite de oliva, ajo, perejil, sal",
+    alergenos: ["pescado"]
+  },
+  "merluza en salsa verde": {
+    ingredientes: "Merluza, salsa verde (ajo, perejil, vino blanco, caldo de pescado), almejas",
+    alergenos: ["pescado","moluscos","sulfitos","gluten"]
+  },
+  "bacalao al pil pil": {
+    ingredientes: "Lomo de bacalao desalado, aceite de oliva virgen extra, ajo, guindilla",
+    alergenos: ["pescado"]
+  },
+  "dorada a la plancha": {
+    ingredientes: "Dorada fresca, aceite de oliva, limón, sal, hierbas",
+    alergenos: ["pescado"]
+  },
+  "trucha a la plancha": {
+    ingredientes: "Trucha, aceite de oliva, ajo, jamón serrano",
+    alergenos: ["pescado"]
+  },
+  "gambas al ajillo": {
+    ingredientes: "Gambas peladas, aceite de oliva, ajo, guindilla, perejil",
+    alergenos: ["crustaceos"]
+  },
+  "gambas a la plancha": {
+    ingredientes: "Gambas enteras a la plancha, sal gorda, limón",
+    alergenos: ["crustaceos"]
+  },
+  "pulpo a la gallega": {
+    ingredientes: "Pulpo cocido, pimentón dulce y picante, aceite de oliva, sal gorda, patata cocida",
+    alergenos: ["moluscos"]
+  },
+  "arroz con pollo": {
+    ingredientes: "Arroz, pollo, pimiento, tomate, cebolla, caldo, azafrán",
+    alergenos: []
+  },
+  "paella de pollo y conejo": {
+    ingredientes: "Arroz bomba, pollo, conejo, judía verde, garrofón, tomate, aceite, azafrán, romero",
+    alergenos: []
+  },
+  "paella mixta": {
+    ingredientes: "Arroz, pollo, gambas, mejillones, calamares, pimiento, tomate, azafrán",
+    alergenos: ["crustaceos","moluscos"]
+  },
+  "fideos con almejas": {
+    ingredientes: "Fideos gordos, almejas, ajo, perejil, vino blanco, caldo de pescado",
+    alergenos: ["gluten","moluscos","pescado"]
+  },
+  // ── PINCHOS Y TAPAS ───────────────────────────
+  "pincho tortilla": {
+    ingredientes: "Tortilla de patata (huevo, patata, cebolla), pan",
+    alergenos: ["gluten","huevo"]
+  },
+  "pincho de chistorra": {
+    ingredientes: "Chistorra frita, pan",
+    alergenos: ["gluten"]
+  },
+  "montadito de lomo y queso": {
+    ingredientes: "Pan tostado, lomo a la plancha, queso fundido",
+    alergenos: ["gluten","leche"]
+  },
+  "montadito de jamon iberico": {
+    ingredientes: "Pan tostado con tomate, jamón ibérico",
+    alergenos: ["gluten"]
+  },
+  "huevo frito con chorizo": {
+    ingredientes: "Huevo frito, chorizo a la plancha",
+    alergenos: ["huevo"]
+  },
+  "morcilla con pimientos": {
+    ingredientes: "Morcilla de arroz o cebolla, pimientos asados",
+    alergenos: []
+  },
+  "navajas a la plancha": {
+    ingredientes: "Navajas a la plancha, aceite, limón, perejil",
+    alergenos: ["moluscos"]
+  },
+  "mejillones al vapor": {
+    ingredientes: "Mejillones frescos al vapor, limón",
+    alergenos: ["moluscos"]
+  },
+  "mejillones en escabeche": {
+    ingredientes: "Mejillones en escabeche de lata / casero con vinagre, pimentón",
+    alergenos: ["moluscos","sulfitos"]
+  },
+  "berberechos": {
+    ingredientes: "Berberechos al vapor, limón",
+    alergenos: ["moluscos"]
+  },
+  "anchoas del cantabrico": {
+    ingredientes: "Anchoas en aceite de oliva, pan",
+    alergenos: ["gluten","pescado"]
+  },
+  "pimientos del padron": {
+    ingredientes: "Pimientos del Padrón fritos, sal gorda, aceite de oliva",
+    alergenos: []
+  },
+  "pimientos rellenos": {
+    ingredientes: "Pimientos del piquillo rellenos de bacalao o carne, salsa de tomate",
+    alergenos: ["pescado","gluten"]
+  },
+  "champiñones al ajillo": {
+    ingredientes: "Champiñones, ajo, aceite de oliva, perejil, guindilla",
+    alergenos: []
+  },
+  "tabla de quesos": {
+    ingredientes: "Selección de quesos (manchego, cabra, brie), membrillo, nueces, pan",
+    alergenos: ["leche","frutos secos","gluten"]
+  },
+  "tabla de embutidos": {
+    ingredientes: "Jamón serrano, chorizo, salchichón, lomo embuchado, pan",
+    alergenos: ["gluten"]
+  },
+  // ── POSTRES ───────────────────────────────────
+  "flan casero": {
+    ingredientes: "Huevo, leche, azúcar, caramelo",
+    alergenos: ["huevo","leche"]
+  },
+  "tarta de queso": {
+    ingredientes: "Queso crema, nata, huevo, azúcar, base de galleta",
+    alergenos: ["leche","huevo","gluten"]
+  },
+  "tarta de chocolate": {
+    ingredientes: "Chocolate fondant, mantequilla, huevo, harina, azúcar",
+    alergenos: ["leche","huevo","gluten"]
+  },
+  "brownie con helado": {
+    ingredientes: "Brownie de chocolate (harina, chocolate, mantequilla, huevo), helado de vainilla",
+    alergenos: ["gluten","leche","huevo","frutos secos"]
+  },
+  "arroz con leche": {
+    ingredientes: "Arroz, leche, azúcar, canela, limón",
+    alergenos: ["leche"]
+  },
+  "natillas caseras": {
+    ingredientes: "Leche, yema de huevo, azúcar, vainilla, galleta",
+    alergenos: ["leche","huevo","gluten"]
+  },
+  "helado": {
+    ingredientes: "Helado artesano (varios sabores: vainilla, chocolate, fresa, nata)",
+    alergenos: ["leche","huevo"]
+  },
+  "mousse de chocolate": {
+    ingredientes: "Chocolate negro, nata, huevo, azúcar",
+    alergenos: ["leche","huevo"]
+  },
+  "tiramisu": {
+    ingredientes: "Bizcocho de soletilla, mascarpone, huevo, azúcar, café, cacao",
+    alergenos: ["gluten","leche","huevo"]
+  },
+  "tarta del dia": {
+    ingredientes: "Elaboración diaria del chef, preguntar al camarero para alérgenos exactos",
+    alergenos: ["gluten","leche","huevo"]
+  },
+  "fruta del tiempo": {
+    ingredientes: "Fruta fresca de temporada",
+    alergenos: []
+  },
+  // ── SOPAS Y CREMAS ────────────────────────────
+  "gazpacho": {
+    ingredientes: "Tomate, pepino, pimiento verde, cebolla, ajo, aceite de oliva, vinagre, pan",
+    alergenos: ["gluten"]
+  },
+  "salmorejo": {
+    ingredientes: "Tomate, pan, aceite de oliva, ajo, huevo cocido, jamón serrano",
+    alergenos: ["gluten","huevo"]
+  },
+  "caldo gallego": {
+    ingredientes: "Grelos, patatas, alubias blancas, lacón, chorizo, unto",
+    alergenos: []
+  },
+  // ── HUEVOS Y TORTILLAS ────────────────────────
+  "tortilla de patatas": {
+    ingredientes: "Huevos frescos, patatas, aceite de oliva, sal (con / sin cebolla a elegir)",
+    alergenos: ["huevo"]
+  },
+  "tortilla de patatas con cebolla": {
+    ingredientes: "Huevos frescos, patatas, cebolla, aceite de oliva, sal",
+    alergenos: ["huevo"]
+  },
+  "tortilla francesa": {
+    ingredientes: "Huevos frescos, mantequilla o aceite, sal",
+    alergenos: ["huevo","leche"]
+  },
+  "revuelto de jamon y espárragos": {
+    ingredientes: "Huevos, jamón serrano, espárragos trigueros, aceite de oliva",
+    alergenos: ["huevo"]
+  },
+  "revuelto de gambas": {
+    ingredientes: "Huevos, gambas peladas, ajo, aceite, perejil",
+    alergenos: ["huevo","crustaceos"]
+  },
+  "huevos revueltos con trufa": {
+    ingredientes: "Huevos, trufa negra o aroma de trufa, aceite, sal",
+    alergenos: ["huevo"]
+  },
+  // ── CARNES A LA PLANCHA ───────────────────────
+  "solomillo de ternera": {
+    ingredientes: "Solomillo de ternera a la plancha, guarnición a elegir",
+    alergenos: []
+  },
+  "solomillo de cerdo": {
+    ingredientes: "Solomillo de cerdo a la plancha, guarnición a elegir",
+    alergenos: []
+  },
+  "secreto iberico": {
+    ingredientes: "Secreto ibérico a la plancha, sal Maldon",
+    alergenos: []
+  },
+  "presa iberica": {
+    ingredientes: "Presa ibérica a la plancha, sal Maldon, guarnición",
+    alergenos: []
+  },
+  "chuletas de cordero": {
+    ingredientes: "Chuletas de cordero a la brasa, ajo, romero",
+    alergenos: []
+  },
+  "costillas de cerdo": {
+    ingredientes: "Costillas de cerdo asadas con adobo (pimentón, ajo, orégano, vinagre)",
+    alergenos: ["sulfitos"]
+  },
+  "pechuga de pollo a la plancha": {
+    ingredientes: "Pechuga de pollo, aceite de oliva, sal, pimienta, limón",
+    alergenos: []
+  },
+  "filete de pollo": {
+    ingredientes: "Filete de pollo a la plancha, sal, pimienta",
+    alergenos: []
+  },
+  "filete de ternera": {
+    ingredientes: "Filete de ternera a la plancha, sal, pimienta",
+    alergenos: []
+  },
+  "chuleton": {
+    ingredientes: "Chuletón de ternera madurada, sal Maldon, aceite de oliva",
+    alergenos: []
+  },
+  // ── PASTAS Y ARROCES ──────────────────────────
+  "espaguetis carbonara": {
+    ingredientes: "Espaguetis, panceta, yema de huevo, queso pecorino, pimienta negra",
+    alergenos: ["gluten","leche","huevo"]
+  },
+  "espaguetis boloñesa": {
+    ingredientes: "Espaguetis, carne picada de ternera, tomate, cebolla, zanahoria, vino tinto",
+    alergenos: ["gluten","sulfitos"]
+  },
+  "pasta con gambas y pesto": {
+    ingredientes: "Pasta, gambas, pesto (albahaca, piñones, parmesano, ajo, aceite)",
+    alergenos: ["gluten","crustaceos","leche","frutos secos"]
+  },
+  "macarrones con tomate": {
+    ingredientes: "Macarrones, tomate frito, queso rallado",
+    alergenos: ["gluten","leche"]
+  },
+  "risotto de setas": {
+    ingredientes: "Arroz arborio, setas (champiñón, boletus), caldo vegetal, parmesano, mantequilla, vino blanco",
+    alergenos: ["leche","sulfitos"]
+  },
 };
 
 /* Normalizar nombre para buscar en INFO_PRODUCTO */
@@ -3019,19 +3558,32 @@ async function solicitarCuenta() {
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch spin"></i> Enviando...'; }
 
   try {
-    // Buscar el índice del ticket en el array y actualizar sólo ese nodo
+    // /tickets puede ser array numérico O objeto con push-keys de Firebase
     const snap = await rtdb.ref('/tickets').once('value');
-    const tickets = snap.val() || [];
-    const idx = tickets.findIndex(t => String(t.mesa) === String(mesaId));
-    if (idx === -1) throw new Error('Ticket no encontrado');
+    const raw = snap.val();
+    if (!raw) throw new Error('Sin tickets');
 
-    await rtdb.ref('/tickets/' + idx + '/tiketSolicitadoABarra').set(true);
-    await rtdb.ref('/tickets/' + idx + '/tiketSolicitadoHora').set(horaActual());
+    let ticketKey = null;
+
+    if (Array.isArray(raw)) {
+      // Array numérico — buscar por índice
+      const idx = raw.findIndex(t => t && String(t.mesa) === String(mesaId));
+      if (idx === -1) throw new Error('Ticket no encontrado');
+      ticketKey = String(idx);
+    } else {
+      // Objeto con push-keys (formato habitual de Firebase .push())
+      const entry = Object.entries(raw).find(([, t]) => t && String(t.mesa) === String(mesaId));
+      if (!entry) throw new Error('Ticket no encontrado');
+      ticketKey = entry[0];
+    }
+
+    await rtdb.ref('/tickets/' + ticketKey + '/tiketSolicitadoABarra').set(true);
+    await rtdb.ref('/tickets/' + ticketKey + '/tiketSolicitadoHora').set(horaActual());
 
     toast('🔔 Cuenta solicitada · El personal viene ahora', 'success', 'fa-bell');
     // La UI se actualiza sola vía el listener on('value')
   } catch (err) {
-    console.error(err);
+    console.error('[solicitarCuenta]', err);
     toast('Error al solicitar la cuenta. Avisa a un camarero.', 'danger', 'fa-ban');
     if (btn) {
       btn.disabled = false;
