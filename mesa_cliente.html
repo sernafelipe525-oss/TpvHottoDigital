@@ -158,6 +158,24 @@ body {
   letter-spacing: 0.3px;
   margin-top: 1px;
 }
+
+/* ── Botón volver (modo visitante) ── */
+.header-back-btn {
+  display: none;
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--text2);
+  align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.header-back-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+.header-back-btn:active { transform: scale(0.94); }
+.header-back-btn.show { display: flex; }
 .header-total-pill {
   flex-shrink: 0;
   background: var(--accent);
@@ -187,30 +205,32 @@ body {
   position: sticky; top: 63px; z-index: 99;
 }
 .tab-btn {
-  flex: 1; padding: 13px 8px;
+  flex: 1; padding: 16px 8px;
   background: none; border: none;
-  font-family: var(--ff); font-size: 0.75rem;
-  font-weight: 600; letter-spacing: 0.3px;
+  font-family: var(--ff); font-size: 0.82rem;
+  font-weight: 700; letter-spacing: 0.3px;
   color: var(--muted);
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   transition: all 0.2s ease;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
   white-space: nowrap;
 }
+.tab-btn i { font-size: 0.95rem !important; }
 .tab-btn.active {
   color: var(--accent);
   border-bottom-color: var(--accent);
+  background: var(--accent-lt);
 }
 .tab-badge {
   background: var(--accent);
   color: #fff;
   border-radius: 100px;
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 800;
-  min-width: 16px; height: 16px;
+  min-width: 18px; height: 18px;
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 0 4px;
+  padding: 0 5px;
 }
 
 /* ── PAGE CONTENT ────────────────────────────────── */
@@ -359,24 +379,25 @@ body {
 
 /* Categorías */
 .cats-scroll {
-  display: flex; gap: 8px; overflow-x: auto;
+  display: flex; gap: 10px; overflow-x: auto;
   padding-bottom: 12px; margin-bottom: 16px;
   scrollbar-width: none;
 }
 .cats-scroll::-webkit-scrollbar { display: none; }
 .cat-pill {
   flex-shrink: 0;
-  padding: 7px 14px;
+  padding: 11px 20px;
   border-radius: 100px;
   border: 1.5px solid var(--border);
   background: var(--white);
-  font-size: 0.75rem; font-weight: 600;
+  font-size: 0.88rem; font-weight: 700;
   color: var(--text2);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
-  display: flex; align-items: center; gap: 5px;
+  display: flex; align-items: center; gap: 7px;
 }
+.cat-pill span:first-child { font-size: 1.05rem; }
 .cat-pill:hover { border-color: var(--accent); color: var(--accent); }
 .cat-pill.active {
   background: var(--accent); border-color: var(--accent);
@@ -395,7 +416,7 @@ body {
   background: var(--white);
   border: 2px solid var(--border);
   border-radius: var(--r-xl);
-  padding: 28px 16px 22px;
+  padding: 22px 14px 20px;
   display: flex; flex-direction: column;
   align-items: center; gap: 10px;
   cursor: pointer;
@@ -423,22 +444,20 @@ body {
 }
 .tipo-card.active::before { opacity: 1; }
 .tipo-card-icon-wrap {
-  width: 72px; height: 72px;
-  border-radius: 20px;
+  width: 100%;
+  height: 88px;
+  border-radius: 16px;
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
-  font-size: 2.8rem;
-  line-height: 1;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  position: relative; z-index: 1;
+  overflow: hidden;
 }
-.tipo-card:hover .tipo-card-icon-wrap { transform: scale(1.08); }
+.tipo-card-icon-wrap svg { width: 100%; height: 100%; }
+.tipo-card:hover .tipo-card-icon-wrap { transform: scale(1.04); }
 .tipo-card.active .tipo-card-icon-wrap {
-  background: rgba(200,80,42,0.12);
-}
-.tipo-card-icon {
-  font-size: 2.8rem;
-  line-height: 1;
+  background: rgba(200,80,42,0.10);
 }
 .tipo-card-badge {
   font-size: 0.55rem; font-weight: 800;
@@ -446,6 +465,7 @@ body {
   background: var(--bg2); color: var(--muted);
   padding: 3px 9px; border-radius: 100px;
   margin-bottom: -4px;
+  position: relative; z-index: 1;
 }
 .tipo-card.active .tipo-card-badge {
   background: rgba(200,80,42,0.15); color: var(--accent-dk);
@@ -456,12 +476,14 @@ body {
   font-weight: 700;
   color: var(--text);
   line-height: 1.2;
+  position: relative; z-index: 1;
 }
 .tipo-card-sub {
   font-size: 0.7rem;
   color: var(--muted);
   line-height: 1.4;
-  max-width: 110px;
+  max-width: 130px;
+  position: relative; z-index: 1;
 }
 .tipo-card.active .tipo-card-label { color: var(--accent-dk); }
 .tipo-card.active .tipo-card-sub { color: rgba(160,61,30,0.7); }
@@ -860,200 +882,287 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
-   WELCOME SCREEN — rediseño profesional
+   WELCOME SCREEN — carta de restaurante
 ══════════════════════════════════════════════════ */
 #qr-scan-screen {
   display: none;
   position: fixed; inset: 0; z-index: 998;
-  background: #f9f6f1;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   overflow-y: auto;
+  /* Fondo: textura lino oscuro */
+  background-color: #1a1410;
+  background-image:
+    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(200,80,42,0.18) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
 }
 #qr-scan-screen.show { display: flex; }
 
-/* Hero superior con fondo oscuro */
-.welcome-hero-bg {
-  width: 100%;
-  background: linear-gradient(160deg, #1c1714 0%, #2e2620 60%, #1a100c 100%);
-  display: flex; flex-direction: column; align-items: center;
-  padding: 52px 28px 40px;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.welcome-hero-bg::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 90% 60% at 50% 0%, rgba(200,80,42,0.22) 0%, transparent 70%);
-  pointer-events: none;
-}
-/* línea superior acento */
+/* ── Banda dorada superior ── */
 .welcome-band {
-  position: absolute; top: 0; left: 0; right: 0;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
   height: 3px;
-  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--gold) 60%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 20%, #e8c84a 50%, var(--gold) 80%, transparent 100%);
 }
 
+/* ── Ornamento floral SVG ── */
+.welcome-ornament {
+  position: relative; z-index: 2;
+  margin-top: 44px;
+  opacity: 0.55;
+  width: 100%; text-align: center;
+  line-height: 0;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* ── Logo ── */
 .welcome-logo-wrap {
-  width: 76px; height: 76px;
-  border-radius: 22px;
+  width: 88px; height: 88px;
+  border-radius: 24px;
   background: linear-gradient(145deg, rgba(200,80,42,0.9), rgba(160,61,30,1));
   display: flex; align-items: center; justify-content: center;
-  font-size: 2.1rem;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 12px 32px rgba(0,0,0,0.45), 0 0 40px rgba(200,80,42,0.25);
+  font-size: 2.4rem;
+  box-shadow:
+    0 0 0 1px rgba(201,162,39,0.35),
+    0 0 0 5px rgba(201,162,39,0.08),
+    0 16px 40px rgba(0,0,0,0.65),
+    0 0 50px rgba(200,80,42,0.2);
   overflow: hidden;
   flex-shrink: 0;
-  position: relative; z-index: 1;
+  position: relative; z-index: 2;
+  margin-top: 20px;
+  animation: logo-glow 3s ease-in-out infinite;
+}
+@keyframes logo-glow {
+  0%,100% { box-shadow: 0 0 0 1px rgba(201,162,39,0.35), 0 0 0 5px rgba(201,162,39,0.08), 0 16px 40px rgba(0,0,0,0.65), 0 0 50px rgba(200,80,42,0.2); }
+  50% { box-shadow: 0 0 0 1px rgba(201,162,39,0.55), 0 0 0 8px rgba(201,162,39,0.12), 0 16px 40px rgba(0,0,0,0.65), 0 0 70px rgba(200,80,42,0.35); }
 }
 .welcome-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
+/* ── Nombre y tagline ── */
 .welcome-restaurant-name {
   font-family: var(--fh);
-  font-size: 2rem; font-weight: 700;
-  color: #f5efe8;
+  font-size: 2.2rem; font-weight: 700;
+  color: #f2e8d9;
   text-align: center;
-  margin-top: 16px;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  position: relative; z-index: 1;
+  margin-top: 18px;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  position: relative; z-index: 2;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+  animation: fadeInUp 0.7s ease 0.1s both;
 }
 .welcome-tagline {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.38);
+  font-family: var(--fh);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: rgba(201,162,39,0.75);
   text-align: center;
-  margin-top: 6px;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  font-weight: 500;
-  position: relative; z-index: 1;
+  margin-top: 8px;
+  letter-spacing: 0.5px;
+  font-weight: 400;
+  position: relative; z-index: 2;
+  animation: fadeInUp 0.7s ease 0.25s both;
 }
 
-/* Ilustración en el hero */
-.welcome-hero-illustration {
-  margin-top: 28px;
-  position: relative; z-index: 1;
-  display: flex; align-items: center; justify-content: center;
-  gap: 18px;
+/* ── Línea divisoria ornamental ── */
+.welcome-rule {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; max-width: 280px;
+  margin: 20px auto 0;
+  position: relative; z-index: 2;
+  animation: fadeInUp 0.7s ease 0.35s both;
 }
-.hero-feat-pill {
-  display: flex; align-items: center; gap: 7px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 100px;
-  padding: 7px 14px;
-  font-size: 0.72rem; font-weight: 600;
-  color: rgba(255,255,255,0.65);
-  backdrop-filter: blur(8px);
+.welcome-rule-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,162,39,0.45), transparent);
 }
-.hero-feat-pill i { color: var(--accent); font-size: 0.7rem; }
-
-/* ── Cuerpo blanco/crema ─────────────── */
-.welcome-body {
-  width: 100%; max-width: 420px;
-  display: flex; flex-direction: column;
-  align-items: center;
-  padding: 0 22px 52px;
-  flex: 1;
+.welcome-rule-diamond {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  opacity: 0.7;
+  flex-shrink: 0;
 }
 
-/* Tarjeta carta — card principal destacada */
+/* ── Frase de bienvenida ── */
+.welcome-phrase {
+  font-family: var(--fh);
+  font-style: italic;
+  font-size: 0.92rem;
+  color: rgba(242,232,217,0.55);
+  text-align: center;
+  max-width: 260px;
+  line-height: 1.7;
+  position: relative; z-index: 2;
+  margin-top: 14px;
+  letter-spacing: 0.2px;
+  animation: fadeInUp 0.7s ease 0.45s both;
+}
+.welcome-phrase::before {
+  content: '"';
+  font-size: 1.8rem;
+  line-height: 0;
+  vertical-align: -0.4em;
+  color: rgba(201,162,39,0.35);
+  margin-right: 3px;
+}
+.welcome-phrase::after {
+  content: '"';
+  font-size: 1.8rem;
+  line-height: 0;
+  vertical-align: -0.4em;
+  color: rgba(201,162,39,0.35);
+  margin-left: 3px;
+}
+
+/* ── Panel de acciones (tarjeta flotante sobre el fondo) ── */
+.welcome-panel {
+  width: calc(100% - 32px);
+  max-width: 400px;
+  background: rgba(255,255,255,0.97);
+  border-radius: 24px 24px 20px 20px;
+  box-shadow: 0 -2px 0 0 rgba(201,162,39,0.5), 0 20px 60px rgba(0,0,0,0.5);
+  padding: 28px 24px 16px;
+  margin: 28px 0 0;
+  position: relative; z-index: 2;
+  flex-shrink: 0;
+  animation: slideUpPanel 0.6s cubic-bezier(0.34,1.3,0.64,1) 0.3s both;
+  border-top: 2px solid rgba(201,162,39,0.4);
+}
+@keyframes slideUpPanel {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Ilustración escena gastronómica ── */
+.welcome-illustration {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 320px;
+  margin: 18px auto 0;
+  opacity: 0.92;
+  animation: fadeInUp 0.8s ease 0.3s both;
+}
+.welcome-illustration svg { width: 100%; height: auto; display: block; }
+
+/* ── Tarjeta carta — versión "portada de menú" ── */
 .welcome-carta-card {
   width: 100%;
-  margin-top: -1px;
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 22px;
-  padding: 20px 20px;
-  display: flex; align-items: center; gap: 16px;
+  background: linear-gradient(135deg, #1c1714 0%, #2e2420 100%);
+  border: 1px solid rgba(201,162,39,0.3);
+  border-radius: 18px;
+  padding: 0;
+  display: flex; flex-direction: column;
   cursor: pointer;
   transition: all 0.22s ease;
   text-decoration: none;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
   position: relative;
   overflow: hidden;
-  margin-top: 20px;
+  margin-bottom: 4px;
 }
-.welcome-carta-card::after {
+.welcome-carta-card::before {
   content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(200,80,42,0.04) 0%, transparent 60%);
-  opacity: 0; transition: opacity 0.22s;
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,162,39,0.5), transparent);
+  z-index: 1;
 }
-.welcome-carta-card:hover { box-shadow: 0 8px 36px rgba(200,80,42,0.18); border-color: rgba(200,80,42,0.4); transform: translateY(-1px); }
-.welcome-carta-card:hover::after { opacity: 1; }
+.welcome-carta-card:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(0,0,0,0.35); border-color: rgba(201,162,39,0.55); }
 .welcome-carta-card:active { transform: translateY(0); }
 
+/* Cabecera ilustrada de la tarjeta carta */
+.carta-card-banner {
+  width: 100%; height: 96px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(201,162,39,0.2);
+  background: linear-gradient(135deg, rgba(201,162,39,0.12), rgba(200,80,42,0.1));
+}
+.carta-card-banner svg { width: 100%; height: 100%; display: block; }
+.carta-card-banner-label {
+  position: absolute; top: 10px; left: 14px;
+  font-size: 0.55rem; font-weight: 800; letter-spacing: 1.2px;
+  text-transform: uppercase; color: rgba(201,162,39,0.9);
+  background: rgba(26,20,16,0.55);
+  padding: 4px 9px; border-radius: 100px;
+  border: 1px solid rgba(201,162,39,0.3);
+  backdrop-filter: blur(4px);
+}
+
+.carta-card-body {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px 18px;
+}
+
 .carta-icon-wrap {
-  width: 54px; height: 54px; flex-shrink: 0;
-  border-radius: 15px;
-  background: linear-gradient(145deg, var(--accent-lt), rgba(200,80,42,0.06));
-  border: 1px solid rgba(200,80,42,0.2);
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: 13px;
+  background: rgba(201,162,39,0.15);
+  border: 1px solid rgba(201,162,39,0.3);
   display: flex; align-items: center; justify-content: center;
 }
-.carta-icon-svg { width: 28px; height: 28px; }
-
+.carta-icon-svg { width: 26px; height: 26px; }
 .carta-card-text { flex: 1; }
 .carta-card-title {
   font-family: var(--fh);
-  font-size: 1.05rem; font-weight: 700;
-  color: var(--text);
+  font-size: 1rem; font-weight: 700;
+  color: #f2e8d9;
 }
 .carta-card-sub {
-  font-size: 0.72rem; color: var(--text2);
+  font-size: 0.7rem; color: rgba(242,232,217,0.55);
   margin-top: 3px; line-height: 1.45;
 }
 .carta-card-badge {
-  font-size: 0.58rem; font-weight: 800;
-  background: var(--accent); color: #fff;
-  padding: 3px 8px; border-radius: 100px;
+  font-size: 0.55rem; font-weight: 800;
+  background: rgba(201,162,39,0.2); color: rgba(201,162,39,0.9);
+  border: 1px solid rgba(201,162,39,0.3);
+  padding: 2px 8px; border-radius: 100px;
   letter-spacing: 0.3px;
   margin-top: 6px; display: inline-block;
 }
 .carta-card-arrow {
-  color: var(--accent);
-  font-size: 0.9rem; flex-shrink: 0;
-  opacity: 0.6;
+  color: rgba(201,162,39,0.7);
+  font-size: 0.85rem; flex-shrink: 0;
   transition: transform 0.2s, opacity 0.2s;
 }
-.welcome-carta-card:hover .carta-card-arrow { transform: translateX(3px); opacity: 1; }
+.welcome-carta-card:hover .carta-card-arrow { transform: translateX(4px); color: var(--gold); }
 
-/* ── Divisor con texto ── */
+/* ── Divisor texto dentro del panel ── */
 .welcome-divider {
-  display: flex; align-items: center; gap: 12px;
-  width: 100%; margin: 22px 0 0;
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; margin: 18px 0 16px;
 }
 .welcome-divider-line { flex: 1; height: 1px; background: var(--border); }
 .welcome-divider-text {
-  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.8px;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.8px;
   text-transform: uppercase; color: var(--muted);
   white-space: nowrap;
 }
 
 /* ── Acciones QR y manual ── */
 .welcome-actions {
-  width: 100%; margin-top: 16px;
   display: flex; flex-direction: column; gap: 10px;
 }
 .welcome-btn-primary {
-  width: 100%; padding: 16px 22px;
+  width: 100%; padding: 15px 22px;
   background: var(--text); color: #fff;
   border: none; border-radius: var(--r-xl);
-  font-family: var(--ff); font-size: 0.9rem; font-weight: 700;
+  font-family: var(--ff); font-size: 0.88rem; font-weight: 700;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 6px 22px rgba(0,0,0,0.22);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.2);
   transition: all 0.2s ease; letter-spacing: 0.1px;
 }
 .welcome-btn-primary:hover { background: #2e2620; transform: translateY(-1px); box-shadow: 0 10px 30px rgba(0,0,0,0.28); }
 .welcome-btn-primary:active { transform: translateY(0); }
 
 .welcome-btn-secondary {
-  width: 100%; padding: 14px 22px;
+  width: 100%; padding: 13px 22px;
   background: var(--white);
   color: var(--text2);
   border: 1.5px solid var(--border); border-radius: var(--r-xl);
-  font-family: var(--ff); font-size: 0.88rem; font-weight: 600;
+  font-family: var(--ff); font-size: 0.85rem; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
   transition: all 0.2s ease;
 }
@@ -1069,53 +1178,50 @@ body {
 }
 .welcome-btn-ghost:hover { color: var(--accent); }
 
-/* ── Features en 3 columnas ── */
-.welcome-features {
-  width: 100%;
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 22px;
-}
-.welcome-feat {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 16px 8px 14px;
-  text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  transition: border-color 0.2s;
-}
-.welcome-feat:hover { border-color: var(--border2); }
-.welcome-feat-icon {
-  width: 36px; height: 36px;
-  border-radius: 11px;
-  background: var(--accent-lt);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.88rem; color: var(--accent);
-}
-.welcome-feat-label {
-  font-size: 0.62rem; font-weight: 600;
-  color: var(--text2);
-  line-height: 1.35; letter-spacing: 0.1px;
-}
-
 /* ── Footer ── */
 .welcome-footer {
-  margin-top: 28px;
-  font-size: 0.62rem; color: var(--muted);
-  text-align: center; letter-spacing: 0.3px;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; max-width: 400px;
+  padding: 14px 24px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  position: relative; z-index: 2;
+  margin-top: 2px;
+}
+.welcome-footer-left {
+  font-size: 0.6rem; color: rgba(242,232,217,0.25);
+  letter-spacing: 0.3px;
+  display: flex; align-items: center; gap: 5px;
 }
 .welcome-footer-dot { opacity: 0.4; }
 
-/* ── Inner contenedor para el QR reader ── */
-.welcome-inner {
-  width: 100%; max-width: 420px;
-  display: flex; flex-direction: column;
-  align-items: center;
+/* Enlace área admin — casi invisible */
+.admin-access-btn {
+  background: none; border: none;
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.1);
+  cursor: pointer;
+  font-family: var(--ff);
+  letter-spacing: 0.3px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: color 0.3s, background 0.3s;
+  display: flex; align-items: center; gap: 4px;
+}
+.admin-access-btn:hover {
+  color: rgba(201,162,39,0.6);
+  background: rgba(201,162,39,0.06);
 }
 
-/* qr-reader dinámico (sigue igual) */
+/* ── Inner contenedor para el QR reader ── */
+.welcome-inner {
+  width: 100%;
+  display: flex; flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding-bottom: 24px;
+}
+
+/* qr-reader dinámico */
 #qr-reader {
   width: 100%;
   max-width: 300px;
@@ -1167,16 +1273,16 @@ body {
 .subcats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 4px;
 }
 .subcat-card {
   background: var(--white);
   border: 1.5px solid var(--border);
   border-radius: var(--r-lg);
-  padding: 18px 12px 14px;
+  padding: 26px 14px 20px;
   display: flex; flex-direction: column;
-  align-items: center; gap: 8px;
+  align-items: center; gap: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
@@ -1187,18 +1293,18 @@ body {
   box-shadow: var(--shadow-sm);
   transform: translateY(-2px);
 }
-.subcat-card-icon { font-size: 2rem; line-height: 1; }
+.subcat-card-icon { font-size: 2.6rem; line-height: 1; }
 .subcat-card-label {
-  font-family: var(--fh); font-size: 0.9rem; font-weight: 600;
-  color: var(--text); line-height: 1.2;
+  font-family: var(--fh); font-size: 1.05rem; font-weight: 700;
+  color: var(--text); line-height: 1.25;
 }
 .subcat-card-count {
-  font-size: 0.65rem; color: var(--muted); font-weight: 500;
+  font-size: 0.72rem; color: var(--muted); font-weight: 600;
 }
 .subcat-card-badge {
   position: absolute; top: 10px; right: 10px;
-  font-size: 0.55rem; font-weight: 800;
-  padding: 2px 7px; border-radius: 100px;
+  font-size: 0.6rem; font-weight: 800;
+  padding: 3px 8px; border-radius: 100px;
   background: rgba(200,80,42,0.12); color: var(--accent);
   border: 1px solid rgba(200,80,42,0.3);
 }
@@ -1265,6 +1371,256 @@ body {
 .visitor-banner i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; }
 .visitor-banner-text .vb-title { font-size: 0.82rem; font-weight: 700; color: var(--accent-dk); }
 .visitor-banner-text .vb-sub   { font-size: 0.72rem; color: var(--text2); margin-top: 2px; line-height: 1.4; }
+
+/* ══════════════════════════════════════════════════
+   ADMIN SCREEN — gestión de ingredientes y alérgenos
+══════════════════════════════════════════════════ */
+#admin-screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 1500;
+  background: var(--bg);
+  flex-direction: column;
+  overflow: hidden;
+}
+#admin-screen.show { display: flex; }
+
+.admin-header {
+  flex-shrink: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.admin-header-title {
+  flex: 1;
+  font-family: var(--fh);
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text);
+}
+.admin-header-sub {
+  font-size: 0.7rem; color: var(--muted); margin-top: 2px;
+}
+.admin-close-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  border: 1.5px solid var(--border); background: var(--white);
+  color: var(--text2); font-size: 0.95rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.18s ease; flex-shrink: 0;
+}
+.admin-close-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+
+.admin-body {
+  flex: 1; overflow-y: auto;
+  padding: 16px 16px 100px;
+  max-width: 560px; width: 100%; margin: 0 auto;
+}
+
+/* Buscador */
+.admin-search-wrap {
+  position: relative; margin-bottom: 14px;
+}
+.admin-search-wrap i {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); font-size: 0.85rem;
+}
+.admin-search-input {
+  width: 100%; padding: 12px 14px 12px 38px;
+  border: 1.5px solid var(--border); border-radius: var(--r-xl);
+  background: var(--white); font-family: var(--ff);
+  font-size: 0.88rem; color: var(--text);
+  transition: border 0.15s;
+}
+.admin-search-input:focus { outline: none; border-color: var(--accent); }
+
+/* Filtro tipo */
+.admin-filter-row {
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+.admin-filter-btn {
+  flex: 1; padding: 9px 10px;
+  border: 1.5px solid var(--border); border-radius: 100px;
+  background: var(--white); color: var(--text2);
+  font-family: var(--ff); font-size: 0.78rem; font-weight: 700;
+  cursor: pointer; transition: all 0.18s ease;
+}
+.admin-filter-btn.active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+
+/* Lista de productos */
+.admin-prod-row {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 13px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: flex; align-items: center; gap: 12px;
+}
+.admin-prod-row:hover { border-color: var(--accent); box-shadow: var(--shadow-sm); }
+.admin-prod-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 9px; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.05rem; overflow: hidden;
+}
+.admin-prod-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 9px; }
+.admin-prod-info { flex: 1; min-width: 0; }
+.admin-prod-nombre {
+  font-size: 0.86rem; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.admin-prod-meta {
+  font-size: 0.68rem; color: var(--muted); margin-top: 2px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.admin-prod-status {
+  font-size: 0.6rem; font-weight: 800; padding: 2px 8px; border-radius: 100px;
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.admin-prod-status.ok { background: var(--success-lt); color: var(--success); }
+.admin-prod-status.pending { background: var(--bg2); color: var(--muted); }
+.admin-prod-arrow { color: var(--muted); font-size: 0.8rem; flex-shrink: 0; }
+
+.admin-empty {
+  text-align: center; padding: 40px 20px; color: var(--muted);
+}
+.admin-empty i { font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.4; }
+.admin-empty p { font-size: 0.82rem; line-height: 1.6; }
+
+/* ── Editor de producto (panel deslizante) ── */
+.admin-editor-overlay {
+  position: fixed; inset: 0; z-index: 1600;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.admin-editor-sheet {
+  background: var(--white);
+  border-radius: 22px 22px 0 0;
+  width: 100%; max-width: 480px;
+  max-height: 92vh; overflow-y: auto;
+  animation: slideUp 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+.admin-editor-head {
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.admin-editor-head-icon {
+  width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px;
+  background: var(--bg); display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; overflow: hidden;
+}
+.admin-editor-head-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.admin-editor-head-text { flex: 1; min-width: 0; }
+.admin-editor-head-title {
+  font-family: var(--fh); font-size: 1rem; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.admin-editor-head-sub { font-size: 0.7rem; color: var(--muted); margin-top: 1px; }
+
+.admin-editor-body { padding: 18px 20px 24px; }
+.admin-field-label {
+  font-size: 0.72rem; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.4px;
+  margin-bottom: 8px; display: block;
+}
+.admin-textarea {
+  width: 100%; min-height: 90px;
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  background: var(--bg); padding: 12px 14px;
+  font-family: var(--ff); font-size: 0.86rem; color: var(--text);
+  resize: vertical; transition: border 0.15s; line-height: 1.6;
+  margin-bottom: 20px;
+}
+.admin-textarea:focus { outline: none; border-color: var(--accent); }
+
+/* Grid de alérgenos seleccionables */
+.admin-alergenos-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 8px; margin-bottom: 22px;
+}
+.admin-alergeno-chip {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  cursor: pointer; transition: all 0.15s ease;
+  font-size: 0.78rem; font-weight: 600; color: var(--text2);
+  background: var(--white);
+}
+.admin-alergeno-chip i:first-child { font-size: 0.85rem; color: var(--muted); width: 16px; text-align: center; }
+.admin-alergeno-chip .chip-check {
+  margin-left: auto; font-size: 0.85rem; color: var(--border2);
+}
+.admin-alergeno-chip.active {
+  border-color: var(--accent); background: var(--accent-lt); color: var(--accent-dk);
+}
+.admin-alergeno-chip.active i:first-child { color: var(--accent); }
+.admin-alergeno-chip.active .chip-check { color: var(--accent); }
+
+.admin-editor-actions {
+  display: flex; gap: 10px; padding: 0 20px 22px;
+}
+.admin-editor-actions .btn { flex: 1; }
+
+/* Toggle "sin alérgenos declarados" */
+.admin-no-alergenos-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; margin-bottom: 14px;
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  background: var(--bg);
+}
+.admin-no-alergenos-row span { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+.admin-toggle {
+  width: 42px; height: 24px; border-radius: 100px;
+  background: var(--border2); position: relative; cursor: pointer;
+  transition: background 0.2s ease; flex-shrink: 0;
+}
+.admin-toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.admin-toggle.on { background: var(--accent); }
+.admin-toggle.on::after { transform: translateX(18px); }
+
+/* ── PIN gate ── */
+.admin-pin-overlay {
+  position: fixed; inset: 0; z-index: 1500;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; padding: 24px;
+}
+.admin-pin-card {
+  width: 100%; max-width: 320px;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--r-xl); padding: 28px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+.admin-pin-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: var(--accent-lt); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; margin: 0 auto 14px;
+}
+.admin-pin-title {
+  font-family: var(--fh); font-size: 1.1rem; font-weight: 700;
+  color: var(--text); margin-bottom: 4px;
+}
+.admin-pin-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+.admin-pin-input {
+  width: 100%; padding: 13px 14px; text-align: center;
+  letter-spacing: 6px; font-size: 1.2rem; font-weight: 700;
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  background: var(--bg); color: var(--text);
+  margin-bottom: 12px; font-family: var(--ff);
+}
+.admin-pin-input:focus { outline: none; border-color: var(--accent); }
+.admin-pin-error { font-size: 0.75rem; color: var(--danger); margin-bottom: 10px; min-height: 16px; }
 </style>
 </head>
 <body>
@@ -1273,50 +1629,189 @@ body {
 <div id="qr-scan-screen">
   <div class="welcome-inner">
 
-    <!-- ── Hero oscuro con logo ── -->
-    <div class="welcome-hero-bg" id="welcome-hero-bg">
-      <div class="welcome-band"></div>
+    <!-- Banda dorada fija arriba -->
+    <div class="welcome-band"></div>
 
-      <div class="welcome-logo-wrap" id="welcome-logo">🔥</div>
-      <div class="welcome-restaurant-name" id="welcome-nombre">Hotto Digital</div>
-      <div class="welcome-tagline" id="welcome-tagline">Carta digital · Pedidos desde tu mesa</div>
-
-
+    <!-- Ornamento SVG tipo menú de restaurante -->
+    <div class="welcome-ornament">
+      <svg width="220" height="28" viewBox="0 0 220 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Líneas laterales -->
+        <line x1="0" y1="14" x2="72" y2="14" stroke="rgba(201,162,39,0.5)" stroke-width="0.8"/>
+        <line x1="148" y1="14" x2="220" y2="14" stroke="rgba(201,162,39,0.5)" stroke-width="0.8"/>
+        <!-- Rombo central -->
+        <rect x="103" y="7" width="14" height="14" rx="1" transform="rotate(45 110 14)" fill="none" stroke="rgba(201,162,39,0.7)" stroke-width="0.9"/>
+        <rect x="106.5" y="10.5" width="7" height="7" rx="0.5" transform="rotate(45 110 14)" fill="rgba(201,162,39,0.25)"/>
+        <!-- Pequeños diamantes laterales -->
+        <rect x="79" y="11.2" width="5.6" height="5.6" rx="0.5" transform="rotate(45 82 14)" fill="none" stroke="rgba(201,162,39,0.45)" stroke-width="0.8"/>
+        <rect x="135.4" y="11.2" width="5.6" height="5.6" rx="0.5" transform="rotate(45 138 14)" fill="none" stroke="rgba(201,162,39,0.45)" stroke-width="0.8"/>
+        <!-- Pequeños círculos decorativos -->
+        <circle cx="68" cy="14" r="2" fill="rgba(201,162,39,0.35)"/>
+        <circle cx="152" cy="14" r="2" fill="rgba(201,162,39,0.35)"/>
+        <circle cx="58" cy="14" r="1.2" fill="rgba(201,162,39,0.2)"/>
+        <circle cx="162" cy="14" r="1.2" fill="rgba(201,162,39,0.2)"/>
+      </svg>
     </div>
 
-    <!-- ── Cuerpo claro ── -->
-    <div class="welcome-body">
+    <!-- Logo -->
+    <div class="welcome-logo-wrap" id="welcome-logo">🔥</div>
+
+    <!-- Nombre del restaurante -->
+    <div class="welcome-restaurant-name" id="welcome-nombre">Hotto Digital</div>
+
+    <!-- Tagline -->
+    <div class="welcome-tagline" id="welcome-tagline">Gastronomía con sabor propio</div>
+
+    <!-- Línea ornamental -->
+    <div class="welcome-rule">
+      <div class="welcome-rule-line"></div>
+      <div class="welcome-rule-diamond"></div>
+      <div class="welcome-rule-line"></div>
+    </div>
+
+    <!-- Frase de bienvenida -->
+    <p class="welcome-phrase">Bienvenido. Cada plato, una experiencia</p>
+
+    <!-- Ilustración escena gastronómica -->
+    <div class="welcome-illustration">
+      <svg viewBox="0 0 320 130" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Mesa / mantel -->
+        <ellipse cx="160" cy="118" rx="150" ry="10" fill="rgba(201,162,39,0.06)"/>
+
+        <!-- Plato principal grande -->
+        <ellipse cx="160" cy="92" rx="62" ry="20" fill="rgba(242,232,217,0.07)" stroke="rgba(201,162,39,0.35)" stroke-width="1"/>
+        <ellipse cx="160" cy="90" rx="50" ry="15" fill="rgba(242,232,217,0.05)" stroke="rgba(201,162,39,0.22)" stroke-width="0.8"/>
+
+        <!-- Comida sobre el plato: filete -->
+        <ellipse cx="148" cy="88" rx="20" ry="9" fill="rgba(200,80,42,0.35)" stroke="rgba(200,80,42,0.55)" stroke-width="1"/>
+        <!-- Guarnición: brócoli -->
+        <circle cx="178" cy="83" r="6" fill="rgba(120,160,90,0.45)" stroke="rgba(120,160,90,0.6)" stroke-width="0.8"/>
+        <circle cx="186" cy="88" r="5" fill="rgba(120,160,90,0.4)" stroke="rgba(120,160,90,0.55)" stroke-width="0.8"/>
+        <!-- Tomates cherry -->
+        <circle cx="174" cy="94" r="3.5" fill="rgba(200,80,42,0.5)"/>
+        <circle cx="181" cy="97" r="3" fill="rgba(200,80,42,0.45)"/>
+        <!-- Salsa decorativa -->
+        <path d="M132 96 Q140 100 150 97 Q158 94 166 98" stroke="rgba(201,162,39,0.5)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+
+        <!-- Copa de vino izquierda -->
+        <g opacity="0.85">
+          <path d="M58 50 Q50 78 58 92 H74 Q82 78 74 50 Z" fill="rgba(242,232,217,0.05)" stroke="rgba(201,162,39,0.4)" stroke-width="1"/>
+          <ellipse cx="66" cy="50" rx="8" ry="3.5" fill="rgba(242,232,217,0.05)" stroke="rgba(201,162,39,0.4)" stroke-width="1"/>
+          <path d="M61 60 Q59 76 64 86 H68 Q70 76 67 60 Z" fill="rgba(160,40,40,0.4)"/>
+          <line x1="66" y1="92" x2="66" y2="112" stroke="rgba(201,162,39,0.35)" stroke-width="1"/>
+          <ellipse cx="66" cy="114" rx="11" ry="3" fill="rgba(242,232,217,0.04)" stroke="rgba(201,162,39,0.3)" stroke-width="0.8"/>
+        </g>
+
+        <!-- Vela / candelabro derecha -->
+        <g opacity="0.85">
+          <rect x="248" y="70" width="8" height="40" rx="2" fill="rgba(242,232,217,0.07)" stroke="rgba(201,162,39,0.35)" stroke-width="0.8"/>
+          <ellipse cx="252" cy="112" rx="14" ry="3" fill="rgba(242,232,217,0.04)" stroke="rgba(201,162,39,0.3)" stroke-width="0.8"/>
+          <rect x="250.5" y="58" width="3" height="14" rx="1.5" fill="rgba(242,232,217,0.5)"/>
+          <path d="M252 58 Q254 50 251 44 Q249 50 251 56 Z" fill="rgba(201,162,39,0.8)"/>
+          <circle cx="251.5" cy="48" r="6" fill="rgba(201,162,39,0.25)"/>
+        </g>
+
+        <!-- Cubiertos -->
+        <g opacity="0.7" stroke="rgba(201,162,39,0.45)" stroke-width="1.3" stroke-linecap="round" fill="none">
+          <!-- Tenedor izquierda del plato -->
+          <line x1="92" y1="78" x2="92" y2="106"/>
+          <line x1="88" y1="78" x2="88" y2="90"/>
+          <line x1="92" y1="78" x2="92" y2="90"/>
+          <line x1="96" y1="78" x2="96" y2="90"/>
+          <path d="M88 90 Q92 96 96 90"/>
+          <!-- Cuchillo derecha del plato -->
+          <line x1="228" y1="78" x2="228" y2="106"/>
+          <path d="M228 78 Q236 86 228 96" fill="rgba(201,162,39,0.12)"/>
+        </g>
+
+        <!-- Hojas decorativas flotantes -->
+        <g opacity="0.5" fill="rgba(120,160,90,0.4)">
+          <ellipse cx="40" cy="30" rx="9" ry="4" transform="rotate(-30 40 30)"/>
+          <ellipse cx="288" cy="34" rx="8" ry="3.5" transform="rotate(25 288 34)"/>
+          <ellipse cx="20" cy="70" rx="7" ry="3" transform="rotate(15 20 70)"/>
+        </g>
+
+        <!-- Migas / especias decorativas -->
+        <g fill="rgba(201,162,39,0.4)">
+          <circle cx="118" cy="104" r="1.4"/>
+          <circle cx="124" cy="108" r="1"/>
+          <circle cx="202" cy="106" r="1.4"/>
+          <circle cx="208" cy="102" r="1"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Panel de acciones -->
+    <div class="welcome-panel">
 
       <!-- Tarjeta Ver la carta → modo visitante -->
       <div class="welcome-carta-card" onclick="entrarModoVisitante()" role="button" tabindex="0"
            aria-label="Ver la carta del restaurante sin mesa">
-        <div class="carta-icon-wrap">
-          <svg class="carta-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Portada menú -->
-            <rect x="4" y="2" width="18" height="24" rx="3" fill="rgba(200,80,42,0.12)" stroke="rgba(200,80,42,0.55)" stroke-width="1.2"/>
-            <!-- Lomo -->
-            <rect x="4" y="2" width="4" height="24" rx="2" fill="rgba(200,80,42,0.35)"/>
-            <!-- Líneas simuladas -->
-            <line x1="11" y1="8"  x2="19" y2="8"  stroke="rgba(200,80,42,0.75)" stroke-width="1.3" stroke-linecap="round"/>
-            <line x1="11" y1="12" x2="19" y2="12" stroke="rgba(26,23,20,0.2)"   stroke-width="1"   stroke-linecap="round"/>
-            <line x1="11" y1="15" x2="17" y2="15" stroke="rgba(26,23,20,0.18)"  stroke-width="1"   stroke-linecap="round"/>
-            <line x1="11" y1="18" x2="19" y2="18" stroke="rgba(26,23,20,0.15)"  stroke-width="1"   stroke-linecap="round"/>
-            <line x1="11" y1="21" x2="15" y2="21" stroke="rgba(26,23,20,0.12)"  stroke-width="1"   stroke-linecap="round"/>
-            <!-- Icono cubiertos mini -->
-            <line x1="17" y1="19" x2="17" y2="24" stroke="rgba(200,80,42,0.6)" stroke-width="0.9" stroke-linecap="round"/>
-            <line x1="19" y1="19" x2="19" y2="24" stroke="rgba(200,80,42,0.6)" stroke-width="0.9" stroke-linecap="round"/>
-            <path d="M19 19 Q21 21 19 23" fill="rgba(200,80,42,0.45)"/>
-            <line x1="16.3" y1="19" x2="16.3" y2="21" stroke="rgba(200,80,42,0.4)" stroke-width="0.7" stroke-linecap="round"/>
-            <line x1="17"   y1="19" x2="17"   y2="21" stroke="rgba(200,80,42,0.4)" stroke-width="0.7" stroke-linecap="round"/>
-            <line x1="17.7" y1="19" x2="17.7" y2="21" stroke="rgba(200,80,42,0.4)" stroke-width="0.7" stroke-linecap="round"/>
+
+        <!-- Cabecera ilustrada tipo portada de menú -->
+        <div class="carta-card-banner">
+          <span class="carta-card-banner-label">Carta digital</span>
+          <svg viewBox="0 0 400 96" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- Filas de menú estilizadas -->
+            <line x1="40" y1="22" x2="140" y2="22" stroke="rgba(201,162,39,0.6)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="40" y1="34" x2="200" y2="34" stroke="rgba(242,232,217,0.18)" stroke-width="1.4" stroke-linecap="round"/>
+            <line x1="40" y1="44" x2="170" y2="44" stroke="rgba(242,232,217,0.12)" stroke-width="1.4" stroke-linecap="round"/>
+
+            <line x1="40" y1="62" x2="130" y2="62" stroke="rgba(201,162,39,0.6)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="40" y1="74" x2="210" y2="74" stroke="rgba(242,232,217,0.18)" stroke-width="1.4" stroke-linecap="round"/>
+
+            <!-- Precios alineados a la derecha -->
+            <line x1="330" y1="22" x2="365" y2="22" stroke="rgba(201,162,39,0.45)" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="330" y1="62" x2="365" y2="62" stroke="rgba(201,162,39,0.45)" stroke-width="1.6" stroke-linecap="round"/>
+
+            <!-- Plato decorativo a la derecha -->
+            <circle cx="250" cy="46" r="30" fill="rgba(201,162,39,0.06)" stroke="rgba(201,162,39,0.25)" stroke-width="1"/>
+            <circle cx="250" cy="46" r="22" fill="none" stroke="rgba(201,162,39,0.18)" stroke-width="0.8"/>
+            <!-- comida sobre plato -->
+            <circle cx="244" cy="42" r="9" fill="rgba(200,80,42,0.4)"/>
+            <circle cx="258" cy="50" r="5" fill="rgba(120,160,90,0.45)"/>
+            <circle cx="252" cy="55" r="3.5" fill="rgba(120,160,90,0.4)"/>
+
+            <!-- Cubiertos decorativos esquina -->
+            <g opacity="0.5" stroke="rgba(201,162,39,0.45)" stroke-width="1.3" stroke-linecap="round" fill="none">
+              <line x1="312" y1="20" x2="312" y2="72"/>
+              <line x1="308" y1="20" x2="308" y2="34"/>
+              <line x1="312" y1="20" x2="312" y2="34"/>
+              <line x1="316" y1="20" x2="316" y2="34"/>
+              <path d="M308 34 Q312 40 316 34"/>
+            </g>
+
+            <!-- Difuminado lateral para fundir con el cuerpo -->
+            <rect x="0" y="0" width="400" height="96" fill="url(#fadeGrad)"/>
+            <defs>
+              <linearGradient id="fadeGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#1c1714" stop-opacity="0.35"/>
+                <stop offset="0.5" stop-color="#1c1714" stop-opacity="0"/>
+                <stop offset="1" stop-color="#1c1714" stop-opacity="0.45"/>
+              </linearGradient>
+            </defs>
           </svg>
         </div>
-        <div class="carta-card-text">
-          <div class="carta-card-title">Ver la carta</div>
-          <div class="carta-card-sub">Platos, bebidas, ingredientes y alérgenos</div>
-          <div class="carta-card-badge">Sin necesidad de mesa</div>
+
+        <!-- Cuerpo de la tarjeta -->
+        <div class="carta-card-body">
+          <div class="carta-icon-wrap">
+            <svg class="carta-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="2" width="18" height="24" rx="3" fill="rgba(201,162,39,0.1)" stroke="rgba(201,162,39,0.5)" stroke-width="1.2"/>
+              <rect x="4" y="2" width="4" height="24" rx="2" fill="rgba(201,162,39,0.3)"/>
+              <line x1="11" y1="8"  x2="19" y2="8"  stroke="rgba(201,162,39,0.7)" stroke-width="1.3" stroke-linecap="round"/>
+              <line x1="11" y1="12" x2="19" y2="12" stroke="rgba(242,232,217,0.25)" stroke-width="1" stroke-linecap="round"/>
+              <line x1="11" y1="15" x2="17" y2="15" stroke="rgba(242,232,217,0.2)"  stroke-width="1" stroke-linecap="round"/>
+              <line x1="11" y1="18" x2="19" y2="18" stroke="rgba(242,232,217,0.18)" stroke-width="1" stroke-linecap="round"/>
+              <line x1="11" y1="21" x2="15" y2="21" stroke="rgba(242,232,217,0.14)" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="carta-card-text">
+            <div class="carta-card-title">Ver la carta</div>
+            <div class="carta-card-sub">Platos, bebidas, ingredientes y alérgenos</div>
+            <div class="carta-card-badge">Sin necesidad de mesa</div>
+          </div>
+          <i class="fas fa-chevron-right carta-card-arrow"></i>
         </div>
-        <i class="fas fa-chevron-right carta-card-arrow"></i>
       </div>
 
       <!-- Divisor -->
@@ -1338,19 +1833,24 @@ body {
         </button>
       </div>
 
-
-
       <!-- qr-reader-wrap oculto -->
       <div id="qr-reader-wrap" style="display:none;width:100%;max-width:300px;margin-top:20px"></div>
 
-      <div class="welcome-footer">
+    </div><!-- /welcome-panel -->
+
+    <!-- Footer -->
+    <div class="welcome-footer">
+      <div class="welcome-footer-left">
         <i class="fas fa-shield-halved"></i>
-        <span>Hotto Digital TPV</span>
+        <span>Hotto Digital</span>
         <span class="welcome-footer-dot">·</span>
         <span>Conexión segura</span>
       </div>
+      <button class="admin-access-btn" onclick="accederAdmin()" title="Área de administración">
+        <i class="fas fa-lock"></i> admin
+      </button>
+    </div>
 
-    </div><!-- /welcome-body -->
   </div><!-- /welcome-inner -->
 </div>
 
@@ -1396,12 +1896,55 @@ body {
   <p id="error-desc">No pudimos identificar tu mesa. Escanea de nuevo el código QR o avisa a un camarero.</p>
 </div>
 
+<!-- ADMIN: PIN GATE -->
+<div id="admin-pin-overlay" class="admin-pin-overlay" style="display:none">
+  <div class="admin-pin-card">
+    <div class="admin-pin-icon"><i class="fas fa-lock"></i></div>
+    <div class="admin-pin-title">Área de administración</div>
+    <div class="admin-pin-sub">Introduce el PIN para gestionar ingredientes y alérgenos de la carta.</div>
+    <input type="password" inputmode="numeric" maxlength="6" class="admin-pin-input" id="admin-pin-input" placeholder="••••" autocomplete="off">
+    <div class="admin-pin-error" id="admin-pin-error"></div>
+    <button class="btn btn-primary" onclick="comprobarPinAdmin()" style="margin-bottom:8px">
+      <i class="fas fa-arrow-right-to-bracket"></i> Entrar
+    </button>
+    <button class="btn btn-outline" onclick="cerrarPinAdmin()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ADMIN SCREEN -->
+<div id="admin-screen">
+  <div class="admin-header">
+    <div>
+      <div class="admin-header-title">Ingredientes y alérgenos</div>
+      <div class="admin-header-sub" id="admin-header-sub">Gestiona la información de cada producto</div>
+    </div>
+    <button class="admin-close-btn" onclick="cerrarAdmin()" aria-label="Cerrar">
+      <i class="fas fa-xmark"></i>
+    </button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-search-wrap">
+      <i class="fas fa-search"></i>
+      <input type="text" class="admin-search-input" id="admin-search-input" placeholder="Buscar producto…" oninput="renderAdminLista()">
+    </div>
+    <div class="admin-filter-row">
+      <button class="admin-filter-btn active" id="admin-filter-todos" onclick="setAdminFiltro('todos')">Todos</button>
+      <button class="admin-filter-btn" id="admin-filter-cocina" onclick="setAdminFiltro('cocina')">🍳 Cocina</button>
+      <button class="admin-filter-btn" id="admin-filter-barra" onclick="setAdminFiltro('barra')">🥃 Barra</button>
+    </div>
+    <div id="admin-lista"></div>
+  </div>
+</div>
+
 <!-- MAIN APP -->
 <div id="main-app">
 
   <!-- HEADER -->
   <header class="app-header">
     <div class="header-inner">
+      <button class="header-back-btn" id="header-back-btn" onclick="volverABienvenida()" aria-label="Volver a la bienvenida" title="Volver">
+        <i class="fas fa-arrow-left"></i>
+      </button>
       <div class="header-logo-wrap" id="header-logo">🔥</div>
       <div class="header-info">
         <div class="header-nombre" id="header-nombre">Cargando...</div>
@@ -1584,6 +2127,8 @@ function iniciarEscaner() {
   const actions  = document.querySelector('.welcome-actions');
   const cartaCard = document.querySelector('.welcome-carta-card');
   const divider  = document.querySelector('.welcome-divider');
+  const phrase   = document.querySelector('.welcome-phrase');
+  const rule     = document.querySelector('.welcome-rule');
 
   // 1. Preparar DOM antes de instanciar el lector
   wrap.innerHTML = '';
@@ -1591,6 +2136,8 @@ function iniciarEscaner() {
   if (actions)    actions.style.display   = 'none';
   if (cartaCard)  cartaCard.style.display = 'none';
   if (divider)    divider.style.display   = 'none';
+  if (phrase)     phrase.style.display    = 'none';
+  if (rule)       rule.style.display      = 'none';
 
   const header = document.createElement('div');
   header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;width:100%';
@@ -1647,10 +2194,14 @@ function cancelarEscaner() {
   const actions  = document.querySelector('.welcome-actions');
   const cartaCard= document.querySelector('.welcome-carta-card');
   const divider  = document.querySelector('.welcome-divider');
+  const phrase   = document.querySelector('.welcome-phrase');
+  const rule     = document.querySelector('.welcome-rule');
   if (wrap)      { wrap.style.display = 'none'; wrap.innerHTML = ''; }
   if (actions)    actions.style.display   = 'flex';
   if (cartaCard)  cartaCard.style.display = 'flex';
   if (divider)    divider.style.display   = 'flex';
+  if (phrase)     phrase.style.display    = '';
+  if (rule)       rule.style.display      = '';
 }
 
 function onQRScaneado(decodedText) {
@@ -1821,6 +2372,50 @@ function entrarModoVisitante() {
   connectFirebaseVisitante();
 }
 
+/* ── Volver a la pantalla de bienvenida sin recargar ── */
+function volverABienvenida() {
+  // Desconectar listener de Firebase
+  rtdb.ref('/').off();
+
+  // Resetear estado de sesión
+  modoVisitante = false;
+  mesaId = null;
+  qrToken = null;
+  db = {};
+  carrito = {};
+  tipoActivo = null;
+  catActiva = null;
+  pedidoEnviado = false;
+  pedidosCliente = [];
+  historialLocal = [];
+  cobradoLimpiado = false;
+  sesionInicializada = false;
+  expandedCards.clear();
+
+  // Ocultar app principal y pantalla de error si estaba visible
+  document.getElementById('main-app').classList.remove('show');
+  document.getElementById('error-screen').classList.remove('show');
+  document.getElementById('loading-screen').classList.add('hidden');
+
+  // Restaurar tabs y elementos ocultos en modo visitante
+  document.getElementById('tab-ticket').style.display    = '';
+  document.getElementById('tab-historial').style.display = '';
+  document.getElementById('tab-cuenta').style.display    = '';
+  document.getElementById('cart-bar').style.display      = '';
+  document.getElementById('header-back-btn').classList.remove('show');
+
+  // Volver al tab inicial por defecto
+  currentTab = 'ticket';
+
+  // Limpiar la URL (quitar ?mesa= / ?token= si los hubiera) sin recargar
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  // Mostrar pantalla de bienvenida de nuevo
+  document.getElementById('qr-scan-screen').classList.add('show');
+}
+
 function confirmarMesaManual() {
   const val = (document.getElementById('manual-mesa-input')?.value || '').trim();
   if (!val) {
@@ -1972,6 +2567,7 @@ function updateHeaderVisitante() {
   document.getElementById('header-nombre').textContent = nombre;
   document.getElementById('header-mesa').textContent = 'Solo carta · Sin mesa';
   document.getElementById('header-total').style.display = 'none';
+  document.getElementById('header-back-btn').classList.add('show');
   document.title = 'Carta · ' + nombre;
   const ll = document.getElementById('loading-logo');
   if (ll) {
@@ -2048,7 +2644,7 @@ function applyConfig(cfg) {
   const wNombre = document.getElementById('welcome-nombre');
   if (wNombre) wNombre.textContent = cfg.nombreRestaurante || 'Hotto Digital';
   const wTag = document.getElementById('welcome-tagline');
-  if (wTag) wTag.textContent = 'Carta digital · Pedidos desde tu mesa';
+  if (wTag) wTag.textContent = cfg.taglineRestaurante || 'Gastronomía con sabor propio';
 
   // ── 4. Banda y hero de bienvenida en color acento ─────────────
   const band = document.querySelector('.welcome-band');
@@ -2095,6 +2691,8 @@ function updateHeader() {
   }
   document.getElementById('header-nombre').textContent = nombre;
   document.getElementById('header-mesa').textContent = 'Mesa ' + mesaId;
+  document.getElementById('header-total').style.display = '';
+  document.getElementById('header-back-btn').classList.remove('show');
   document.title = 'Mesa ' + mesaId + ' · ' + nombre;
 
   // Total del ticket
@@ -2452,7 +3050,38 @@ function renderPedirNav() {
         ${hayBarra ? `
         <button class="tipo-card" onclick="seleccionarTipo('barra')">
           <div class="tipo-card-badge">Para tomar</div>
-          <div class="tipo-card-icon-wrap"><span class="tipo-card-icon">🥃</span></div>
+          <div class="tipo-card-icon-wrap">
+            <svg viewBox="0 0 120 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Mesa / barra -->
+              <rect x="0" y="72" width="120" height="4" fill="rgba(200,80,42,0.10)"/>
+              <!-- Copa de cóctel (martini) -->
+              <g>
+                <path d="M28 22 L48 22 L38 40 Z" fill="rgba(200,80,42,0.18)" stroke="rgba(200,80,42,0.55)" stroke-width="1.6" stroke-linejoin="round"/>
+                <line x1="38" y1="40" x2="38" y2="60" stroke="rgba(200,80,42,0.5)" stroke-width="1.6"/>
+                <ellipse cx="38" cy="62" rx="11" ry="2.6" fill="rgba(200,80,42,0.18)" stroke="rgba(200,80,42,0.45)" stroke-width="1.2"/>
+                <!-- aceituna -->
+                <circle cx="42" cy="27" r="2.6" fill="rgba(120,160,90,0.55)"/>
+                <line x1="42" y1="27" x2="48" y2="21" stroke="rgba(160,61,30,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+              </g>
+              <!-- Jarra de cerveza -->
+              <g>
+                <rect x="62" y="28" width="24" height="32" rx="3" fill="rgba(201,162,39,0.16)" stroke="rgba(201,162,39,0.55)" stroke-width="1.6"/>
+                <rect x="62" y="28" width="24" height="9" fill="rgba(242,232,217,0.55)"/>
+                <path d="M86 34 q10 0 10 9 q0 9 -10 9" fill="none" stroke="rgba(201,162,39,0.55)" stroke-width="1.6"/>
+                <line x1="67" y1="42" x2="67" y2="57" stroke="rgba(242,232,217,0.4)" stroke-width="1.2"/>
+              </g>
+              <!-- Burbujas decorativas -->
+              <circle cx="100" cy="26" r="2" fill="rgba(200,80,42,0.25)"/>
+              <circle cx="106" cy="34" r="1.3" fill="rgba(201,162,39,0.3)"/>
+              <circle cx="96" cy="40" r="1.6" fill="rgba(200,80,42,0.2)"/>
+              <!-- Limón decorativo -->
+              <circle cx="14" cy="44" r="8" fill="rgba(201,162,39,0.18)" stroke="rgba(201,162,39,0.5)" stroke-width="1.4"/>
+              <line x1="14" y1="38" x2="14" y2="50" stroke="rgba(201,162,39,0.4)" stroke-width="1"/>
+              <line x1="8" y1="44" x2="20" y2="44" stroke="rgba(201,162,39,0.4)" stroke-width="1"/>
+              <line x1="9.7" y1="39.7" x2="18.3" y2="48.3" stroke="rgba(201,162,39,0.35)" stroke-width="0.8"/>
+              <line x1="18.3" y1="39.7" x2="9.7" y2="48.3" stroke="rgba(201,162,39,0.35)" stroke-width="0.8"/>
+            </svg>
+          </div>
           <div class="tipo-card-label">Barra</div>
           <div class="tipo-card-sub">Bebidas, cafés, cervezas, cócteles…</div>
           ${cartBarra > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(200,80,42,0.12);color:var(--accent);border:1px solid rgba(200,80,42,0.3)">${cartBarra} en carrito</span>` : ''}
@@ -2460,7 +3089,41 @@ function renderPedirNav() {
         ${hayCocina ? `
         <button class="tipo-card" onclick="seleccionarTipo('cocina')">
           <div class="tipo-card-badge">Para comer</div>
-          <div class="tipo-card-icon-wrap"><span class="tipo-card-icon">🍳</span></div>
+          <div class="tipo-card-icon-wrap">
+            <svg viewBox="0 0 120 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Mesa -->
+              <rect x="0" y="72" width="120" height="4" fill="rgba(200,80,42,0.10)"/>
+              <!-- Plato -->
+              <ellipse cx="60" cy="56" rx="38" ry="11" fill="rgba(242,232,217,0.5)" stroke="rgba(200,80,42,0.35)" stroke-width="1.4"/>
+              <ellipse cx="60" cy="54" rx="29" ry="8" fill="rgba(200,80,42,0.07)" stroke="rgba(200,80,42,0.2)" stroke-width="1"/>
+              <!-- Filete -->
+              <ellipse cx="51" cy="52" rx="13" ry="6" fill="rgba(200,80,42,0.35)" stroke="rgba(200,80,42,0.55)" stroke-width="1.2"/>
+              <!-- Guarnición verde -->
+              <circle cx="70" cy="49" r="4.5" fill="rgba(120,160,90,0.5)" stroke="rgba(120,160,90,0.6)" stroke-width="0.8"/>
+              <circle cx="76" cy="54" r="3.6" fill="rgba(120,160,90,0.45)" stroke="rgba(120,160,90,0.55)" stroke-width="0.8"/>
+              <!-- Tomate cherry -->
+              <circle cx="68" cy="58" r="2.6" fill="rgba(200,80,42,0.5)"/>
+              <!-- Vapor / calor -->
+              <g stroke="rgba(201,162,39,0.45)" stroke-width="1.4" fill="none" stroke-linecap="round">
+                <path d="M44 30 q4 -6 0 -12 q-4 6 0 12"/>
+                <path d="M60 26 q4 -6 0 -12 q-4 6 0 12"/>
+                <path d="M76 30 q4 -6 0 -12 q-4 6 0 12"/>
+              </g>
+              <!-- Tenedor izquierda -->
+              <g stroke="rgba(200,80,42,0.4)" stroke-width="1.4" fill="none" stroke-linecap="round">
+                <line x1="14" y1="32" x2="14" y2="62"/>
+                <line x1="10" y1="32" x2="10" y2="44"/>
+                <line x1="14" y1="32" x2="14" y2="44"/>
+                <line x1="18" y1="32" x2="18" y2="44"/>
+                <path d="M10 44 q4 5 8 0"/>
+              </g>
+              <!-- Cuchillo derecha -->
+              <g stroke="rgba(200,80,42,0.4)" stroke-width="1.4" fill="rgba(200,80,42,0.08)" stroke-linecap="round">
+                <line x1="106" y1="32" x2="106" y2="62"/>
+                <path d="M106 32 q9 7 0 16"/>
+              </g>
+            </svg>
+          </div>
           <div class="tipo-card-label">Cocina</div>
           <div class="tipo-card-sub">Platos, raciones, bocadillos…</div>
           ${cartCocina > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(200,80,42,0.12);color:var(--accent);border:1px solid rgba(200,80,42,0.3)">${cartCocina} en carrito</span>` : ''}
@@ -3205,20 +3868,33 @@ function normalizarNombre(n) {
 
 const ALERGENO_ICONS = {
   gluten:    { icon: 'fa-wheat-awn',   label: 'Gluten' },
-  leche:     { icon: 'fa-droplet',     label: 'Lácteos' },
+  crustaceos:{ icon: 'fa-shrimp',      label: 'Crustáceos' },
   huevo:     { icon: 'fa-egg',         label: 'Huevo' },
   pescado:   { icon: 'fa-fish',        label: 'Pescado' },
-  crustaceos:{ icon: 'fa-shrimp',      label: 'Crustáceos' },
-  moluscos:  { icon: 'fa-fish-fins',   label: 'Moluscos' },
-  soja:      { icon: 'fa-seedling',    label: 'Soja' },
+  cacahuetes:{ icon: 'fa-seedling',    label: 'Cacahuetes' },
+  soja:      { icon: 'fa-leaf',        label: 'Soja' },
+  leche:     { icon: 'fa-droplet',     label: 'Lácteos' },
   'frutos secos':{ icon: 'fa-tree',    label: 'Frutos secos' },
+  apio:      { icon: 'fa-carrot',      label: 'Apio' },
   mostaza:   { icon: 'fa-pepper-hot',  label: 'Mostaza' },
-  apio:      { icon: 'fa-leaf',        label: 'Apio' },
   sesamo:    { icon: 'fa-circle-dot',  label: 'Sésamo' },
+  sulfitos:  { icon: 'fa-flask',       label: 'Sulfitos' },
+  altramuces:{ icon: 'fa-spa',         label: 'Altramuces' },
+  moluscos:  { icon: 'fa-fish-fins',   label: 'Moluscos' },
 };
 
 /* Set de cards expandidas actualmente */
 const expandedCards = new Set();
+
+/* Obtiene info de ingredientes/alérgenos de un producto:
+   prioriza overrides guardados en Firebase (/infoProductos),
+   y si no existen cae en el diccionario estático INFO_PRODUCTO */
+function getInfoProducto(p) {
+  const key = normalizarNombre(p.nombre);
+  const override = (db.infoProductos && db.infoProductos[key]) || null;
+  if (override) return override;
+  return INFO_PRODUCTO[key];
+}
 
 function toggleProductoDetail(prodId) {
   if (expandedCards.has(prodId)) {
@@ -3246,7 +3922,7 @@ function buildProductoCard(p) {
         <button class="qty-btn add" onclick="qtyChange(${p.id}, 1)" aria-label="Añadir">+</button>
       </div>`;
 
-  const info = INFO_PRODUCTO[normalizarNombre(p.nombre)];
+  const info = getInfoProducto(p);
   const isExpanded = expandedCards.has(p.id);
   const hasInfo = !!(info && (info.ingredientes || (info.alergenos && info.alergenos.length)));
 
@@ -3484,8 +4160,240 @@ async function enviarPedido() {
 }
 
 /* ══════════════════════════════════════════════════
-   PAGE: CUENTA
+   ÁREA DE ADMINISTRACIÓN — ingredientes y alérgenos
 ══════════════════════════════════════════════════ */
+const ADMIN_PIN_DEFAULT = '1234'; // PIN por defecto; configurable desde Firebase /config.adminPin
+
+let adminFiltroTipo = 'todos';
+let adminEditandoKey = null; // nombre normalizado del producto en edición
+
+function accederAdmin() {
+  const overlay = document.getElementById('admin-pin-overlay');
+  const input = document.getElementById('admin-pin-input');
+  const err = document.getElementById('admin-pin-error');
+  err.textContent = '';
+  input.value = '';
+  overlay.style.display = 'flex';
+  setTimeout(() => input.focus(), 200);
+  input.onkeydown = (e) => { if (e.key === 'Enter') comprobarPinAdmin(); };
+}
+
+function cerrarPinAdmin() {
+  document.getElementById('admin-pin-overlay').style.display = 'none';
+}
+
+function comprobarPinAdmin() {
+  const input = document.getElementById('admin-pin-input');
+  const err = document.getElementById('admin-pin-error');
+  const pinCorrecto = (db.config && db.config.adminPin) || ADMIN_PIN_DEFAULT;
+  if ((input.value || '').trim() === String(pinCorrecto)) {
+    document.getElementById('admin-pin-overlay').style.display = 'none';
+    abrirAdmin();
+  } else {
+    err.textContent = 'PIN incorrecto. Inténtalo de nuevo.';
+    input.value = '';
+    input.focus();
+  }
+}
+
+async function abrirAdmin() {
+  adminFiltroTipo = 'todos';
+  document.getElementById('admin-search-input').value = '';
+  document.querySelectorAll('.admin-filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('admin-filter-todos').classList.add('active');
+
+  // Si todavía no tenemos datos de Firebase (p.ej. desde la bienvenida), cargarlos una vez
+  if (!db.productos || !db.productos.length) {
+    try {
+      const snap = await rtdb.ref('/').once('value');
+      const data = snap.val() || {};
+      db = { ...db, ...data };
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  renderAdminLista();
+  document.getElementById('admin-screen').classList.add('show');
+}
+
+function cerrarAdmin() {
+  document.getElementById('admin-screen').classList.remove('show');
+}
+
+function setAdminFiltro(tipo) {
+  adminFiltroTipo = tipo;
+  document.querySelectorAll('.admin-filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('admin-filter-' + tipo).classList.add('active');
+  renderAdminLista();
+}
+
+function renderAdminLista() {
+  const lista = document.getElementById('admin-lista');
+  const sub = document.getElementById('admin-header-sub');
+  const query = (document.getElementById('admin-search-input').value || '').toLowerCase().trim();
+
+  let productos = (db.productos || []).slice();
+  if (adminFiltroTipo !== 'todos') {
+    productos = productos.filter(p => p.tipo === adminFiltroTipo);
+  }
+  if (query) {
+    productos = productos.filter(p => (p.nombre || '').toLowerCase().includes(query));
+  }
+  productos.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+
+  sub.textContent = productos.length + ' producto' + (productos.length !== 1 ? 's' : '');
+
+  if (!productos.length) {
+    lista.innerHTML = `
+      <div class="admin-empty">
+        <i class="fas fa-utensils"></i>
+        <p>No se encontraron productos con estos filtros.</p>
+      </div>`;
+    return;
+  }
+
+  lista.innerHTML = productos.map(p => {
+    const info = getInfoProducto(p);
+    const tieneInfo = !!(info && (info.ingredientes || (info.alergenos && info.alergenos.length) || (info.alergenos && info.alergenos.length === 0 && info.declarado)));
+    const numAlerg = info?.alergenos?.length || 0;
+    const statusHTML = info
+      ? `<span class="admin-prod-status ok"><i class="fas fa-circle-check"></i> Editado</span>`
+      : `<span class="admin-prod-status pending">Sin datos</span>`;
+    return `
+      <div class="admin-prod-row" onclick="abrirEditorProducto(${p.id})">
+        <div class="admin-prod-icon">${p.imagen ? `<img src="${escHtml(p.imagen)}" alt="">` : (p.icono || '🍽️')}</div>
+        <div class="admin-prod-info">
+          <div class="admin-prod-nombre">${escHtml(p.nombre)}</div>
+          <div class="admin-prod-meta">
+            ${statusHTML}
+            ${numAlerg > 0 ? `<span><i class="fas fa-triangle-exclamation" style="color:var(--accent)"></i> ${numAlerg} alérgeno${numAlerg !== 1 ? 's' : ''}</span>` : ''}
+          </div>
+        </div>
+        <i class="fas fa-chevron-right admin-prod-arrow"></i>
+      </div>`;
+  }).join('');
+}
+
+function abrirEditorProducto(prodId) {
+  const p = (db.productos || []).find(x => x.id === prodId);
+  if (!p) return;
+  const key = normalizarNombre(p.nombre);
+  adminEditandoKey = key;
+
+  const info = getInfoProducto(p) || { ingredientes: '', alergenos: [] };
+  const sinAlergenos = !!(info.alergenos && info.alergenos.length === 0);
+
+  const alergenosHTML = Object.entries(ALERGENO_ICONS).map(([key2, meta]) => {
+    const active = (info.alergenos || []).includes(key2);
+    return `
+      <div class="admin-alergeno-chip ${active ? 'active' : ''}" data-alergeno="${key2}" onclick="toggleAlergenoChip(this)">
+        <i class="fas ${meta.icon}"></i>
+        <span>${meta.label}</span>
+        <i class="fas fa-circle-check chip-check"></i>
+      </div>`;
+  }).join('');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'admin-editor-overlay';
+  overlay.id = 'admin-editor-overlay';
+  overlay.innerHTML = `
+    <div class="admin-editor-sheet">
+      <div class="admin-editor-head">
+        <div class="admin-editor-head-icon">${p.imagen ? `<img src="${escHtml(p.imagen)}" alt="">` : (p.icono || '🍽️')}</div>
+        <div class="admin-editor-head-text">
+          <div class="admin-editor-head-title">${escHtml(p.nombre)}</div>
+          <div class="admin-editor-head-sub">${p.tipo === 'barra' ? '🥃 Barra' : '🍳 Cocina'} · ${formatEur(p.precio)}</div>
+        </div>
+        <button class="modal-close" onclick="cerrarEditorProducto()" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="admin-editor-body">
+        <label class="admin-field-label" for="admin-ingredientes-input">
+          <i class="fas fa-list"></i> Ingredientes
+        </label>
+        <textarea class="admin-textarea" id="admin-ingredientes-input" placeholder="Ej: Tomate, queso mozzarella, albahaca, aceite de oliva…">${escHtml(info.ingredientes || '')}</textarea>
+
+        <div class="admin-no-alergenos-row">
+          <span><i class="fas fa-circle-check" style="color:var(--success);margin-right:6px"></i> Sin alérgenos declarados</span>
+          <div class="admin-toggle ${sinAlergenos ? 'on' : ''}" id="admin-sin-alergenos-toggle" onclick="toggleSinAlergenos(this)"></div>
+        </div>
+
+        <label class="admin-field-label">
+          <i class="fas fa-triangle-exclamation"></i> Alérgenos (Reglamento UE 1169/2011)
+        </label>
+        <div class="admin-alergenos-grid" id="admin-alergenos-grid" style="${sinAlergenos ? 'opacity:0.4;pointer-events:none' : ''}">
+          ${alergenosHTML}
+        </div>
+      </div>
+      <div class="admin-editor-actions">
+        <button class="btn btn-outline" onclick="cerrarEditorProducto()">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarInfoProducto(${p.id})"><i class="fas fa-floppy-disk"></i> Guardar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) cerrarEditorProducto(); });
+}
+
+function toggleAlergenoChip(el) {
+  const grid = document.getElementById('admin-alergenos-grid');
+  if (grid.style.pointerEvents === 'none') return;
+  el.classList.toggle('active');
+}
+
+function toggleSinAlergenos(toggleEl) {
+  const isOn = toggleEl.classList.toggle('on');
+  const grid = document.getElementById('admin-alergenos-grid');
+  if (isOn) {
+    grid.style.opacity = '0.4';
+    grid.style.pointerEvents = 'none';
+  } else {
+    grid.style.opacity = '1';
+    grid.style.pointerEvents = '';
+  }
+}
+
+function cerrarEditorProducto() {
+  const overlay = document.getElementById('admin-editor-overlay');
+  if (overlay) overlay.remove();
+  adminEditandoKey = null;
+}
+
+async function guardarInfoProducto(prodId) {
+  const p = (db.productos || []).find(x => x.id === prodId);
+  if (!p) return;
+  const key = normalizarNombre(p.nombre);
+
+  const ingredientes = (document.getElementById('admin-ingredientes-input').value || '').trim();
+  const sinAlergenos = document.getElementById('admin-sin-alergenos-toggle').classList.contains('on');
+
+  let alergenos = [];
+  if (!sinAlergenos) {
+    document.querySelectorAll('#admin-alergenos-grid .admin-alergeno-chip.active').forEach(chip => {
+      alergenos.push(chip.dataset.alergeno);
+    });
+  }
+
+  const payload = { ingredientes, alergenos, declarado: true };
+
+  const btn = document.querySelector('#admin-editor-overlay .btn-primary');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando…';
+
+  try {
+    await rtdb.ref('/infoProductos/' + key).set(payload);
+    toast('✅ Información guardada correctamente', 'success', 'fa-circle-check');
+    cerrarEditorProducto();
+    renderAdminLista();
+  } catch (e) {
+    console.error(e);
+    toast('No se pudo guardar. Inténtalo de nuevo.', 'danger', 'fa-triangle-exclamation');
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+
 function renderCuentaPage() {
   const wrap = document.getElementById('cuenta-content');
   const ticket = getTicket();
