@@ -3330,6 +3330,15 @@ function toast(msg, type='info', icon='') {
 ════════════════════════════════════ */
 rtdb.ref('/').on('value', (snapshot) => {
   const data = snapshot.val();
+  // ── Snapshot del estado anterior para detectar QUÉ cambió ──
+  // Esto evita redibujar TODA la pantalla cuando solo cambió
+  // una parte (p.ej. otro camarero añadió un producto a OTRA mesa).
+  const _prevTicketsJSON   = JSON.stringify((db && db.tickets) || []);
+  const _prevProductosJSON = JSON.stringify((db && db.productos) || []);
+  const _prevMesasJSON     = JSON.stringify((db && db.mesas) || {});
+  const _prevCategoriasJSON = JSON.stringify((db && db.categorias) || []);
+  const _prevConfigJSON   = JSON.stringify((db && db.config) || {});
+  const _prevPedidosClienteJSON = JSON.stringify((db && db.pedidosCliente) || {});
   if (data) {
     db = data;
 
@@ -3466,7 +3475,40 @@ rtdb.ref('/').on('value', (snapshot) => {
     badge.classList.add('online');
   }
 
-  if (session.role) render(); else init();
+  // ── Decidir si hace falta un render() COMPLETO o basta con
+  //    una actualización ligera (sin resetear la pantalla) ──
+  const _ticketsCambiaron    = _prevTicketsJSON   !== JSON.stringify(db.tickets||[]);
+  const _productosCambiaron  = _prevProductosJSON !== JSON.stringify(db.productos||[]);
+  const _mesasCambiaron      = _prevMesasJSON     !== JSON.stringify(db.mesas||{});
+  const _categoriasCambiaron = _prevCategoriasJSON !== JSON.stringify(db.categorias||[]);
+  const _configCambio        = _prevConfigJSON    !== JSON.stringify(db.config||{});
+  const _pedidosClienteCambiaron = _prevPedidosClienteJSON !== JSON.stringify(db.pedidosCliente||{});
+
+  if (!session.role) {
+    init();
+  } else if (session.role === 'Camarero' && session.mesa) {
+    // El camarero tiene una mesa abierta: si SOLO cambiaron los tickets
+    // (p.ej. otro dispositivo añadió/quitó un producto en cualquier mesa),
+    // actualizamos solo la lista del pedido EN ESTE SITIO, sin recargar
+    // toda la pantalla (evita el "salto"/reseteo).
+    const _soloTickets = _ticketsCambiaron && !_productosCambiaron && !_mesasCambiaron
+                          && !_categoriasCambiaron && !_configCambio && !_pedidosClienteCambiaron;
+    if (_soloTickets) {
+      const t = (db.tickets||[]).find(t=>t.mesa===session.mesa);
+      if (t) { _refreshTicketInPlace(t); refreshCatBadges(); }
+      else render(); // la mesa ya no tiene ticket -> sí hace falta refrescar vista
+    } else {
+      render();
+    }
+  } else if ((session.role === 'Cocina' || session.role === 'Barra')
+             && !_productosCambiaron && !_mesasCambiaron && !_categoriasCambiaron
+             && !_configCambio && !_pedidosClienteCambiaron && !_ticketsCambiaron) {
+    // Nada relevante cambió para esta pantalla (p.ej. solo cambió inventario
+    // o pedidosCliente para otro rol) -> no redibujar.
+    // (El TTS/alertas ya se procesaron arriba con los nuevos datos de db.)
+  } else {
+    render();
+  }
 });
 
 /* ════════════════════════════════════
