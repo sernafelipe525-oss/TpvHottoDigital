@@ -3370,6 +3370,8 @@ rtdb.ref('/').on('value', (snapshot) => {
     if (!db.menus)               db.menus = [];
     if (!db.despachos)           db.despachos = [];
     if (!db.pedidosCliente)      db.pedidosCliente = {};
+    if (!db.inventario)          db.inventario = {};
+    if (!db.inventarioMovimientos) db.inventarioMovimientos = [];
   } else {
     rtdb.ref('/').set(initialDB);
   }
@@ -3586,6 +3588,81 @@ function syncEnviarPedido(mesa, itemsAEnviar, metadatos, callback) {
     }
     if (callback) callback(error, committed);
   });
+}
+
+/* ════════════════════════════════════
+   INVENTARIO — descuento automático de stock
+════════════════════════════════════ */
+/** Devuelve (creando si falta) la entrada de inventario de un producto */
+function getInvEntry(prodId) {
+  if (!db.inventario) db.inventario = {};
+  if (!db.inventario[prodId]) {
+    db.inventario[prodId] = { cantidad: 0, unidad: 'ud', stockMinimo: 5, factorConsumo: 1, actualizado: null };
+  }
+  const e = db.inventario[prodId];
+  if (e.cantidad === undefined)      e.cantidad = 0;
+  if (e.unidad === undefined)        e.unidad = 'ud';
+  if (e.stockMinimo === undefined)   e.stockMinimo = 5;
+  if (e.factorConsumo === undefined) e.factorConsumo = 1;
+  return e;
+}
+
+function getInvEstado(entry) {
+  if (entry.cantidad <= 0) return 'agotado';
+  if (entry.cantidad <= entry.stockMinimo) return 'bajo';
+  return 'ok';
+}
+
+/** Registra un movimiento en el historial de inventario */
+function _registrarMovimientoInv(prodId, prodNombre, tipo, cantidad, motivo) {
+  if (!db.inventarioMovimientos) db.inventarioMovimientos = [];
+  db.inventarioMovimientos.push({
+    id: 'mv_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+    prodId, prodNombre, tipo, // tipo: 'venta' | 'entrada' | 'ajuste'
+    cantidad,
+    motivo: motivo || '',
+    fecha: new Date().toISOString(),
+    usuario: session?.user || 'Sistema'
+  });
+  // Mantener el log acotado (últimos 500 movimientos)
+  if (db.inventarioMovimientos.length > 500) {
+    db.inventarioMovimientos = db.inventarioMovimientos.slice(-500);
+  }
+}
+
+/**
+ * Descuenta stock de inventario para una lista de items recién enviados a cocina/barra.
+ * Llama internamente a sync() — debe invocarse DESPUÉS de confirmar el envío.
+ * Solo afecta a productos que ya tienen una entrada en /inventario (cantidad > 0 o registrados).
+ */
+function descontarStockItems(items) {
+  if (!items || !items.length) return;
+  if (!db.inventario) db.inventario = {};
+  let changed = false;
+
+  items.forEach(i => {
+    // Si el producto nunca se ha registrado en inventario, no crear entradas fantasma
+    if (!db.inventario[i.id]) return;
+    const entry = getInvEntry(i.id);
+    const consumo = round2((Number(i.cantidad)||0) * (entry.factorConsumo || 1));
+    if (consumo <= 0) return;
+
+    const estadoAntes = getInvEstado(entry);
+    entry.cantidad = round2(Math.max(0, entry.cantidad - consumo));
+    entry.actualizado = new Date().toISOString();
+    changed = true;
+
+    _registrarMovimientoInv(i.id, i.nombre, 'venta', -consumo, `Pedido${session?.mesa ? ' mesa ' + session.mesa : ''}`);
+
+    // Auto-generar alerta de stock si cruza a "bajo" o "agotado"
+    const estadoDespues = getInvEstado(entry);
+    if (estadoDespues !== 'ok' && estadoAntes !== estadoDespues) {
+      const zona = i.tipo === 'cocina' ? 'cocina' : 'barra';
+      addStockAlerta(i.nombre, i.icono, estadoDespues === 'agotado' ? 'Sin stock' : 'Stock bajo', zona);
+    }
+  });
+
+  if (changed) sync();
 }
 
 function updateBrandName() {
@@ -5658,6 +5735,7 @@ function enviarPedido() {
   syncEnviarPedido(session.mesa, pending, metadatos, (error, committed) => {
     if (!error && committed) {
       toast(`${pending.length} artículo${pending.length>1?'s':''} enviados a cocina/barra`, 'success');
+      descontarStockItems(pending);
       renderMesas();
     } else if (!committed) {
       toast('⚠️ No se pudo enviar: la mesa ya no existe en el sistema', 'danger', 'fa-triangle-exclamation');
@@ -5665,6 +5743,7 @@ function enviarPedido() {
       toast('⚠️ Error de conexión al enviar. Reintentando...', 'danger', 'fa-wifi');
       pending.forEach(i=>i.enviado=true);
       Object.assign(t, metadatos);
+      descontarStockItems(pending);
       sync();
       setTimeout(renderMesas, 400);
     }
@@ -6513,6 +6592,8 @@ function enviarPedidoVD() {
     sync();
   }
 
+  descontarStockItems(pending);
+
   toast(`${pending.length} plato${pending.length>1?'s':''} enviados a cocina`, 'success', 'fa-paper-plane');
   renderVentaDirecta();
 }
@@ -6604,6 +6685,11 @@ function _ejecutarCobroVD(metodo, montoParcial, montoParcial2, metodo2) {
 
   const items = session.ventaDirectaItems || [];
   const tot   = calcTotal(items);
+
+  // Descontar stock de items de barra (consumo inmediato en venta directa).
+  // Los items de cocina ya se descontaron al enviarse a cocina con enviarPedidoVD().
+  const itemsBarraVD = items.filter(i => i.tipo === 'barra');
+  if (itemsBarraVD.length) descontarStockItems(itemsBarraVD);
 
   if (!db.historicoVentas) db.historicoVentas = [];
   const ahora = new Date();
@@ -7158,6 +7244,9 @@ function renderAdmin() {
       <button class="admin-tab ${adminTab==='qr'?'active':''}" id="tab-qr" onclick="tab('qr')">
         <i class="fas fa-qrcode"></i> QR Mesas
       </button>
+      <a class="admin-tab" href="inventario.html" target="_blank" style="text-decoration:none;display:inline-flex">
+        <i class="fas fa-boxes-stacked"></i> Inventario
+      </a>
     </div>
     <div id="adm-c"></div>`;
   tab(adminTab);
