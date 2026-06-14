@@ -48,7 +48,7 @@ body { min-height: 100vh; padding-bottom: 40px; }
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; gap: 14px;
   padding: 14px 18px;
-  background: rgba(8,11,20,0.85);
+  background: rgba(8,11,20,0.92);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
@@ -62,7 +62,7 @@ body { min-height: 100vh; padding-bottom: 40px; }
 .inv-title { font-family: var(--fh); font-weight: 800; font-size: 1.05rem; letter-spacing: 0.3px; }
 .inv-title span { color: var(--accent); }
 .inv-subtitle { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
-.inv-header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.inv-header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 
 .badge-sync {
   display: flex; align-items: center; gap: 6px;
@@ -71,10 +71,31 @@ body { min-height: 100vh; padding-bottom: 40px; }
   background: rgba(0,229,160,0.1); color: var(--success);
   border: 1px solid rgba(0,229,160,0.25);
   font-family: var(--fh); white-space: nowrap;
+  transition: all 0.3s;
 }
 .badge-sync.offline { background: rgba(255,59,92,0.1); color: var(--danger); border-color: rgba(255,59,92,0.25); }
+.badge-sync.connecting { background: rgba(247,201,72,0.1); color: var(--warning); border-color: rgba(247,201,72,0.25); }
 .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 2s ease-in-out infinite; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* ── Alerta de ventas pendientes ───────────────── */
+.ventas-alert {
+  display: none; align-items: center; gap: 8px;
+  background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.3);
+  border-radius: var(--r-md); padding: 10px 14px;
+  margin-bottom: 14px; font-size: 0.78rem; color: var(--accent2);
+  font-weight: 600;
+}
+.ventas-alert.visible { display: flex; }
+.ventas-alert i { flex-shrink: 0; }
+.ventas-alert .va-text { flex: 1; }
+.btn-apply-ventas {
+  background: var(--accent); color: #05070d; border: none;
+  border-radius: 8px; padding: 6px 12px; font-size: 0.7rem;
+  font-weight: 800; font-family: var(--fh); cursor: pointer;
+  white-space: nowrap; transition: opacity 0.15s;
+}
+.btn-apply-ventas:hover { opacity: 0.88; }
 
 /* ── Layout ─────────────────────────────────────── */
 .inv-main { max-width: 1280px; margin: 0 auto; padding: 18px; }
@@ -99,10 +120,10 @@ body { min-height: 100vh; padding-bottom: 40px; }
   display: flex; align-items: center; justify-content: center;
   font-size: 1rem; flex-shrink: 0;
 }
-.stat-icon.total { background: rgba(167,139,250,0.12); color: var(--purple); }
-.stat-icon.ok    { background: rgba(0,229,160,0.1); color: var(--success); }
-.stat-icon.bajo  { background: rgba(247,201,72,0.1); color: var(--warning); }
-.stat-icon.agotado { background: rgba(255,59,92,0.1); color: var(--danger); }
+.stat-icon.total  { background: rgba(167,139,250,0.12); color: var(--purple); }
+.stat-icon.ok     { background: rgba(0,229,160,0.1);    color: var(--success); }
+.stat-icon.bajo   { background: rgba(247,201,72,0.1);   color: var(--warning); }
+.stat-icon.agotado{ background: rgba(255,59,92,0.1);    color: var(--danger); }
 .stat-value { font-family: var(--fh); font-weight: 800; font-size: 1.35rem; line-height: 1.1; }
 .stat-label { font-size: 0.65rem; color: var(--muted); font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
 
@@ -112,12 +133,12 @@ body { min-height: 100vh; padding-bottom: 40px; }
   margin-bottom: 14px;
 }
 .search-wrap { position: relative; flex: 1; min-width: 180px; }
-.search-wrap i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.8rem; }
+.search-wrap i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.8rem; pointer-events: none; }
 .search-input {
   width: 100%; padding: 10px 14px 10px 36px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--r); color: var(--text); font-size: 0.85rem;
-  font-family: var(--fb);
+  font-family: var(--fb); transition: border-color 0.15s;
 }
 .search-input:focus { outline: none; border-color: var(--accent); }
 .search-input::placeholder { color: var(--muted); }
@@ -133,8 +154,8 @@ body { min-height: 100vh; padding-bottom: 40px; }
 }
 .filter-pill:hover { border-color: var(--border-hi); }
 .filter-pill.active { background: var(--accent); border-color: var(--accent); color: #05070d; }
-.filter-pill.active.barra { background: var(--barra); border-color: var(--barra); }
-.filter-pill.active.cocina { background: var(--cocina); border-color: var(--cocina); }
+.filter-pill.active.barra  { background: var(--barra);  border-color: var(--barra);  color: #05070d; }
+.filter-pill.active.cocina { background: var(--cocina); border-color: var(--cocina); color: #05070d; }
 
 /* ── Section headers ────────────────────────────── */
 .section-head {
@@ -144,9 +165,7 @@ body { min-height: 100vh; padding-bottom: 40px; }
 }
 .section-head .ico { font-size: 1.05rem; }
 .section-head h2 { font-family: var(--fh); font-size: 0.95rem; font-weight: 800; letter-spacing: 0.3px; }
-.section-head .count {
-  margin-left: auto; font-size: 0.68rem; color: var(--muted); font-weight: 600;
-}
+.section-head .count { margin-left: auto; font-size: 0.68rem; color: var(--muted); font-weight: 600; }
 
 /* ── Product grid ───────────────────────────────── */
 .prod-grid {
@@ -156,15 +175,15 @@ body { min-height: 100vh; padding-bottom: 40px; }
 .inv-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--r-md); padding: 13px;
-  transition: border-color 0.2s, transform 0.15s;
+  transition: border-color 0.2s;
   position: relative; overflow: hidden;
 }
-.inv-card.bajo { border-color: rgba(247,201,72,0.35); }
+.inv-card.bajo    { border-color: rgba(247,201,72,0.35); }
 .inv-card.agotado { border-color: rgba(255,59,92,0.4); }
 .inv-card.bajo::before, .inv-card.agotado::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
 }
-.inv-card.bajo::before { background: var(--warning); }
+.inv-card.bajo::before    { background: var(--warning); }
 .inv-card.agotado::before { background: var(--danger); }
 
 .inv-card-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
@@ -182,14 +201,15 @@ body { min-height: 100vh; padding-bottom: 40px; }
   -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
 .inv-cat { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+
 .inv-status-badge {
   font-size: 0.58rem; font-weight: 800; padding: 2px 8px; border-radius: 100px;
   font-family: var(--fh); letter-spacing: 0.4px; flex-shrink: 0;
   white-space: nowrap;
 }
-.inv-status-badge.ok { background: rgba(0,229,160,0.1); color: var(--success); border: 1px solid rgba(0,229,160,0.25); }
-.inv-status-badge.bajo { background: rgba(247,201,72,0.1); color: var(--warning); border: 1px solid rgba(247,201,72,0.25); }
-.inv-status-badge.agotado { background: rgba(255,59,92,0.1); color: var(--danger); border: 1px solid rgba(255,59,92,0.25); }
+.inv-status-badge.ok     { background: rgba(0,229,160,0.1);  color: var(--success); border: 1px solid rgba(0,229,160,0.25); }
+.inv-status-badge.bajo   { background: rgba(247,201,72,0.1); color: var(--warning); border: 1px solid rgba(247,201,72,0.25); }
+.inv-status-badge.agotado{ background: rgba(255,59,92,0.1);  color: var(--danger);  border: 1px solid rgba(255,59,92,0.25); }
 
 .inv-stock-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .stock-btn {
@@ -198,33 +218,30 @@ body { min-height: 100vh; padding-bottom: 40px; }
   color: var(--text); font-size: 1rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: all 0.12s; flex-shrink: 0;
-  font-family: var(--fh);
 }
-.stock-btn:hover { background: var(--surface3); border-color: var(--border-hi); }
-.stock-btn:active { transform: scale(0.92); }
-.stock-btn.minus:hover { color: var(--danger); border-color: rgba(255,59,92,0.3); }
-.stock-btn.plus:hover { color: var(--success); border-color: rgba(0,229,160,0.3); }
+.stock-btn:hover   { background: var(--surface3); border-color: var(--border-hi); }
+.stock-btn:active  { transform: scale(0.92); }
+.stock-btn.minus:hover { color: var(--danger);  border-color: rgba(255,59,92,0.3); }
+.stock-btn.plus:hover  { color: var(--success); border-color: rgba(0,229,160,0.3); }
 
 .stock-qty-input {
   flex: 1; text-align: center; font-family: var(--fh); font-weight: 800;
   font-size: 1.1rem; background: var(--surface2); border: 1px solid var(--border);
   border-radius: 8px; padding: 5px 4px; color: var(--text);
-  min-width: 0;
+  min-width: 0; transition: border-color 0.15s;
 }
 .stock-qty-input:focus { outline: none; border-color: var(--accent); }
-.stock-unit { font-size: 0.65rem; color: var(--muted); font-weight: 600; min-width: 28px; text-align: left; }
 
 .inv-meta-row {
   display: flex; align-items: center; justify-content: space-between;
   font-size: 0.62rem; color: var(--muted);
 }
-.inv-min-edit {
-  display: flex; align-items: center; gap: 4px; cursor: pointer;
-}
+.inv-min-edit { display: flex; align-items: center; gap: 4px; cursor: pointer; }
 .inv-min-edit input {
   width: 38px; background: var(--surface2); border: 1px solid var(--border);
   border-radius: 5px; color: var(--text2); font-size: 0.62rem;
   text-align: center; padding: 2px; font-family: var(--fb);
+  transition: border-color 0.15s;
 }
 .inv-min-edit input:focus { outline: none; border-color: var(--accent); color: var(--text); }
 .inv-updated { font-style: italic; }
@@ -234,13 +251,11 @@ body { min-height: 100vh; padding-bottom: 40px; }
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 8px; color: var(--text2); font-size: 0.65rem;
   font-family: var(--fb); padding: 5px 4px; min-width: 52px;
-  cursor: pointer;
+  cursor: pointer; transition: border-color 0.15s;
 }
 .stock-unit-select:focus { outline: none; border-color: var(--accent); color: var(--text); }
 
-.inv-actions-row {
-  display: flex; gap: 6px; margin-top: 8px;
-}
+.inv-actions-row { display: flex; gap: 6px; margin-top: 8px; }
 .btn-reponer {
   flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
   background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.25);
@@ -258,7 +273,7 @@ body { min-height: 100vh; padding-bottom: 40px; }
 }
 .btn-factor:hover { color: var(--text2); border-color: var(--border-hi); }
 
-/* ── Top action bar (history toggle) ────────────── */
+/* ── Top action bar ─────────────────────────────── */
 .top-actions { display: flex; justify-content: flex-end; margin-bottom: 4px; }
 .btn-history {
   display: flex; align-items: center; gap: 6px;
@@ -269,7 +284,7 @@ body { min-height: 100vh; padding-bottom: 40px; }
 }
 .btn-history:hover { border-color: var(--border-hi); color: var(--text); }
 
-/* ── Modal (reponer / factor / history) ─────────── */
+/* ── Modal ──────────────────────────────────────── */
 .inv-modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.72);
   display: flex; align-items: center; justify-content: center;
@@ -293,6 +308,7 @@ body { min-height: 100vh; padding-bottom: 40px; }
   width: 100%; padding: 9px 12px; background: var(--surface2);
   border: 1px solid var(--border); border-radius: var(--r); color: var(--text);
   font-size: 0.85rem; font-family: var(--fb); margin-bottom: 12px;
+  transition: border-color 0.15s;
 }
 .inv-modal-input:focus { outline: none; border-color: var(--accent); }
 .inv-modal-row { display: flex; gap: 8px; }
@@ -304,7 +320,7 @@ body { min-height: 100vh; padding-bottom: 40px; }
 }
 .btn-modal:hover { opacity: 0.88; }
 .btn-modal.primary { background: var(--success); color: #05070d; }
-.btn-modal.ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.btn-modal.ghost   { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
 
 /* ── History list ────────────────────────────────── */
 .mov-list { display: flex; flex-direction: column; gap: 6px; }
@@ -318,9 +334,9 @@ body { min-height: 100vh; padding-bottom: 40px; }
   width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center; font-size: 0.7rem;
 }
-.mov-icon.venta { background: rgba(255,107,53,0.1); color: var(--accent); }
-.mov-icon.entrada { background: rgba(0,229,160,0.1); color: var(--success); }
-.mov-icon.ajuste { background: rgba(167,139,250,0.1); color: var(--purple); }
+.mov-icon.venta   { background: rgba(255,107,53,0.1); color: var(--accent); }
+.mov-icon.entrada { background: rgba(0,229,160,0.1);  color: var(--success); }
+.mov-icon.ajuste  { background: rgba(167,139,250,0.1);color: var(--purple); }
 .mov-info { flex: 1; min-width: 0; }
 .mov-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mov-meta { font-size: 0.6rem; color: var(--muted); margin-top: 1px; }
@@ -332,19 +348,17 @@ body { min-height: 100vh; padding-bottom: 40px; }
 .mov-filter-pill {
   padding: 5px 11px; border-radius: 100px; font-size: 0.65rem; font-weight: 700;
   background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
-  cursor: pointer; font-family: var(--fh);
+  cursor: pointer; font-family: var(--fh); transition: all 0.15s;
 }
 .mov-filter-pill.active { background: var(--accent); border-color: var(--accent); color: #05070d; }
 
 /* ── Empty state ────────────────────────────────── */
-.empty-state {
-  text-align: center; padding: 60px 20px; color: var(--muted);
-}
+.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
 .empty-state i { font-size: 2.2rem; margin-bottom: 10px; opacity: 0.3; display: block; }
 .empty-state p { font-size: 0.85rem; }
 
 /* ── Toast ──────────────────────────────────────── */
-#toast-container { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+#toast-container { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
 .toast {
   display: flex; align-items: center; gap: 8px;
   background: var(--surface2); border: 1px solid var(--border-hi);
@@ -353,11 +367,25 @@ body { min-height: 100vh; padding-bottom: 40px; }
   animation: toastIn 0.25s ease both;
 }
 .toast.success { color: var(--success); border-color: rgba(0,229,160,0.3); }
-.toast.danger { color: var(--danger); border-color: rgba(255,59,92,0.3); }
-.toast.info { color: var(--info); }
+.toast.danger  { color: var(--danger);  border-color: rgba(255,59,92,0.3); }
+.toast.info    { color: var(--text2); }
 .toast.out { animation: toastOut 0.3s ease forwards; }
-@keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastIn  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes toastOut { to { opacity: 0; transform: translateY(8px); } }
+
+/* ── Loading ─────────────────────────────────────── */
+#loading-screen {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999; gap: 12px;
+}
+.loading-spinner {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 3px solid var(--surface3); border-top-color: var(--accent);
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 0.78rem; color: var(--muted); font-family: var(--fh); }
 
 /* ── Responsive ─────────────────────────────────── */
 @media (max-width: 480px) {
@@ -368,6 +396,12 @@ body { min-height: 100vh; padding-bottom: 40px; }
 </head>
 <body>
 
+<!-- Loading screen -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Conectando con Firebase…</div>
+</div>
+
 <header class="inv-header">
   <div class="inv-logo"><i class="fas fa-boxes-stacked"></i></div>
   <div>
@@ -375,11 +409,20 @@ body { min-height: 100vh; padding-bottom: 40px; }
     <div class="inv-subtitle">Sincronizado en tiempo real con el TPV</div>
   </div>
   <div class="inv-header-right">
-    <div id="sync-status" class="badge-sync"><span class="sync-dot"></span>Conectando</div>
+    <div id="sync-status" class="badge-sync connecting"><span class="sync-dot"></span>Conectando</div>
   </div>
 </header>
 
 <main class="inv-main">
+
+  <!-- Alerta ventas pendientes de descontar -->
+  <div class="ventas-alert" id="ventas-alert">
+    <i class="fas fa-cash-register"></i>
+    <div class="va-text">
+      Hay <strong id="ventas-pendientes-count">0</strong> venta(s) nuevas del TPV pendientes de descontar del inventario.
+    </div>
+    <button class="btn-apply-ventas" onclick="aplicarVentasPendientes()">Aplicar ahora</button>
+  </div>
 
   <!-- Stats -->
   <div class="stats-strip">
@@ -408,9 +451,9 @@ body { min-height: 100vh; padding-bottom: 40px; }
       <input type="text" class="search-input" id="search-input" placeholder="Buscar producto..." oninput="render()">
     </div>
     <div class="filter-pills">
-      <button class="filter-pill active" data-tipo="todos" onclick="setTipoFilter('todos')"><i class="fas fa-layer-group"></i> Todo</button>
-      <button class="filter-pill" data-tipo="cocina" onclick="setTipoFilter('cocina')"><i class="fas fa-fire-burner"></i> Cocina</button>
-      <button class="filter-pill" data-tipo="barra" onclick="setTipoFilter('barra')"><i class="fas fa-wine-glass"></i> Barra</button>
+      <button class="filter-pill active" data-tipo="todos"   onclick="setTipoFilter('todos')"><i class="fas fa-layer-group"></i> Todo</button>
+      <button class="filter-pill"        data-tipo="cocina"  onclick="setTipoFilter('cocina')"><i class="fas fa-fire-burner"></i> Cocina</button>
+      <button class="filter-pill"        data-tipo="barra"   onclick="setTipoFilter('barra')"><i class="fas fa-wine-glass"></i> Barra</button>
     </div>
     <button class="btn-history" onclick="showHistorialModal()"><i class="fas fa-clock-rotate-left"></i> Historial</button>
   </div>
@@ -423,7 +466,7 @@ body { min-height: 100vh; padding-bottom: 40px; }
 
 <script>
 /* ════════════════════════════════════
-   FIREBASE CONFIG (mismo proyecto que el TPV)
+   FIREBASE CONFIG
 ════════════════════════════════════ */
 const _FB_URL_DEFAULT = "https://tpv-hottodigital-default-rtdb.europe-west1.firebasedatabase.app/";
 const firebaseConfig = {
@@ -432,145 +475,302 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb = firebase.database();
 
-let db = {};
+/* ════════════════════════════════════
+   ESTADO LOCAL
+════════════════════════════════════ */
+let db = { productos: [], categorias: [], inventario: {}, inventarioMovimientos: {} };
 let _ready = false;
+let filtroTipo   = 'todos';  // todos | cocina | barra
+let filtroEstado = 'todos';  // todos | ok | bajo | agotado
+let _historialFiltro = 'todos';
+
+// Marca el último tiket procesado para detectar ventas nuevas
+const _INV_LAST_TIKET_KEY = 'inv_lastProcessedTiketId';
+let _ventasPendientes = []; // array de { tiketId, prodId, nombre, cantidad }
+
+const UNIDADES = ['ud', 'kg', 'g', 'l', 'ml', 'botella', 'caja', 'paquete', 'barril'];
 
 /* ════════════════════════════════════
-   STATE: filtros
+   FIREBASE: ESCUCHA SELECTIVA (no escucha / entero)
 ════════════════════════════════════ */
-let filtroTipo = 'todos';      // todos | cocina | barra
-let filtroEstado = 'todos';    // todos | ok | bajo | agotado
 
-const DEFAULT_CATS = [];
-
-/* ════════════════════════════════════
-   FIREBASE SYNC — escucha en tiempo real
-════════════════════════════════════ */
-let _syncTimer = null;
-rtdb.ref('/').on('value', (snapshot) => {
-  const data = snapshot.val();
-  if (!data) return;
-  db = data;
-  if (!db.productos) db.productos = [];
-  if (!db.categorias) db.categorias = [];
-  if (!db.inventario) db.inventario = {};
-  if (!db.inventarioMovimientos) db.inventarioMovimientos = [];
-
-  _ready = true;
-  setSyncStatus(true);
-  render();
+// Escuchar solo los nodos que necesitamos
+rtdb.ref('/productos').on('value', snap => {
+  db.productos = snap.val() || [];
+  if (!Array.isArray(db.productos)) {
+    // Si llegó como objeto (firebase push keys), convertir a array
+    db.productos = Object.values(db.productos);
+  }
+  renderIfReady();
 });
 
-rtdb.ref('.info/connected').on('value', (snap) => {
-  setSyncStatus(snap.val() === true);
+rtdb.ref('/categorias').on('value', snap => {
+  db.categorias = snap.val() || [];
+  if (!Array.isArray(db.categorias)) db.categorias = Object.values(db.categorias);
+  renderIfReady();
 });
 
-function setSyncStatus(online) {
+rtdb.ref('/inventario').on('value', snap => {
+  db.inventario = snap.val() || {};
+  renderIfReady();
+});
+
+// Movimientos como objeto con push keys (NO array — los arrays en RTDB son frágiles)
+rtdb.ref('/inventarioMovimientos').on('value', snap => {
+  const raw = snap.val() || {};
+  // Normalizar: si llegó como array (legacy), convertir
+  if (Array.isArray(raw)) {
+    const obj = {};
+    raw.forEach((m, i) => { if (m) obj['legacy_' + i] = m; });
+    db.inventarioMovimientos = obj;
+  } else {
+    db.inventarioMovimientos = raw;
+  }
+  renderIfReady();
+});
+
+// Escuchar tikets cobrados para detectar ventas nuevas
+rtdb.ref('/tikets').on('value', snap => {
+  const tikets = snap.val() || {};
+  checkVentasPendientes(tikets);
+});
+
+rtdb.ref('.info/connected').on('value', snap => {
+  setSyncStatus(snap.val() === true ? 'online' : 'offline');
+});
+
+let _readyFlags = { productos: false, categorias: false, inventario: false, movimientos: false };
+// Marcamos ready cuando lleguen los datos críticos
+rtdb.ref('/productos').once('value',   () => { _readyFlags.productos = true;   trySetReady(); });
+rtdb.ref('/categorias').once('value',  () => { _readyFlags.categorias = true;  trySetReady(); });
+rtdb.ref('/inventario').once('value',  () => { _readyFlags.inventario = true;  trySetReady(); });
+rtdb.ref('/inventarioMovimientos').once('value', () => { _readyFlags.movimientos = true; trySetReady(); });
+
+function trySetReady() {
+  if (_readyFlags.productos && _readyFlags.categorias && _readyFlags.inventario && _readyFlags.movimientos) {
+    _ready = true;
+    document.getElementById('loading-screen').style.display = 'none';
+    setSyncStatus('online');
+    render();
+  }
+}
+
+function renderIfReady() {
+  if (_ready) render();
+}
+
+function setSyncStatus(state) {
   const el = document.getElementById('sync-status');
   if (!el) return;
-  if (online) {
+  if (state === 'online') {
     el.className = 'badge-sync';
     el.innerHTML = '<span class="sync-dot"></span>Sincronizado';
-  } else {
+  } else if (state === 'offline') {
     el.className = 'badge-sync offline';
     el.innerHTML = '<span class="sync-dot"></span>Sin conexión';
+  } else {
+    el.className = 'badge-sync connecting';
+    el.innerHTML = '<span class="sync-dot"></span>Conectando';
   }
 }
 
-/* Escribe solo el nodo /inventario (no pisa el resto del TPV) */
+/* ════════════════════════════════════
+   SYNC: escrituras atómicas por nodo
+════════════════════════════════════ */
+let _syncDebounce = null;
 function syncInventario() {
-  rtdb.ref('/inventario').set(db.inventario || {});
+  // Debounce de 400ms para no saturar Firebase con clicks rápidos
+  clearTimeout(_syncDebounce);
+  _syncDebounce = setTimeout(() => {
+    rtdb.ref('/inventario').set(db.inventario || {}).catch(err => {
+      toast('Error al guardar. Comprueba la conexión.', 'danger');
+      console.error('[inventario] sync error:', err);
+    });
+  }, 400);
 }
 
-/* Escribe solo el nodo /inventarioMovimientos */
 function syncMovimientos() {
-  rtdb.ref('/inventarioMovimientos').set(db.inventarioMovimientos || []);
+  rtdb.ref('/inventarioMovimientos').set(db.inventarioMovimientos || {}).catch(err => {
+    console.error('[movimientos] sync error:', err);
+  });
 }
 
-/* Registra un movimiento en el historial de inventario */
-function registrarMovimiento(prodId, prodNombre, tipo, cantidad, motivo) {
-  if (!db.inventarioMovimientos) db.inventarioMovimientos = [];
-  db.inventarioMovimientos.push({
-    id: 'mv_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-    prodId, prodNombre, tipo, // tipo: 'venta' | 'entrada' | 'ajuste'
-    cantidad,
-    motivo: motivo || '',
-    fecha: new Date().toISOString(),
-    usuario: 'Inventario'
+/* ════════════════════════════════════
+   DETECCIÓN DE VENTAS DEL TPV
+   Lee tikets cobrados y compara con el último procesado
+════════════════════════════════════ */
+function checkVentasPendientes(tikets) {
+  if (!_ready) return;
+  const lastProcessed = localStorage.getItem(_INV_LAST_TIKET_KEY) || '';
+  const pending = [];
+
+  Object.entries(tikets).forEach(([id, tiket]) => {
+    // Solo procesar tikets cobrados (estado = 'cobrado') que aún no hayamos procesado
+    if (tiket.estado !== 'cobrado') return;
+    if (tiket.inventarioProcesado) return; // ya marcado en Firebase
+    if (tiket.inventarioSkipped) return;   // fue ignorado manualmente
+
+    // Acumular líneas de venta
+    const lineas = tiket.lineas || tiket.productos || [];
+    const arr = Array.isArray(lineas) ? lineas : Object.values(lineas);
+    arr.forEach(linea => {
+      if (!linea || !linea.id) return;
+      const entry = db.inventario[linea.id];
+      const factor = (entry && entry.factorConsumo != null) ? entry.factorConsumo : 1;
+      if (factor <= 0) return; // factor 0 = no gestionar inventario
+      pending.push({
+        tiketId: id,
+        tiketFecha: tiket.fecha || tiket.cobradoEn || null,
+        prodId: linea.id,
+        nombre: linea.nombre || linea.name || '',
+        cantidad: round2((linea.cantidad || linea.qty || 1) * factor)
+      });
+    });
   });
-  if (db.inventarioMovimientos.length > 500) {
-    db.inventarioMovimientos = db.inventarioMovimientos.slice(-500);
+
+  _ventasPendientes = pending;
+  const alertEl = document.getElementById('ventas-alert');
+  const countEl = document.getElementById('ventas-pendientes-count');
+  if (pending.length > 0) {
+    alertEl.classList.add('visible');
+    // Contar tikets únicos
+    const tiketIds = [...new Set(pending.map(p => p.tiketId))];
+    countEl.textContent = tiketIds.length;
+  } else {
+    alertEl.classList.remove('visible');
   }
-  syncMovimientos();
+}
+
+function aplicarVentasPendientes() {
+  if (_ventasPendientes.length === 0) return;
+
+  // Agrupar por prodId para sumar cantidades de múltiples tikets
+  const porProducto = {};
+  const tiketIds = new Set();
+
+  _ventasPendientes.forEach(v => {
+    tiketIds.add(v.tiketId);
+    if (!porProducto[v.prodId]) {
+      porProducto[v.prodId] = { nombre: v.nombre, totalDesc: 0 };
+    }
+    porProducto[v.prodId].totalDesc = round2(porProducto[v.prodId].totalDesc + v.cantidad);
+  });
+
+  // Aplicar descuentos al inventario local
+  Object.entries(porProducto).forEach(([prodId, info]) => {
+    const entry = getInvEntry(prodId);
+    const before = entry.cantidad;
+    entry.cantidad = Math.max(0, round2(entry.cantidad - info.totalDesc));
+    entry.actualizado = new Date().toISOString();
+    const real = round2(before - entry.cantidad);
+    if (real !== 0) {
+      registrarMovimiento(prodId, info.nombre, 'venta', -real, `Venta TPV (${tiketIds.size} tiket${tiketIds.size !== 1 ? 's' : ''})`);
+    }
+  });
+
+  // Marcar los tikets como procesados en Firebase
+  const updates = {};
+  tiketIds.forEach(id => {
+    updates[`/tikets/${id}/inventarioProcesado`] = true;
+  });
+  rtdb.ref('/').update(updates).catch(err => console.error('[tikets] mark error:', err));
+
+  syncInventario();
+  _ventasPendientes = [];
+  document.getElementById('ventas-alert').classList.remove('visible');
+  toast(`Inventario actualizado (${tiketIds.size} tiket${tiketIds.size !== 1 ? 's' : ''})`, 'success', 'fa-check-circle');
+  render();
 }
 
 /* ════════════════════════════════════
    HELPERS
 ════════════════════════════════════ */
 function escHtml(s) {
-  return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function getAllCats() {
-  return db.categorias || DEFAULT_CATS;
-}
-
-function getCatId(p) {
-  if (p.catId) {
-    const cats = getAllCats().filter(c => c.tipo === p.tipo);
-    if (cats.find(c => c.id === p.catId)) return p.catId;
-  }
-  return null;
+  return (s || '').toString()
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function getCatLabel(p) {
-  const cid = getCatId(p);
-  if (!cid) return null;
-  const cat = getAllCats().find(c => c.id === cid);
-  return cat ? `${cat.icono} ${cat.label}` : null;
+  const cats = Array.isArray(db.categorias) ? db.categorias : Object.values(db.categorias);
+  if (!p.catId) return null;
+  const cat = cats.find(c => c.id === p.catId && c.tipo === p.tipo);
+  return cat ? `${cat.icono || ''} ${cat.label || ''}`.trim() : null;
 }
 
-const UNIDADES = ['ud', 'kg', 'g', 'l', 'ml', 'botella', 'caja', 'paquete', 'barril'];
-
-/* Devuelve el registro de inventario de un producto, creando un default si no existe */
 function getInvEntry(prodId) {
   if (!db.inventario) db.inventario = {};
   if (!db.inventario[prodId]) {
     db.inventario[prodId] = { cantidad: 0, unidad: 'ud', stockMinimo: 5, factorConsumo: 1, actualizado: null };
   }
-  // backfill defaults for older entries
   const e = db.inventario[prodId];
-  if (e.cantidad === undefined)      e.cantidad = 0;
-  if (e.unidad === undefined)        e.unidad = 'ud';
-  if (e.stockMinimo === undefined)   e.stockMinimo = 5;
+  if (e.cantidad      === undefined) e.cantidad      = 0;
+  if (e.unidad        === undefined) e.unidad        = 'ud';
+  if (e.stockMinimo   === undefined) e.stockMinimo   = 5;
   if (e.factorConsumo === undefined) e.factorConsumo = 1;
   return e;
 }
 
 function getEstado(entry) {
-  if (entry.cantidad <= 0) return 'agotado';
-  if (entry.cantidad <= entry.stockMinimo) return 'bajo';
+  if (entry.cantidad <= 0)                      return 'agotado';
+  if (entry.cantidad <= entry.stockMinimo)      return 'bajo';
   return 'ok';
 }
 
-function toast(msg, type='info', icon='') {
+function round2(n) { return Math.round(n * 100) / 100; }
+
+function toast(msg, type = 'info', icon = '') {
   const container = document.getElementById('toast-container');
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  const icons = { success:'fa-check-circle', danger:'fa-exclamation-circle', info:'fa-info-circle' };
-  t.innerHTML = `<i class="fas ${icon||icons[type]||icons.info}"></i><span>${escHtml(msg)}</span>`;
+  const icons = { success: 'fa-check-circle', danger: 'fa-exclamation-circle', info: 'fa-info-circle' };
+  t.innerHTML = `<i class="fas ${icon || icons[type] || icons.info}"></i><span>${escHtml(msg)}</span>`;
   container.appendChild(t);
-  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 2200);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 2500);
 }
 
 function fmtTime(iso) {
   if (!iso) return 'sin registrar';
   const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
   const now = new Date();
   const sameDay = d.toDateString() === now.toDateString();
-  const time = d.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  const time = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   if (sameDay) return `hoy ${time}`;
-  return `${d.toLocaleDateString('es-ES', {day:'2-digit', month:'2-digit'})} ${time}`;
+  return `${d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })} ${time}`;
+}
+
+/* ════════════════════════════════════
+   REGISTRAR MOVIMIENTO
+   Usa push keys de Firebase (no array)
+════════════════════════════════════ */
+function registrarMovimiento(prodId, prodNombre, tipo, cantidad, motivo) {
+  if (!db.inventarioMovimientos) db.inventarioMovimientos = {};
+  const key = 'mv_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  db.inventarioMovimientos[key] = {
+    id: key,
+    prodId,
+    prodNombre,
+    tipo,        // 'venta' | 'entrada' | 'ajuste'
+    cantidad,
+    motivo: motivo || '',
+    fecha: new Date().toISOString(),
+    usuario: 'Inventario'
+  };
+
+  // Limitar a 500 entradas: borrar las más antiguas
+  const keys = Object.keys(db.inventarioMovimientos);
+  if (keys.length > 500) {
+    // Ordenar por fecha y eliminar las más viejas
+    const sorted = keys.sort((a, b) => {
+      const fa = db.inventarioMovimientos[a]?.fecha || '';
+      const fb = db.inventarioMovimientos[b]?.fecha || '';
+      return fa.localeCompare(fb);
+    });
+    sorted.slice(0, keys.length - 500).forEach(k => delete db.inventarioMovimientos[k]);
+  }
+
+  syncMovimientos();
 }
 
 /* ════════════════════════════════════
@@ -580,7 +780,7 @@ function setTipoFilter(tipo) {
   filtroTipo = tipo;
   document.querySelectorAll('.filter-pill[data-tipo]').forEach(el => {
     el.classList.toggle('active', el.dataset.tipo === tipo);
-    el.classList.remove('barra','cocina');
+    el.classList.remove('barra', 'cocina');
     if (el.classList.contains('active') && tipo !== 'todos') el.classList.add(tipo);
   });
   render();
@@ -601,11 +801,14 @@ function changeStock(prodId, delta) {
   entry.actualizado = new Date().toISOString();
   const real = round2(entry.cantidad - before);
   if (real !== 0) {
-    const p = (db.productos||[]).find(x=>x.id===prodId);
-    registrarMovimiento(prodId, p?.nombre||'', 'ajuste', real, 'Ajuste manual');
+    const p = getProducto(prodId);
+    registrarMovimiento(prodId, p?.nombre || '', 'ajuste', real, 'Ajuste manual');
   }
   syncInventario();
-  render();
+  // Actualizar solo el input del card en cuestión (no re-renderizar todo)
+  const input = document.getElementById('qty-' + prodId);
+  if (input && document.activeElement !== input) input.value = entry.cantidad;
+  refreshCard(prodId);
 }
 
 function setStockExact(prodId, value) {
@@ -617,11 +820,11 @@ function setStockExact(prodId, value) {
   entry.actualizado = new Date().toISOString();
   const diff = round2(entry.cantidad - before);
   if (diff !== 0) {
-    const p = (db.productos||[]).find(x=>x.id===prodId);
-    registrarMovimiento(prodId, p?.nombre||'', 'ajuste', diff, 'Edición manual de cantidad');
+    const p = getProducto(prodId);
+    registrarMovimiento(prodId, p?.nombre || '', 'ajuste', diff, 'Edición manual de cantidad');
   }
   syncInventario();
-  render();
+  refreshCard(prodId);
 }
 
 function setStockMinimo(prodId, value) {
@@ -630,7 +833,7 @@ function setStockMinimo(prodId, value) {
   if (isNaN(v) || v < 0) { render(); return; }
   entry.stockMinimo = round2(v);
   syncInventario();
-  render();
+  refreshCard(prodId);
 }
 
 function setStockUnidad(prodId, value) {
@@ -639,79 +842,116 @@ function setStockUnidad(prodId, value) {
   syncInventario();
 }
 
+/* Actualiza solo los badges/estado de una card sin re-renderizar todo */
+function refreshCard(prodId) {
+  const entry = getInvEntry(prodId);
+  const estado = getEstado(entry);
+  const card = document.getElementById('inv-card-' + prodId);
+  if (!card) { render(); return; }
+
+  // Clases de estado en la card
+  card.classList.remove('ok', 'bajo', 'agotado');
+  card.classList.add(estado);
+
+  // Badge
+  const badge = card.querySelector('.inv-status-badge');
+  if (badge) {
+    badge.className = `inv-status-badge ${estado}`;
+    badge.textContent = estado === 'ok' ? 'EN STOCK' : estado === 'bajo' ? 'STOCK BAJO' : 'AGOTADO';
+  }
+
+  // Timestamp
+  const upd = card.querySelector('.inv-updated');
+  if (upd) upd.textContent = fmtTime(entry.actualizado);
+
+  // Actualizar stats globales (rápido)
+  updateStats();
+}
+
+function updateStats() {
+  const allProds = Array.isArray(db.productos) ? db.productos : Object.values(db.productos);
+  let cTotal = allProds.length, cOk = 0, cBajo = 0, cAgotado = 0;
+  allProds.forEach(p => {
+    const est = getEstado(getInvEntry(p.id));
+    if (est === 'ok')       cOk++;
+    else if (est === 'bajo') cBajo++;
+    else                     cAgotado++;
+  });
+  document.getElementById('st-total').textContent   = cTotal;
+  document.getElementById('st-ok').textContent      = cOk;
+  document.getElementById('st-bajo').textContent    = cBajo;
+  document.getElementById('st-agotado').textContent = cAgotado;
+}
+
 /* ════════════════════════════════════
-   MODAL: REPONER STOCK (entrada)
+   MODAL: REPONER STOCK
 ════════════════════════════════════ */
 function showReponerModal(prodId) {
-  const p = (db.productos||[]).find(x=>x.id===prodId);
+  const p = getProducto(prodId);
   if (!p) return;
   const entry = getInvEntry(prodId);
-  document.getElementById('inv-modal')?.remove();
-  const modal = document.createElement('div');
-  modal.className = 'inv-modal-overlay';
-  modal.id = 'inv-modal';
-  modal.innerHTML = `
-    <div class="inv-modal-box">
-      <div class="inv-modal-title"><i class="fas fa-truck-ramp-box" style="color:var(--success)"></i> Reponer stock</div>
-      <div class="inv-modal-sub">${escHtml(p.icono||'🍽️')} ${escHtml(p.nombre)} · actual: <strong>${entry.cantidad} ${escHtml(entry.unidad)}</strong></div>
-      <label class="inv-modal-label">Cantidad a añadir</label>
-      <input type="number" id="reponer-cantidad" class="inv-modal-input" min="0" step="any" placeholder="0" autofocus>
-      <label class="inv-modal-label">Motivo / proveedor (opcional)</label>
-      <input type="text" id="reponer-motivo" class="inv-modal-input" placeholder="ej. Pedido Makro, recepción semanal...">
-      <div class="inv-modal-row">
-        <button class="btn-modal ghost" onclick="document.getElementById('inv-modal')?.remove()">Cancelar</button>
-        <button class="btn-modal primary" onclick="confirmReponer(${prodId})"><i class="fas fa-check"></i> Añadir al stock</button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-  setTimeout(() => document.getElementById('reponer-cantidad')?.focus(), 60);
+  closeModal();
+  const modal = createModal(`
+    <div class="inv-modal-title"><i class="fas fa-truck-ramp-box" style="color:var(--success)"></i> Reponer stock</div>
+    <div class="inv-modal-sub">${escHtml(p.icono || '🍽️')} ${escHtml(p.nombre)} · actual: <strong>${entry.cantidad} ${escHtml(entry.unidad)}</strong></div>
+    <label class="inv-modal-label">Cantidad a añadir</label>
+    <input type="number" id="reponer-cantidad" class="inv-modal-input" min="0.01" step="any" placeholder="0" autofocus>
+    <label class="inv-modal-label">Motivo / proveedor (opcional)</label>
+    <input type="text" id="reponer-motivo" class="inv-modal-input" placeholder="ej. Pedido Makro, recepción semanal...">
+    <div class="inv-modal-row">
+      <button class="btn-modal ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-modal primary" onclick="confirmReponer(${prodId})"><i class="fas fa-check"></i> Añadir al stock</button>
+    </div>
+  `);
+  // Enter para confirmar
+  modal.querySelector('#reponer-cantidad').addEventListener('keydown', e => { if (e.key === 'Enter') confirmReponer(prodId); });
+  modal.querySelector('#reponer-motivo').addEventListener('keydown', e => { if (e.key === 'Enter') confirmReponer(prodId); });
+  setTimeout(() => modal.querySelector('#reponer-cantidad')?.focus(), 60);
 }
 
 function confirmReponer(prodId) {
   const v = parseFloat(document.getElementById('reponer-cantidad')?.value);
-  const motivo = document.getElementById('reponer-motivo')?.value?.trim() || 'Reposición de stock';
+  const motivo = (document.getElementById('reponer-motivo')?.value || '').trim() || 'Reposición de stock';
   if (isNaN(v) || v <= 0) { toast('Indica una cantidad válida', 'danger'); return; }
   const entry = getInvEntry(prodId);
   entry.cantidad = round2(entry.cantidad + v);
   entry.actualizado = new Date().toISOString();
-  const p = (db.productos||[]).find(x=>x.id===prodId);
-  registrarMovimiento(prodId, p?.nombre||'', 'entrada', v, motivo);
+  const p = getProducto(prodId);
+  registrarMovimiento(prodId, p?.nombre || '', 'entrada', v, motivo);
   syncInventario();
-  document.getElementById('inv-modal')?.remove();
-  toast(`Stock de "${p?.nombre}" actualizado`, 'success', 'fa-truck-ramp-box');
-  render();
+  closeModal();
+  toast(`"${p?.nombre}" → +${v} ${entry.unidad}`, 'success', 'fa-truck-ramp-box');
+  refreshCard(prodId);
+  // Actualizar el input del card
+  const input = document.getElementById('qty-' + prodId);
+  if (input) input.value = entry.cantidad;
 }
 
 /* ════════════════════════════════════
    MODAL: FACTOR DE CONSUMO
 ════════════════════════════════════ */
 function showFactorModal(prodId) {
-  const p = (db.productos||[]).find(x=>x.id===prodId);
+  const p = getProducto(prodId);
   if (!p) return;
   const entry = getInvEntry(prodId);
-  document.getElementById('inv-modal')?.remove();
-  const modal = document.createElement('div');
-  modal.className = 'inv-modal-overlay';
-  modal.id = 'inv-modal';
-  modal.innerHTML = `
-    <div class="inv-modal-box">
-      <div class="inv-modal-title"><i class="fas fa-scale-balanced" style="color:var(--purple)"></i> Consumo por venta</div>
-      <div class="inv-modal-sub">${escHtml(p.icono||'🍽️')} ${escHtml(p.nombre)}</div>
-      <p style="font-size:0.72rem;color:var(--text2);line-height:1.5;margin-bottom:12px">
-        Cuántas <strong>${escHtml(entry.unidad)}</strong> de stock se descuentan automáticamente cada vez
-        que se vende <strong>1 unidad</strong> de este producto en el TPV.
-      </p>
-      <label class="inv-modal-label">Consumo por venta (${escHtml(entry.unidad)})</label>
-      <input type="number" id="factor-valor" class="inv-modal-input" min="0" step="any" value="${entry.factorConsumo}">
-      <div class="inv-modal-row">
-        <button class="btn-modal ghost" onclick="document.getElementById('inv-modal')?.remove()">Cancelar</button>
-        <button class="btn-modal primary" onclick="confirmFactor(${prodId})"><i class="fas fa-check"></i> Guardar</button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-  setTimeout(() => document.getElementById('factor-valor')?.focus(), 60);
+  closeModal();
+  const modal = createModal(`
+    <div class="inv-modal-title"><i class="fas fa-scale-balanced" style="color:var(--purple)"></i> Consumo por venta</div>
+    <div class="inv-modal-sub">${escHtml(p.icono || '🍽️')} ${escHtml(p.nombre)}</div>
+    <p style="font-size:0.72rem;color:var(--text2);line-height:1.5;margin-bottom:12px">
+      Cuántas <strong>${escHtml(entry.unidad)}</strong> de stock se descuentan automáticamente
+      cada vez que se vende <strong>1 unidad</strong> de este producto en el TPV.<br>
+      <span style="color:var(--muted)">Ponlo a <strong>0</strong> si no quieres gestionar el inventario de este producto.</span>
+    </p>
+    <label class="inv-modal-label">Consumo por venta (${escHtml(entry.unidad)})</label>
+    <input type="number" id="factor-valor" class="inv-modal-input" min="0" step="any" value="${entry.factorConsumo}">
+    <div class="inv-modal-row">
+      <button class="btn-modal ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-modal primary" onclick="confirmFactor(${prodId})"><i class="fas fa-check"></i> Guardar</button>
+    </div>
+  `);
+  modal.querySelector('#factor-valor').addEventListener('keydown', e => { if (e.key === 'Enter') confirmFactor(prodId); });
+  setTimeout(() => modal.querySelector('#factor-valor')?.focus(), 60);
 }
 
 function confirmFactor(prodId) {
@@ -720,50 +960,57 @@ function confirmFactor(prodId) {
   const entry = getInvEntry(prodId);
   entry.factorConsumo = round2(v);
   syncInventario();
-  document.getElementById('inv-modal')?.remove();
+  closeModal();
   toast('Consumo por venta actualizado', 'success');
-  render();
+  // Actualizar el botón del card
+  const card = document.getElementById('inv-card-' + prodId);
+  if (card) {
+    const btn = card.querySelector('.btn-factor');
+    if (btn) btn.innerHTML = `<i class="fas fa-scale-balanced"></i> ×${entry.factorConsumo}`;
+  }
 }
 
 /* ════════════════════════════════════
-   MODAL: HISTORIAL DE MOVIMIENTOS
+   MODAL: HISTORIAL
 ════════════════════════════════════ */
-let _historialFiltro = 'todos'; // todos | venta | entrada | ajuste
-
 function showHistorialModal() {
-  document.getElementById('inv-modal')?.remove();
-  const modal = document.createElement('div');
-  modal.className = 'inv-modal-overlay';
-  modal.id = 'inv-modal';
-  modal.innerHTML = `
-    <div class="inv-modal-box" style="max-width:440px">
-      <div class="inv-modal-title"><i class="fas fa-clock-rotate-left" style="color:var(--accent)"></i> Historial de movimientos</div>
-      <div class="inv-modal-sub">Últimos cambios de stock, más recientes primero</div>
-      <div class="mov-filter-pills">
-        <button class="mov-filter-pill ${_historialFiltro==='todos'?'active':''}" onclick="_historialFiltro='todos';renderHistorial()">Todos</button>
-        <button class="mov-filter-pill ${_historialFiltro==='venta'?'active':''}" onclick="_historialFiltro='venta';renderHistorial()"><i class="fas fa-receipt"></i> Ventas</button>
-        <button class="mov-filter-pill ${_historialFiltro==='entrada'?'active':''}" onclick="_historialFiltro='entrada';renderHistorial()"><i class="fas fa-truck-ramp-box"></i> Reposiciones</button>
-        <button class="mov-filter-pill ${_historialFiltro==='ajuste'?'active':''}" onclick="_historialFiltro='ajuste';renderHistorial()"><i class="fas fa-sliders"></i> Ajustes</button>
-      </div>
-      <div id="mov-list-container"></div>
-      <div class="inv-modal-row" style="margin-top:14px">
-        <button class="btn-modal ghost" onclick="document.getElementById('inv-modal')?.remove()">Cerrar</button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  closeModal();
+  const modal = createModal(`
+    <div class="inv-modal-title"><i class="fas fa-clock-rotate-left" style="color:var(--accent)"></i> Historial de movimientos</div>
+    <div class="inv-modal-sub">Últimos 60 cambios de stock, más recientes primero</div>
+    <div class="mov-filter-pills">
+      <button class="mov-filter-pill" data-mfiltro="todos"   onclick="setHistFiltro('todos')">Todos</button>
+      <button class="mov-filter-pill" data-mfiltro="venta"   onclick="setHistFiltro('venta')"><i class="fas fa-receipt"></i> Ventas</button>
+      <button class="mov-filter-pill" data-mfiltro="entrada" onclick="setHistFiltro('entrada')"><i class="fas fa-truck-ramp-box"></i> Reposiciones</button>
+      <button class="mov-filter-pill" data-mfiltro="ajuste"  onclick="setHistFiltro('ajuste')"><i class="fas fa-sliders"></i> Ajustes</button>
+    </div>
+    <div id="mov-list-container"></div>
+    <div class="inv-modal-row" style="margin-top:14px">
+      <button class="btn-modal ghost" onclick="closeModal()">Cerrar</button>
+    </div>
+  `, '440px');
+  renderHistorial();
+}
+
+function setHistFiltro(f) {
+  _historialFiltro = f;
   renderHistorial();
 }
 
 function renderHistorial() {
   const container = document.getElementById('mov-list-container');
   if (!container) return;
-  document.querySelectorAll('.mov-filter-pill').forEach((el, i) => {
-    const labels = ['todos','venta','entrada','ajuste'];
-    el.classList.toggle('active', labels[i] === _historialFiltro);
+
+  // Actualizar pills
+  document.querySelectorAll('.mov-filter-pill[data-mfiltro]').forEach(el => {
+    el.classList.toggle('active', el.dataset.mfiltro === _historialFiltro);
   });
 
-  let movs = (db.inventarioMovimientos || []).slice().reverse();
+  // Obtener movimientos como array ordenado por fecha desc
+  let movs = Object.values(db.inventarioMovimientos || {})
+    .filter(m => m && m.fecha)
+    .sort((a, b) => b.fecha.localeCompare(a.fecha));
+
   if (_historialFiltro !== 'todos') movs = movs.filter(m => m.tipo === _historialFiltro);
   movs = movs.slice(0, 60);
 
@@ -774,62 +1021,63 @@ function renderHistorial() {
 
   const icons = { venta: 'fa-receipt', entrada: 'fa-truck-ramp-box', ajuste: 'fa-sliders' };
   container.innerHTML = `<div class="mov-list">${movs.map(m => {
-    const sign = m.cantidad > 0 ? 'pos' : 'neg';
-    const signChar = m.cantidad > 0 ? '+' : '';
+    const isPos  = m.cantidad > 0;
+    const isNeg  = m.cantidad < 0;
+    const sign   = isPos ? 'pos' : (isNeg ? 'neg' : '');
+    const signCh = isPos ? '+' : '';
     return `<div class="mov-item">
-      <div class="mov-icon ${m.tipo}"><i class="fas ${icons[m.tipo]||'fa-circle'}"></i></div>
+      <div class="mov-icon ${m.tipo || 'ajuste'}"><i class="fas ${icons[m.tipo] || 'fa-circle'}"></i></div>
       <div class="mov-info">
         <div class="mov-name">${escHtml(m.prodNombre)}</div>
-        <div class="mov-meta">${escHtml(m.motivo||'')} · ${fmtTime(m.fecha)}${m.usuario ? ' · '+escHtml(m.usuario) : ''}</div>
+        <div class="mov-meta">${escHtml(m.motivo || '')} · ${fmtTime(m.fecha)}${m.usuario ? ' · ' + escHtml(m.usuario) : ''}</div>
       </div>
-      <div class="mov-qty ${sign}">${signChar}${m.cantidad}</div>
+      <div class="mov-qty ${sign}">${signCh}${m.cantidad}</div>
     </div>`;
   }).join('')}</div>`;
 }
 
-function round2(n) {
-  return Math.round(n * 100) / 100;
+/* ════════════════════════════════════
+   MODAL: UTILIDADES
+════════════════════════════════════ */
+function createModal(innerHtml, maxWidth = '380px') {
+  const overlay = document.createElement('div');
+  overlay.className = 'inv-modal-overlay';
+  overlay.id = 'inv-modal';
+  overlay.innerHTML = `<div class="inv-modal-box" style="max-width:${maxWidth}">${innerHtml}</div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  // Escape para cerrar
+  const escListener = e => { if (e.key === 'Escape') { closeModal(); document.removeEventListener('keydown', escListener); } };
+  document.addEventListener('keydown', escListener);
+  return overlay;
+}
+
+function closeModal() {
+  document.getElementById('inv-modal')?.remove();
 }
 
 /* ════════════════════════════════════
-   RENDER
+   HELPERS DE PRODUCTOS
+════════════════════════════════════ */
+function getProducto(prodId) {
+  const arr = Array.isArray(db.productos) ? db.productos : Object.values(db.productos);
+  return arr.find(x => x.id === prodId || x.id === Number(prodId)) || null;
+}
+
+/* ════════════════════════════════════
+   RENDER PRINCIPAL
 ════════════════════════════════════ */
 function render() {
   if (!_ready) return;
   const search = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
-  let prods = (db.productos || []).slice();
+  let prods = Array.isArray(db.productos) ? db.productos.slice() : Object.values(db.productos);
 
-  // Filtro tipo
   if (filtroTipo !== 'todos') prods = prods.filter(p => p.tipo === filtroTipo);
+  if (search) prods = prods.filter(p => (p.nombre || '').toLowerCase().includes(search) || (p.icono || '').includes(search));
+  if (filtroEstado !== 'todos') prods = prods.filter(p => getEstado(getInvEntry(p.id)) === filtroEstado);
 
-  // Filtro búsqueda
-  if (search) prods = prods.filter(p => (p.nombre||'').toLowerCase().includes(search));
-
-  // Calcular stats globales (sobre TODOS los productos, no filtrados)
-  const allProds = db.productos || [];
-  let cTotal = allProds.length, cOk = 0, cBajo = 0, cAgotado = 0;
-  allProds.forEach(p => {
-    const e = getInvEntry(p.id);
-    const est = getEstado(e);
-    if (est === 'ok') cOk++;
-    else if (est === 'bajo') cBajo++;
-    else cAgotado++;
-  });
-  document.getElementById('st-total').textContent = cTotal;
-  document.getElementById('st-ok').textContent = cOk;
-  document.getElementById('st-bajo').textContent = cBajo;
-  document.getElementById('st-agotado').textContent = cAgotado;
-
-  ['stat-ok','stat-bajo','stat-agotado','stat-total'].forEach(id => document.getElementById(id).classList.remove('active'));
-  if (filtroEstado === 'ok') document.getElementById('stat-ok').classList.add('active');
-  else if (filtroEstado === 'bajo') document.getElementById('stat-bajo').classList.add('active');
-  else if (filtroEstado === 'agotado') document.getElementById('stat-agotado').classList.add('active');
-  else document.getElementById('stat-total').classList.add('active');
-
-  // Filtro estado
-  if (filtroEstado !== 'todos') {
-    prods = prods.filter(p => getEstado(getInvEntry(p.id)) === filtroEstado);
-  }
+  updateStats();
+  updateStatActiveClass();
 
   const content = document.getElementById('content');
 
@@ -841,52 +1089,60 @@ function render() {
     return;
   }
 
-  // Agrupar por tipo si filtro es 'todos'
   if (filtroTipo === 'todos') {
     const cocina = prods.filter(p => p.tipo === 'cocina');
     const barra  = prods.filter(p => p.tipo === 'barra');
     let html = '';
-    if (cocina.length) html += renderSection('cocina', '🍳 Cocina', cocina);
-    if (barra.length)  html += renderSection('barra', '🍷 Barra', barra);
+    if (cocina.length) html += renderSection('🍳 Cocina', cocina);
+    if (barra.length)  html += renderSection('🍷 Barra',  barra);
     content.innerHTML = html;
   } else {
     content.innerHTML = renderGrid(prods);
   }
 }
 
-function renderSection(tipo, label, prods) {
+function updateStatActiveClass() {
+  ['stat-ok','stat-bajo','stat-agotado','stat-total'].forEach(id => {
+    document.getElementById(id)?.classList.remove('active');
+  });
+  const map = { ok: 'stat-ok', bajo: 'stat-bajo', agotado: 'stat-agotado', todos: 'stat-total' };
+  document.getElementById(map[filtroEstado] || 'stat-total')?.classList.add('active');
+}
+
+function renderSection(label, prods) {
+  const ico   = label.split(' ')[0];
+  const title = label.split(' ').slice(1).join(' ');
   return `
     <div class="section-head">
-      <span class="ico">${label.split(' ')[0]}</span>
-      <h2>${label.split(' ').slice(1).join(' ')}</h2>
-      <span class="count">${prods.length} producto${prods.length!==1?'s':''}</span>
+      <span class="ico">${ico}</span>
+      <h2>${escHtml(title)}</h2>
+      <span class="count">${prods.length} producto${prods.length !== 1 ? 's' : ''}</span>
     </div>
     ${renderGrid(prods)}
   `;
 }
 
 function renderGrid(prods) {
-  // Ordenar: agotados primero, luego bajos, luego ok; alfabético dentro de cada grupo
   const orden = { agotado: 0, bajo: 1, ok: 2 };
   const sorted = prods.slice().sort((a, b) => {
     const ea = getEstado(getInvEntry(a.id));
     const eb = getEstado(getInvEntry(b.id));
     if (orden[ea] !== orden[eb]) return orden[ea] - orden[eb];
-    return (a.nombre||'').localeCompare(b.nombre||'');
+    return (a.nombre || '').localeCompare(b.nombre || '', 'es');
   });
   return `<div class="prod-grid">${sorted.map(buildCard).join('')}</div>`;
 }
 
 function buildCard(p) {
-  const entry = getInvEntry(p.id);
-  const estado = getEstado(entry);
+  const entry    = getInvEntry(p.id);
+  const estado   = getEstado(entry);
   const catLabel = getCatLabel(p);
   const badgeText = estado === 'ok' ? 'EN STOCK' : estado === 'bajo' ? 'STOCK BAJO' : 'AGOTADO';
 
   return `<div class="inv-card ${estado}" id="inv-card-${p.id}">
     <div class="inv-card-top">
       <div class="inv-icon">
-        ${p.imagen ? `<img src="${p.imagen}">` : `<span>${p.icono||'🍽️'}</span>`}
+        ${p.imagen ? `<img src="${escHtml(p.imagen)}" loading="lazy">` : `<span>${p.icono || '🍽️'}</span>`}
       </div>
       <div class="inv-info">
         <div class="inv-name">${escHtml(p.nombre)}</div>
@@ -896,17 +1152,17 @@ function buildCard(p) {
     </div>
     <div class="inv-stock-row">
       <button class="stock-btn minus" onclick="changeStock(${p.id}, -1)"><i class="fas fa-minus"></i></button>
-      <input type="number" class="stock-qty-input" id="qty-${p.id}" value="${entry.cantidad}"
-             step="any" min="0"
+      <input type="number" class="stock-qty-input" id="qty-${p.id}"
+             value="${entry.cantidad}" step="any" min="0"
              onchange="setStockExact(${p.id}, this.value)"
              onfocus="this.select()">
       <button class="stock-btn plus" onclick="changeStock(${p.id}, 1)"><i class="fas fa-plus"></i></button>
       <select class="stock-unit-select" onchange="setStockUnidad(${p.id}, this.value)">
-        ${UNIDADES.map(u => `<option value="${u}" ${entry.unidad===u?'selected':''}>${u}</option>`).join('')}
+        ${UNIDADES.map(u => `<option value="${u}"${entry.unidad === u ? ' selected' : ''}>${u}</option>`).join('')}
       </select>
     </div>
     <div class="inv-meta-row">
-      <label class="inv-min-edit" title="Stock mínimo antes de alertar">
+      <label class="inv-min-edit" title="Stock mínimo para alertar">
         <i class="fas fa-bell" style="font-size:0.6rem"></i> mín:
         <input type="number" value="${entry.stockMinimo}" min="0" step="any"
                onchange="setStockMinimo(${p.id}, this.value)">
@@ -915,7 +1171,7 @@ function buildCard(p) {
     </div>
     <div class="inv-actions-row">
       <button class="btn-reponer" onclick="showReponerModal(${p.id})"><i class="fas fa-truck-ramp-box"></i> Reponer</button>
-      <button class="btn-factor" onclick="showFactorModal(${p.id})" title="Consumo por venta">
+      <button class="btn-factor"  onclick="showFactorModal(${p.id})"  title="Consumo por venta">
         <i class="fas fa-scale-balanced"></i> ×${entry.factorConsumo}
       </button>
     </div>
