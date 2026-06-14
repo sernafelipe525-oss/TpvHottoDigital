@@ -1309,6 +1309,52 @@ body {
   border: 1px solid rgba(200,80,42,0.3);
 }
 
+/* ── MENÚS (visualización cliente) ── */
+.menus-seccion { margin-top: 22px; }
+.menus-seccion .seccion-titulo { margin-bottom: 4px; }
+.menu-cliente-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+.menu-cliente-card:hover { border-color: var(--border2); box-shadow: var(--shadow-sm); }
+.menu-cliente-head {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px;
+}
+.menu-cliente-icon {
+  width: 52px; height: 52px; flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--accent-lt);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; overflow: hidden;
+}
+.menu-cliente-icon img { width: 100%; height: 100%; object-fit: cover; }
+.menu-cliente-info { flex: 1; min-width: 0; }
+.menu-cliente-nombre {
+  font-family: var(--fh); font-size: 0.98rem; font-weight: 700; color: var(--text);
+}
+.menu-cliente-precio {
+  font-size: 0.8rem; font-weight: 700; color: var(--success); margin-top: 2px;
+}
+.menu-cliente-paso { margin-bottom: 8px; }
+.menu-cliente-paso:last-child { margin-bottom: 0; }
+.menu-cliente-paso-titulo {
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 5px; display: flex; align-items: center; gap: 5px;
+}
+.menu-cliente-opciones { display: flex; flex-wrap: wrap; gap: 6px; }
+.menu-cliente-opcion-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.74rem; font-weight: 500; color: var(--text2);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 100px; padding: 4px 10px;
+}
+.menu-cliente-opcion-chip img { width: 18px; height: 18px; object-fit: cover; border-radius: 4px; }
+
 /* ── INGREDIENTES / ALÉRGENOS en producto card ── */
 .producto-card.expandida { align-items: flex-start; flex-direction: column; }
 .prod-main-row {
@@ -2454,14 +2500,19 @@ function connectFirebase() {
     }
 
     // Validar que la mesa existe en la configuración
-    const mesas = db.mesas?.salones || [];
-    const todasMesas = mesas.flatMap(s => s.mesas || []);
-    const mesaValida = todasMesas.some(m => String(m.id) === String(mesaId));
+    // Las mesas no se guardan como array (salon.mesas); se generan a partir
+    // de salon.prefijo + número (1..salon.cantidad), igual que en el TPV.
+    const salones = db.mesas?.salones || [];
+    const mesaValida = salones.some(s => {
+      if (!String(mesaId||'').startsWith(s.prefijo)) return false;
+      const num = parseInt(String(mesaId).slice(s.prefijo.length), 10);
+      return !isNaN(num) && num >= 1 && num <= (s.cantidad || 0);
+    });
 
     // Si hay un ticket activo para esta mesa, la consideramos válida también
     const ticketActivo = (db.tickets||[]).find(t => String(t.mesa) === String(mesaId));
 
-    if (!mesaValida && !ticketActivo && mesas.length > 0) {
+    if (!mesaValida && !ticketActivo && salones.length > 0) {
       showError('Mesa ' + mesaId + ' no encontrada', 'Esta mesa no existe en el sistema. Verifica el código QR o consulta a un camarero.');
       return;
     }
@@ -3046,13 +3097,6 @@ function renderPedirNav() {
     wrap.innerHTML = `
       <p class="seccion-titulo">¿Qué deseas pedir?</p>
       <p class="seccion-sub">Elige si quieres algo de barra o de cocina para ver la carta.</p>
-      <div class="info-card" style="border-color:rgba(183,120,26,0.25);background:var(--warning-lt);margin-bottom:16px">
-        <div class="info-card-icon warning"><i class="fas fa-circle-info"></i></div>
-        <div class="info-card-text">
-          <div class="info-card-title" style="color:var(--warning)">Aviso · Consumiciones en barra</div>
-          <div class="info-card-desc">Los productos de <strong>barra</strong> tienen un suplemento de <strong>0,20&nbsp;€</strong> por consumición.</div>
-        </div>
-      </div>
       <div class="tipo-selector">
         ${hayBarra ? `
         <button class="tipo-card" onclick="seleccionarTipo('barra')">
@@ -3190,7 +3234,8 @@ function renderPedirNav() {
           <div class="tipo-card-sub">Platos, raciones, bocadillos…</div>
           ${cartCocina > 0 ? `<span style="font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:100px;background:rgba(200,80,42,0.12);color:var(--accent);border:1px solid rgba(200,80,42,0.3)">${cartCocina} en carrito</span>` : ''}
         </button>` : ''}
-      </div>`;
+      </div>
+      ${buildMenusClienteSection()}`;
     return;
   }
 
@@ -3242,6 +3287,52 @@ function renderPedirNav() {
   }
 }
 
+/* ══════════════════════════════════════════════════
+   MENÚS — visualización para el cliente
+   Muestra los menús creados en el TPV (db.menus) con
+   sus pasos y opciones, a modo informativo.
+══════════════════════════════════════════════════ */
+function buildMenusClienteSection() {
+  const menus = db.menus || [];
+  if (!menus.length) return '';
+
+  const cardsHTML = menus.map(m => {
+    const iconoEl = m.imagen
+      ? `<img src="${m.imagen}" alt="">`
+      : (m.icono || '🍽️');
+    const pasosHTML = (m.pasos || []).map(p => {
+      const opcionesHTML = (p.opciones || []).map(op => {
+        const opIcono = op.imagen
+          ? `<img src="${op.imagen}" alt="">`
+          : (op.icono || '🍽️');
+        return `<span class="menu-cliente-opcion-chip">${opIcono} ${escHtml(op.nombre)}</span>`;
+      }).join('');
+      const pasoTipoIcon = p.tipo === 'barra' ? 'fa-wine-glass' : 'fa-fire-burner';
+      return `<div class="menu-cliente-paso">
+        <div class="menu-cliente-paso-titulo"><i class="fas ${pasoTipoIcon}"></i> ${escHtml(p.nombre)}</div>
+        <div class="menu-cliente-opciones">${opcionesHTML}</div>
+      </div>`;
+    }).join('');
+
+    return `<div class="menu-cliente-card">
+      <div class="menu-cliente-head">
+        <div class="menu-cliente-icon">${iconoEl}</div>
+        <div class="menu-cliente-info">
+          <div class="menu-cliente-nombre">${escHtml(m.nombre)}</div>
+          <div class="menu-cliente-precio">${formatEur(round2(parseFloat(m.precio)||0))}</div>
+        </div>
+      </div>
+      ${pasosHTML}
+    </div>`;
+  }).join('');
+
+  return `<div class="menus-seccion">
+    <p class="seccion-titulo"><i class="fas fa-book-open" style="margin-right:6px;color:var(--accent)"></i>Menús</p>
+    <p class="seccion-sub">Consulta los menús disponibles y lo que incluyen.</p>
+    ${cardsHTML}
+  </div>`;
+}
+
 function seleccionarTipo(tipo) {
   tipoActivo = tipo;
   catActiva  = null;
@@ -3287,20 +3378,22 @@ function renderProductos() {
       return (a.nombre||'').localeCompare(b.nombre||'');
     });
 
+  const avisoHTML = buildAvisoSuplementoTerraza();
+
   if (!productos.length) {
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">🍽️</div>
         <h3>Sin productos</h3>
         <p>No hay productos disponibles en esta sección.</p>
-      </div>`;
+      </div>` + avisoHTML;
     return;
   }
 
   // Si hay subcategoría activa, mostrar productos directamente
   // Si no hay subcategoría, agrupar por categoría con encabezados
   if (catActiva) {
-    container.innerHTML = productos.map(p => buildProductoCard(p)).join('');
+    container.innerHTML = productos.map(p => buildProductoCard(p)).join('') + avisoHTML;
     return;
   }
 
@@ -3328,7 +3421,29 @@ function renderProductos() {
     html += sinCat.map(p => buildProductoCard(p)).join('');
   }
 
-  container.innerHTML = html;
+  container.innerHTML = html + avisoHTML;
+}
+
+/* ══════════════════════════════════════════════════
+   AVISO · Suplemento Terraza para productos de barra
+   Se muestra al pie de la página de productos cuando
+   tipoActivo === 'barra' y la mesa pertenece a un salón
+   con suplemento configurado (ej: Terraza, +0,20€)
+══════════════════════════════════════════════════ */
+function buildAvisoSuplementoTerraza() {
+  if (tipoActivo !== 'barra') return '';
+  const salones = db.mesas?.salones || [];
+  const salon = salones.find(s => String(mesaId||'').startsWith(s.prefijo));
+  const extra = Number(salon?.precio_extra || 0);
+  if (!(extra > 0)) return '';
+  const extraStr = extra.toFixed(2).replace('.', ',');
+  return `<div class="info-card" style="margin-top:14px;border-color:rgba(183,120,26,0.25);background:var(--warning-lt)">
+    <div class="info-card-icon warning"><i class="fas fa-circle-info"></i></div>
+    <div class="info-card-text">
+      <div class="info-card-title" style="color:var(--warning)">Aviso · Consumiciones en ${escHtml(salon.nombre||'Terraza')}</div>
+      <div class="info-card-desc">Los productos de <strong>barra</strong> consumidos en ${escHtml(salon.nombre||'Terraza')} tienen un suplemento de <strong>${extraStr}&nbsp;€</strong> por consumición.</div>
+    </div>
+  </div>`;
 }
 
 /* ══════════════════════════════════════════════════
