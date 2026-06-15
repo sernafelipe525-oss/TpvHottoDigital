@@ -2192,6 +2192,7 @@ const firebaseConfig = {
 };
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb = firebase.database();
+let _renderDebounceTimer = null; // usado para agrupar renders rápidos (evita el "salto" de pantalla)
 
 /* ════════════════════════════════════
    STATE & INITIAL DATA
@@ -3330,15 +3331,6 @@ function toast(msg, type='info', icon='') {
 ════════════════════════════════════ */
 rtdb.ref('/').on('value', (snapshot) => {
   const data = snapshot.val();
-  // ── Snapshot del estado anterior para detectar QUÉ cambió ──
-  // Esto evita redibujar TODA la pantalla cuando solo cambió
-  // una parte (p.ej. otro camarero añadió un producto a OTRA mesa).
-  const _prevTicketsJSON   = JSON.stringify((db && db.tickets) || []);
-  const _prevProductosJSON = JSON.stringify((db && db.productos) || []);
-  const _prevMesasJSON     = JSON.stringify((db && db.mesas) || {});
-  const _prevCategoriasJSON = JSON.stringify((db && db.categorias) || []);
-  const _prevConfigJSON   = JSON.stringify((db && db.config) || {});
-  const _prevPedidosClienteJSON = JSON.stringify((db && db.pedidosCliente) || {});
   if (data) {
     db = data;
 
@@ -3475,39 +3467,16 @@ rtdb.ref('/').on('value', (snapshot) => {
     badge.classList.add('online');
   }
 
-  // ── Decidir si hace falta un render() COMPLETO o basta con
-  //    una actualización ligera (sin resetear la pantalla) ──
-  const _ticketsCambiaron    = _prevTicketsJSON   !== JSON.stringify(db.tickets||[]);
-  const _productosCambiaron  = _prevProductosJSON !== JSON.stringify(db.productos||[]);
-  const _mesasCambiaron      = _prevMesasJSON     !== JSON.stringify(db.mesas||{});
-  const _categoriasCambiaron = _prevCategoriasJSON !== JSON.stringify(db.categorias||[]);
-  const _configCambio        = _prevConfigJSON    !== JSON.stringify(db.config||{});
-  const _pedidosClienteCambiaron = _prevPedidosClienteJSON !== JSON.stringify(db.pedidosCliente||{});
-
-  if (!session.role) {
-    init();
-  } else if (session.role === 'Camarero' && session.mesa) {
-    // El camarero tiene una mesa abierta: si SOLO cambiaron los tickets
-    // (p.ej. otro dispositivo añadió/quitó un producto en cualquier mesa),
-    // actualizamos solo la lista del pedido EN ESTE SITIO, sin recargar
-    // toda la pantalla (evita el "salto"/reseteo).
-    const _soloTickets = _ticketsCambiaron && !_productosCambiaron && !_mesasCambiaron
-                          && !_categoriasCambiaron && !_configCambio && !_pedidosClienteCambiaron;
-    if (_soloTickets) {
-      const t = (db.tickets||[]).find(t=>t.mesa===session.mesa);
-      if (t) { _refreshTicketInPlace(t); refreshCatBadges(); }
-      else render(); // la mesa ya no tiene ticket -> sí hace falta refrescar vista
-    } else {
-      render();
-    }
-  } else if ((session.role === 'Cocina' || session.role === 'Barra')
-             && !_productosCambiaron && !_mesasCambiaron && !_categoriasCambiaron
-             && !_configCambio && !_pedidosClienteCambiaron && !_ticketsCambiaron) {
-    // Nada relevante cambió para esta pantalla (p.ej. solo cambió inventario
-    // o pedidosCliente para otro rol) -> no redibujar.
-    // (El TTS/alertas ya se procesaron arriba con los nuevos datos de db.)
+  // ── Agrupar renders rápidos ──
+  // Si llegan varias actualizaciones de Firebase casi a la vez
+  // (varios dispositivos añadiendo productos a la vez), evitamos
+  // hacer un render() por cada una -> solo se hace UNA vez,
+  // ~120ms después de la última actualización recibida.
+  if (session.role) {
+    if (_renderDebounceTimer) clearTimeout(_renderDebounceTimer);
+    _renderDebounceTimer = setTimeout(() => { _renderDebounceTimer = null; render(); }, 120);
   } else {
-    render();
+    init();
   }
 });
 
@@ -3977,6 +3946,30 @@ function renderPinPad(nombre, pinCorrecto) {
 ════════════════════════════════════ */
 function render() {
   if (!session.role) return;
+  // ── Preservar la posición de scroll de #app-body ──
+  // Como las pantallas se reconstruyen por completo (innerHTML),
+  // el navegador resetea el scroll a 0. Lo guardamos antes y lo
+  // restauramos justo después de redibujar para evitar el "salto".
+  const _appBody = document.getElementById('app-body');
+  const _scrollTop = _appBody ? _appBody.scrollTop : 0;
+  const _scrollLeft = _appBody ? _appBody.scrollLeft : 0;
+
+  // ── Preservar el campo de texto que el usuario está escribiendo ──
+  // Si hay un input/textarea con foco dentro de #app-body, el re-render
+  // lo destruye y el usuario pierde el cursor/foco a media frase.
+  // Guardamos su id, valor y posición del cursor para restaurarlos.
+  let _focusInfo = null;
+  const _active = document.activeElement;
+  if (_appBody && _active && _appBody.contains(_active) &&
+      (_active.tagName === 'INPUT' || _active.tagName === 'TEXTAREA')) {
+    _focusInfo = {
+      id: _active.id,
+      value: _active.value,
+      selStart: _active.selectionStart,
+      selEnd: _active.selectionEnd
+    };
+  }
+
   if (session.role === 'Camarero') {
     if (session.mesa) {
       const t = (db.tickets||[]).find(t=>t.mesa===session.mesa);
@@ -3985,6 +3978,21 @@ function render() {
   } else if (session.role === 'Cocina')       renderMonitor('cocina');
   else if (session.role === 'Barra')          renderMonitor('barra');
   else if (session.role === 'Administrador')  renderAdmin();
+
+  // Restaurar scroll (también del contenedor interno si existe)
+  requestAnimationFrame(() => {
+    const ab = document.getElementById('app-body');
+    if (ab) { ab.scrollTop = _scrollTop; ab.scrollLeft = _scrollLeft; }
+    // Restaurar foco/valor/cursor del input que el usuario estaba editando
+    if (_focusInfo && _focusInfo.id) {
+      const el = document.getElementById(_focusInfo.id);
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+        if (el.value !== _focusInfo.value) el.value = _focusInfo.value;
+        el.focus();
+        try { el.setSelectionRange(_focusInfo.selStart, _focusInfo.selEnd); } catch(e) {}
+      }
+    }
+  });
 }
 
 /* ════════════════════════════════════
