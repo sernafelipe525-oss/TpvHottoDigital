@@ -3336,7 +3336,14 @@ rtdb.ref('/').on('value', (snapshot) => {
   //    de Firebase (no el "db" local, que puede tener cambios
   //    optimistas aún no confirmados) con el snapshot NUEVO. ──
   const _prevRaw = _lastFirebaseSnapshot;
-  _lastFirebaseSnapshot = data;
+  // IMPORTANTE: clonar profundamente el snapshot antes de guardarlo.
+  // "data" se asigna directamente a "db" (db = data), y el código
+  // de la app modifica "db" en el sitio (p.ej. marcarListo hace
+  // it.entregado = true directamente sobre db.tickets). Si guardamos
+  // la misma referencia, esas mutaciones locales también "ensucian"
+  // _lastFirebaseSnapshot, haciendo que la próxima comparación piense
+  // que no hubo cambios -> el monitor no se actualiza hasta recargar.
+  _lastFirebaseSnapshot = data ? JSON.parse(JSON.stringify(data)) : data;
   const _changed = (key) => JSON.stringify(_prevRaw ? _prevRaw[key] : undefined) !== JSON.stringify(data ? data[key] : undefined);
   const _brancheschanged = {
     tickets:        !_prevRaw || _changed('tickets'),
