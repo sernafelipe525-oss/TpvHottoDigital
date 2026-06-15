@@ -3611,7 +3611,7 @@ function _computeMonitorHash(zona) {
     const pen = (t.items||[]).filter(i=>i.tipo===zona && i.enviado && !i.entregado);
     if (!pen.length && !(t.tiketSolicitadoABarra && zona==='barra')) return;
     partes.push(
-      t.mesa + ':' + (t.cobrado?1:0) + ':' + (t.tiketSolicitadoABarra?1:0) + ':' +
+      t.mesa + ':' + (t.cobrado?1:0) + ':' + (t.tiketSolicitadoABarra?1:0) + ':' + (t.propina?.monto||0) + ':' +
       pen.map(i => i.uid + '/' + i.cantidad + '/' + (i.nota||'') + '/' + (i.variante||'') + '/' + (i.motivoEliminacion||'')).join(',')
     );
   });
@@ -6058,6 +6058,7 @@ function renderMonitor(z) {
             <div style="font-size:0.65rem;color:var(--muted);margin-top:1px">${t.tiketSolicitadoHora||'Ahora'} · €${tot.toFixed(2)}</div>
           </div>
           <span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(255,107,53,0.15);color:var(--accent);border:1px solid rgba(255,107,53,0.4);white-space:nowrap;animation:pulse 2s ease-in-out infinite">TIKET</span>
+          ${t.propina?.monto > 0 ? `<span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(201,162,39,0.15);color:#c9a227;border:1px solid rgba(201,162,39,0.4);white-space:nowrap;display:flex;align-items:center;gap:4px"><i class="fas fa-heart" style="font-size:0.55rem"></i>+${t.propina.monto.toFixed(2)}€</span>` : ''}
         </div>`;
       }).join('');
       tiketsSolicitadosHTML = `<div style="padding:10px 16px 0;display:flex;flex-direction:column;gap:6px">
@@ -11430,6 +11431,20 @@ function showModalPago(mesa, total) {
                        color:#fff">${total.toFixed(2)} €</span>
         </div>
       </div>
+      ${t?.propina?.monto > 0 ? `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:12px;
+                  background:rgba(201,162,39,0.08);border:1px solid rgba(201,162,39,0.3);
+                  border-radius:var(--r-md)">
+        <i class="fas fa-heart" style="color:#c9a227;font-size:1rem;flex-shrink:0"></i>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.74rem;font-weight:700;color:#c9a227">
+            El cliente sugirió una propina de ${fmtEur(t.propina.monto)}
+          </div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:1px">
+            Súmala manualmente al cobro en efectivo/tarjeta si procede · ${t.propina.hora||''}
+          </div>
+        </div>
+      </div>` : ''}
 
       <!-- MÉTODO DE PAGO -->
       <p style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;
