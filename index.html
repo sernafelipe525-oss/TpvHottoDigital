@@ -3522,6 +3522,23 @@ rtdb.ref('/').on('value', (snapshot) => {
       if (_renderDebounceTimer) clearTimeout(_renderDebounceTimer);
       _renderDebounceTimer = setTimeout(() => { _renderDebounceTimer = null; render(); }, 120);
     }
+  } else if (_soloTicketsCambiaron && session.role === 'Administrador') {
+    // ── Administrador: evitar reconstruir TODA la pantalla (cabecera +
+    //    pestañas + contenido) cada vez que cualquier camarero hace
+    //    un pedido. La mayoría de pestañas (Carta, Categorías, Personal,
+    //    Config, Menús, Agotando, QR...) no dependen de los tickets.
+    const _tabsQueDependenDeTickets = ['v','m','rm','ds'];
+    if (_tabsQueDependenDeTickets.includes(adminTab)) {
+      // Solo refrescar el contenido de la pestaña activa (#adm-c),
+      // sin tocar la cabecera ni las pestañas -> sin parpadeo de la UI general.
+      if (_renderDebounceTimer) clearTimeout(_renderDebounceTimer);
+      _renderDebounceTimer = setTimeout(() => {
+        _renderDebounceTimer = null;
+        const c = document.getElementById('adm-c');
+        if (c) tab(adminTab); else render();
+      }, 120);
+    }
+    // Si la pestaña activa no depende de tickets -> no hacer nada.
   } else if (!_brancheschanged.tickets && !_brancheschanged.productos && !_brancheschanged.categorias
              && !_brancheschanged.mesas && !_brancheschanged.config && !_brancheschanged.pedidosCliente) {
     // Nada relevante cambió (p.ej. solo se actualizó inventario/despachos
