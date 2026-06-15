@@ -2194,6 +2194,8 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb = firebase.database();
 let _renderDebounceTimer = null; // usado para agrupar renders rápidos (evita el "salto" de pantalla)
 let _lastFirebaseSnapshot = null; // último snapshot crudo de Firebase, para saber qué ramas cambiaron
+let _lastMonitorHash = null;      // último "estado visual" del monitor (Cocina/Barra), para evitar redibujados innecesarios
+let _monitorDebounceTimer = null; // debounce específico del monitor Cocina/Barra
 
 /* ════════════════════════════════════
    STATE & INITIAL DATA
@@ -3556,6 +3558,23 @@ rtdb.ref('/').on('value', (snapshot) => {
       }, 120);
     }
     // Si la pestaña activa no depende de tickets -> no hacer nada.
+  } else if ((session.role === 'Cocina' || session.role === 'Barra')
+             && (_brancheschanged.tickets || _brancheschanged.pedidosCliente)
+             && !_brancheschanged.productos && !_brancheschanged.categorias
+             && !_brancheschanged.mesas && !_brancheschanged.config) {
+    // ── Cocina/Barra: solo redibujar el monitor si CAMBIÓ algo que esa
+    //    pantalla realmente muestra (sus propios pedidos pendientes,
+    //    tikets solicitados, alertas de stock, venta directa). Un pedido
+    //    de cliente o un cambio de ticket que afecta a la OTRA zona no
+    //    provoca ningún parpadeo aquí. ──
+    const zona = session.role === 'Cocina' ? 'cocina' : 'barra';
+    const _hash = _computeMonitorHash(zona);
+    if (_hash !== _lastMonitorHash) {
+      _lastMonitorHash = _hash;
+      if (_monitorDebounceTimer) clearTimeout(_monitorDebounceTimer);
+      _monitorDebounceTimer = setTimeout(() => { _monitorDebounceTimer = null; renderMonitor(zona); }, 120);
+    }
+    // Si el hash no cambió -> no redibujar nada, evita el parpadeo.
   } else if (!_brancheschanged.tickets && !_brancheschanged.productos && !_brancheschanged.categorias
              && !_brancheschanged.mesas && !_brancheschanged.config && !_brancheschanged.pedidosCliente) {
     // Nada relevante cambió (p.ej. solo se actualizó inventario/despachos
@@ -3577,6 +3596,33 @@ function genUID() {
   _uidCounter++;
   const user = (session && session.user) ? session.user.replace(/[^a-zA-Z0-9]/g,'').slice(0,6) : 'xx';
   return `${Date.now()}_${user}_${_uidCounter}`;
+}
+
+/* ════════════════════════════════════
+   HASH LIGERO DEL MONITOR (Cocina/Barra)
+   Genera una "huella" del estado visual relevante para una zona,
+   para evitar redibujar el monitor cuando algo cambia en Firebase
+   pero no afecta a lo que esa pantalla muestra (p.ej. un pedido de
+   cliente que va a la OTRA zona, un camarero editando otra mesa, etc).
+════════════════════════════════════ */
+function _computeMonitorHash(zona) {
+  const partes = [];
+  (db.tickets||[]).forEach(t => {
+    const pen = (t.items||[]).filter(i=>i.tipo===zona && i.enviado && !i.entregado);
+    if (!pen.length && !(t.tiketSolicitadoABarra && zona==='barra')) return;
+    partes.push(
+      t.mesa + ':' + (t.cobrado?1:0) + ':' + (t.tiketSolicitadoABarra?1:0) + ':' +
+      pen.map(i => i.uid + '/' + i.cantidad + '/' + (i.nota||'') + '/' + (i.variante||'') + '/' + (i.motivoEliminacion||'')).join(',')
+    );
+  });
+  // Alertas de stock visibles en esta zona
+  (db.stockAlertas||[]).forEach(a => { if (a.monitor === zona) partes.push('alert:'+a.id); });
+  // Venta directa en barra (botón "Retomar venta")
+  if (zona === 'barra') {
+    const vd = (db.tickets||[]).find(t => t.mesa && t.mesa.startsWith('VD') && !t.cobrado);
+    if (vd) partes.push('vd:' + (vd.items||[]).length);
+  }
+  return partes.join('|');
 }
 
 /* ════════════════════════════════════
@@ -3785,6 +3831,7 @@ function init() {
   _ttsAnunciadoTiket = new Set();
   _ttsQueue = [];
   _ttsBusy = false;
+  _lastMonitorHash = null;
   if (window.speechSynthesis) window.speechSynthesis.cancel();
   const ud = document.getElementById('user-display');
   if (ud) ud.style.display = 'none';
@@ -3954,6 +4001,9 @@ function _doEnter(nombre) {
   ud.style.display = 'flex';
   toast(`Bienvenido, ${session.user}`, 'success', 'fa-circle-user');
   render();
+  if (session.role === 'Cocina' || session.role === 'Barra') {
+    _lastMonitorHash = _computeMonitorHash(session.role === 'Cocina' ? 'cocina' : 'barra');
+  }
 }
 
 /* ── Teclado PIN ──────────────────────────────────────────────────── */
@@ -6066,6 +6116,10 @@ function renderMonitor(z) {
            <small>No hay pedidos pendientes</small>
          </div>`}
     ${_buildStockAlertStrip(z)}`;
+
+  // Sincronizar la huella tras un redibujado (manual o por Firebase) para
+  // que el siguiente snapshot no provoque un redibujado duplicado.
+  _lastMonitorHash = _computeMonitorHash(z);
 }
 
 /* ════════════════════════════════════
