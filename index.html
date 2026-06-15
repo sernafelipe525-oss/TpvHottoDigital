@@ -3509,8 +3509,25 @@ rtdb.ref('/').on('value', (snapshot) => {
     && !_brancheschanged.mesas && !_brancheschanged.config
     && !_brancheschanged.pedidosCliente;
 
+  const _soloPedidosClienteCambiaron = _brancheschanged.pedidosCliente
+    && !_brancheschanged.tickets && !_brancheschanged.productos && !_brancheschanged.categorias
+    && !_brancheschanged.mesas && !_brancheschanged.config;
+
   if (!session.role) {
     init();
+  } else if (_soloPedidosClienteCambiaron) {
+    // ── Un cliente envió un pedido desde su móvil (mesa_cliente.html). ──
+    // Esto NO afecta a tickets/productos/etc., así que en la mayoría
+    // de pantallas no hace falta redibujar nada (el aviso sonoro/TTS
+    // ya se procesó arriba). Solo la LISTA DE MESAS del camarero
+    // muestra un badge con pedidos pendientes del cliente, así que
+    // solo ahí refrescamos (y de forma ligera).
+    if (session.role === 'Camarero' && !session.mesa) {
+      if (_renderDebounceTimer) clearTimeout(_renderDebounceTimer);
+      _renderDebounceTimer = setTimeout(() => { _renderDebounceTimer = null; renderMesas(); }, 120);
+    }
+    // En cualquier otro caso (camarero con mesa abierta, cocina, barra,
+    // administrador) -> no redibujar nada, evita el parpadeo en todo el TPV.
   } else if (_soloTicketsCambiaron && session.role === 'Camarero' && session.mesa) {
     const t = (db.tickets||[]).find(x=>x.mesa===session.mesa);
     if (t) {
