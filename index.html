@@ -2193,6 +2193,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb = firebase.database();
 let _renderDebounceTimer = null; // usado para agrupar renders rápidos (evita el "salto" de pantalla)
+let _lastFirebaseSnapshot = null; // último snapshot crudo de Firebase, para saber qué ramas cambiaron
 
 /* ════════════════════════════════════
    STATE & INITIAL DATA
@@ -3331,6 +3332,20 @@ function toast(msg, type='info', icon='') {
 ════════════════════════════════════ */
 rtdb.ref('/').on('value', (snapshot) => {
   const data = snapshot.val();
+  // ── Detectar qué ramas cambiaron, comparando el snapshot ANTERIOR
+  //    de Firebase (no el "db" local, que puede tener cambios
+  //    optimistas aún no confirmados) con el snapshot NUEVO. ──
+  const _prevRaw = _lastFirebaseSnapshot;
+  _lastFirebaseSnapshot = data;
+  const _changed = (key) => JSON.stringify(_prevRaw ? _prevRaw[key] : undefined) !== JSON.stringify(data ? data[key] : undefined);
+  const _brancheschanged = {
+    tickets:        !_prevRaw || _changed('tickets'),
+    productos:      !_prevRaw || _changed('productos'),
+    categorias:     !_prevRaw || _changed('categorias'),
+    mesas:          !_prevRaw || _changed('mesas'),
+    config:         !_prevRaw || _changed('config'),
+    pedidosCliente: !_prevRaw || _changed('pedidosCliente'),
+  };
   if (data) {
     db = data;
 
@@ -3467,16 +3482,42 @@ rtdb.ref('/').on('value', (snapshot) => {
     badge.classList.add('online');
   }
 
-  // ── Agrupar renders rápidos ──
+  // ── Agrupar renders rápidos + evitar parpadeo innecesario ──
   // Si llegan varias actualizaciones de Firebase casi a la vez
-  // (varios dispositivos añadiendo productos a la vez), evitamos
-  // hacer un render() por cada una -> solo se hace UNA vez,
-  // ~120ms después de la última actualización recibida.
-  if (session.role) {
+  // (varios camareros tomando pedidos a la vez), evitamos
+  // redibujar TODA la pantalla por cada una.
+  //
+  // Caso especial y MUY frecuente: un camarero tiene una mesa abierta
+  // y SOLO cambiaron los tickets (otro camarero envió/añadió un
+  // producto en cualquier mesa). En ese caso, en vez de reconstruir
+  // toda la pantalla (lo que provoca el parpadeo del panel de
+  // productos/categorías), solo refrescamos la lista de su propio
+  // pedido — el panel de productos no se toca y no parpadea.
+  const _soloTicketsCambiaron = _brancheschanged.tickets
+    && !_brancheschanged.productos && !_brancheschanged.categorias
+    && !_brancheschanged.mesas && !_brancheschanged.config
+    && !_brancheschanged.pedidosCliente;
+
+  if (!session.role) {
+    init();
+  } else if (_soloTicketsCambiaron && session.role === 'Camarero' && session.mesa) {
+    const t = (db.tickets||[]).find(x=>x.mesa===session.mesa);
+    if (t) {
+      // Actualización ligera: sin parpadeo, sin tocar el panel de productos
+      _refreshTicketInPlace(t);
+      refreshCatBadges();
+    } else {
+      // La mesa ya no tiene ticket (p.ej. se cerró) -> sí hace falta refrescar vista
+      if (_renderDebounceTimer) clearTimeout(_renderDebounceTimer);
+      _renderDebounceTimer = setTimeout(() => { _renderDebounceTimer = null; render(); }, 120);
+    }
+  } else if (!_brancheschanged.tickets && !_brancheschanged.productos && !_brancheschanged.categorias
+             && !_brancheschanged.mesas && !_brancheschanged.config && !_brancheschanged.pedidosCliente) {
+    // Nada relevante cambió (p.ej. solo se actualizó inventario/despachos
+    // para otro rol) -> no redibujar nada.
+  } else {
     if (_renderDebounceTimer) clearTimeout(_renderDebounceTimer);
     _renderDebounceTimer = setTimeout(() => { _renderDebounceTimer = null; render(); }, 120);
-  } else {
-    init();
   }
 });
 
