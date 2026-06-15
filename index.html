@@ -3946,13 +3946,24 @@ function renderPinPad(nombre, pinCorrecto) {
 ════════════════════════════════════ */
 function render() {
   if (!session.role) return;
-  // ── Preservar la posición de scroll de #app-body ──
+  // ── Preservar la posición de scroll ──
   // Como las pantallas se reconstruyen por completo (innerHTML),
-  // el navegador resetea el scroll a 0. Lo guardamos antes y lo
-  // restauramos justo después de redibujar para evitar el "salto".
+  // el navegador resetea a 0 el scroll de #app-body Y de cualquier
+  // panel interno con scroll propio (p.ej. #cat-panel-body, donde
+  // el camarero busca productos). Guardamos el scroll de TODOS los
+  // elementos con id que tengan scroll, y lo restauramos después.
   const _appBody = document.getElementById('app-body');
-  const _scrollTop = _appBody ? _appBody.scrollTop : 0;
-  const _scrollLeft = _appBody ? _appBody.scrollLeft : 0;
+  const _scrollMap = {};
+  if (_appBody) {
+    _appBody.querySelectorAll('[id]').forEach(el => {
+      if (el.scrollTop > 0 || el.scrollLeft > 0) {
+        _scrollMap[el.id] = { top: el.scrollTop, left: el.scrollLeft };
+      }
+    });
+    if (_appBody.scrollTop > 0 || _appBody.scrollLeft > 0) {
+      _scrollMap['app-body'] = { top: _appBody.scrollTop, left: _appBody.scrollLeft };
+    }
+  }
 
   // ── Preservar el campo de texto que el usuario está escribiendo ──
   // Si hay un input/textarea con foco dentro de #app-body, el re-render
@@ -3979,10 +3990,22 @@ function render() {
   else if (session.role === 'Barra')          renderMonitor('barra');
   else if (session.role === 'Administrador')  renderAdmin();
 
-  // Restaurar scroll (también del contenedor interno si existe)
+  // Restaurar scroll de #app-body y de cualquier panel interno (p.ej. lista de productos)
+  const _restoreScroll = () => {
+    Object.entries(_scrollMap).forEach(([id, pos]) => {
+      const el = document.getElementById(id);
+      if (el) { el.scrollTop = pos.top; el.scrollLeft = pos.left; }
+    });
+  };
+  // Doble rAF: espera a que el navegador termine de pintar el nuevo
+  // contenido (y por tanto conozca su altura real) antes de fijar el scroll.
   requestAnimationFrame(() => {
-    const ab = document.getElementById('app-body');
-    if (ab) { ab.scrollTop = _scrollTop; ab.scrollLeft = _scrollLeft; }
+    requestAnimationFrame(() => {
+      _restoreScroll();
+      // Reintento de seguridad por si el contenido (imágenes, etc.)
+      // todavía estaba calculando su altura.
+      setTimeout(_restoreScroll, 50);
+    });
     // Restaurar foco/valor/cursor del input que el usuario estaba editando
     if (_focusInfo && _focusInfo.id) {
       const el = document.getElementById(_focusInfo.id);
