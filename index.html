@@ -3475,9 +3475,13 @@ rtdb.ref('/').on('value', (snapshot) => {
     });
   }
 
-  /* Sync badge */
+  /* Sync badge — actualizar solo UNA VEZ (la primera conexión).
+     Antes esto se ejecutaba en CADA snapshot de Firebase, lo que
+     recreaba el <span class="sync-dot"> y reiniciaba su animación
+     CSS (pulse-dot) constantemente -> parpadeo visible en TODAS
+     las pantallas, incluso cuando tú mismo añadías un producto. */
   const badge = document.getElementById('sync-status');
-  if (badge) {
+  if (badge && !badge.classList.contains('online')) {
     badge.innerHTML = '<span class="sync-dot"></span>Sincronizado';
     badge.classList.add('online');
   }
@@ -3724,7 +3728,10 @@ function updateBrandName() {
   const mid = Math.ceil(parts.length/2);
   const first = parts.slice(0,mid).join(' ');
   const rest  = parts.slice(mid).join(' ');
-  bn.innerHTML = rest ? `${first} <span>${rest}</span>` : first;
+  const html = rest ? `${first} <span>${rest}</span>` : first;
+  // Solo tocar el DOM si realmente cambió, para no provocar
+  // parpadeos en CADA sincronización de Firebase.
+  if (bn.innerHTML !== html) bn.innerHTML = html;
 }
 
 /* ════════════════════════════════════
@@ -6186,7 +6193,10 @@ function applyTextColors() {
   });
   css += '}';
   
-  style.textContent = css;
+  // Solo reescribir el <style> si el contenido cambió: asignar
+  // textContent siempre (aunque sea igual) fuerza un recálculo
+  // global de estilos en TODA la página -> parpadeo en cada sync.
+  if (style.textContent !== css) style.textContent = css;
 }
 
 function resetTextColors() {
@@ -9781,24 +9791,32 @@ function applyLogo() {
   const bgColor = db.config?.logoBgColor || '#ff6b35';
   const fgColor = db.config?.logoFgColor || '#ffffff';
   
-  logo.style.background = bgColor;
-  logo.style.color = fgColor;
+  if (logo.style.background !== bgColor) logo.style.background = bgColor;
+  if (logo.style.color !== fgColor) logo.style.color = fgColor;
   
-  if (db.config?.logo) {
-    logo.innerHTML = `<img src="${db.config.logo}" style="width:100%;height:100%;object-fit:contain;padding:4px">`;
-  } else {
-    logo.innerHTML = '🔥';
-  }
+  // Solo reescribir el logo si cambió, para no recargar/parpadear
+  // la imagen (a veces pesada en base64) en CADA sincronización.
+  const newHTML = db.config?.logo
+    ? `<img src="${db.config.logo}" style="width:100%;height:100%;object-fit:contain;padding:4px">`
+    : '🔥';
+  if (logo.innerHTML !== newHTML) logo.innerHTML = newHTML;
 }
 
 function applyBg() {
+  // Solo tocar el fondo si realmente cambió, para no provocar
+  // un repintado del fondo en CADA sincronización de Firebase.
   if (db.config?.fondo) {
-    document.body.style.backgroundImage = `url('${db.config.fondo}')`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
-    document.body.style.backgroundAttachment = 'fixed';
+    const url = `url('${db.config.fondo}')`;
+    if (document.body.style.backgroundImage !== url) {
+      document.body.style.backgroundImage = url;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundAttachment = 'fixed';
+    }
   } else {
-    document.body.style.backgroundImage = '';
+    if (document.body.style.backgroundImage !== '') {
+      document.body.style.backgroundImage = '';
+    }
   }
 }
 
