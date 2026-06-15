@@ -808,6 +808,59 @@ body {
 .info-card-title { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
 .info-card-desc { font-size: 0.75rem; color: var(--text2); line-height: 1.5; }
 
+/* ── Propina sugerida ── */
+.propina-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r-xl); padding: 18px;
+  margin-bottom: 16px; box-shadow: var(--shadow-sm);
+}
+.propina-head {
+  display: flex; align-items: center; gap: 11px; margin-bottom: 10px;
+}
+.propina-icon {
+  width: 38px; height: 38px; flex-shrink: 0; border-radius: 10px;
+  background: rgba(201,162,39,0.12); color: var(--gold);
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.propina-title { font-family: var(--fh); font-size: 0.98rem; font-weight: 600; color: var(--text); }
+.propina-msg {
+  font-size: 0.78rem; color: var(--text2); line-height: 1.65;
+  margin-bottom: 14px; padding-bottom: 14px;
+  border-bottom: 1px dashed var(--border);
+}
+.propina-msg strong { color: var(--text); }
+.propina-options {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px;
+}
+.propina-chip {
+  padding: 11px 4px; text-align: center;
+  border: 1.5px solid var(--border); border-radius: var(--r-lg);
+  background: var(--bg); cursor: pointer; transition: all 0.15s ease;
+}
+.propina-chip-pct { font-family: var(--fh); font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.propina-chip-eur { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+.propina-chip.active {
+  border-color: var(--gold); background: rgba(201,162,39,0.1);
+}
+.propina-chip.active .propina-chip-pct { color: var(--gold); }
+.propina-chip.active .propina-chip-eur { color: var(--gold); }
+.propina-custom-wrap {
+  display: flex; align-items: center; gap: 8px;
+}
+.propina-custom-wrap input {
+  flex: 1; padding: 11px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--r-lg); background: var(--bg); font-family: var(--ff);
+  font-size: 0.88rem; color: var(--text); outline: none; transition: border 0.15s;
+}
+.propina-custom-wrap input:focus { border-color: var(--gold); }
+.propina-summary {
+  margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.propina-summary-label { font-size: 0.78rem; color: var(--text2); font-weight: 600; }
+.propina-summary-amount { font-family: var(--fh); font-size: 1.15rem; font-weight: 700; color: var(--gold); }
+.propina-summary-amount.zero { color: var(--muted); }
+
 /* ── TOAST ───────────────────────────────────────── */
 #toast-wrap {
   position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
@@ -1493,6 +1546,59 @@ body {
   background: var(--accent); border-color: var(--accent); color: #fff;
 }
 
+/* ── Selector de sección admin (Ingredientes / Visibilidad) ── */
+.admin-section-tabs {
+  display: flex; gap: 8px; margin-bottom: 16px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--r-xl); padding: 4px;
+}
+.admin-section-tab {
+  flex: 1; padding: 10px 8px; text-align: center;
+  border: none; background: transparent; color: var(--text2);
+  font-family: var(--ff); font-size: 0.78rem; font-weight: 700;
+  border-radius: 100px; cursor: pointer; transition: all 0.18s ease;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.admin-section-tab.active {
+  background: var(--white); color: var(--accent); box-shadow: var(--shadow-sm);
+}
+
+/* ── Visibilidad de carta: filas con toggle ── */
+.vis-group-label {
+  font-size: 0.7rem; font-weight: 800; letter-spacing: 0.6px;
+  text-transform: uppercase; color: var(--muted);
+  margin: 18px 4px 8px; display: flex; align-items: center; gap: 6px;
+}
+.vis-group-label:first-child { margin-top: 4px; }
+.vis-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--r-lg); padding: 10px 12px; margin-bottom: 8px;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+.vis-row.hidden-item { opacity: 0.5; border-style: dashed; }
+.vis-row-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 9px; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.05rem; overflow: hidden;
+}
+.vis-row-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 9px; }
+.vis-row-info { flex: 1; min-width: 0; }
+.vis-row-nombre {
+  font-size: 0.86rem; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vis-row-meta {
+  font-size: 0.68rem; color: var(--muted); margin-top: 2px;
+  display: flex; align-items: center; gap: 6px;
+}
+.vis-row-meta .vis-oculto-tag {
+  font-size: 0.6rem; font-weight: 800; padding: 1px 7px; border-radius: 100px;
+  background: var(--danger-lt); color: var(--danger);
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+
 /* Lista de productos */
 .admin-prod-row {
   background: var(--white);
@@ -1964,7 +2070,7 @@ body {
 <div id="admin-screen">
   <div class="admin-header">
     <div>
-      <div class="admin-header-title">Ingredientes y alérgenos</div>
+      <div class="admin-header-title" id="admin-header-title">Ingredientes y alérgenos</div>
       <div class="admin-header-sub" id="admin-header-sub">Gestiona la información de cada producto</div>
     </div>
     <button class="admin-close-btn" onclick="cerrarAdmin()" aria-label="Cerrar">
@@ -1972,16 +2078,41 @@ body {
     </button>
   </div>
   <div class="admin-body">
-    <div class="admin-search-wrap">
-      <i class="fas fa-search"></i>
-      <input type="text" class="admin-search-input" id="admin-search-input" placeholder="Buscar producto…" oninput="renderAdminLista()">
+    <div class="admin-section-tabs">
+      <button class="admin-section-tab active" id="admin-sec-info" onclick="setAdminSeccion('info')">
+        <i class="fas fa-list"></i> Ingredientes
+      </button>
+      <button class="admin-section-tab" id="admin-sec-vis" onclick="setAdminSeccion('vis')">
+        <i class="fas fa-eye"></i> Visibilidad de carta
+      </button>
     </div>
-    <div class="admin-filter-row">
-      <button class="admin-filter-btn active" id="admin-filter-todos" onclick="setAdminFiltro('todos')">Todos</button>
-      <button class="admin-filter-btn" id="admin-filter-cocina" onclick="setAdminFiltro('cocina')">🍳 Cocina</button>
-      <button class="admin-filter-btn" id="admin-filter-barra" onclick="setAdminFiltro('barra')">🥃 Barra</button>
+
+    <div id="admin-seccion-info">
+      <div class="admin-search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" class="admin-search-input" id="admin-search-input" placeholder="Buscar producto…" oninput="renderAdminLista()">
+      </div>
+      <div class="admin-filter-row">
+        <button class="admin-filter-btn active" id="admin-filter-todos" onclick="setAdminFiltro('todos')">Todos</button>
+        <button class="admin-filter-btn" id="admin-filter-cocina" onclick="setAdminFiltro('cocina')">🍳 Cocina</button>
+        <button class="admin-filter-btn" id="admin-filter-barra" onclick="setAdminFiltro('barra')">🥃 Barra</button>
+      </div>
+      <div id="admin-lista"></div>
     </div>
-    <div id="admin-lista"></div>
+
+    <div id="admin-seccion-vis" style="display:none">
+      <div class="admin-search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" class="admin-search-input" id="admin-vis-search-input" placeholder="Buscar producto o menú…" oninput="renderAdminVisibilidad()">
+      </div>
+      <div class="admin-filter-row">
+        <button class="admin-filter-btn active" id="admin-vis-filter-todos" onclick="setAdminVisFiltro('todos')">Todos</button>
+        <button class="admin-filter-btn" id="admin-vis-filter-cocina" onclick="setAdminVisFiltro('cocina')">🍳 Cocina</button>
+        <button class="admin-filter-btn" id="admin-vis-filter-barra" onclick="setAdminVisFiltro('barra')">🥃 Barra</button>
+        <button class="admin-filter-btn" id="admin-vis-filter-menus" onclick="setAdminVisFiltro('menus')">📖 Menús</button>
+      </div>
+      <div id="admin-vis-lista"></div>
+    </div>
   </div>
 </div>
 
@@ -2089,6 +2220,8 @@ let pedidosCliente = [];      // pedidos pendientes enviados por el cliente
 let historialLocal = [];      // copia local del historial (persiste aunque Firebase se limpie al cobrar)
 let cobradoLimpiado = false;  // flag: evita llamar remove() en cada tick del listener
 let modoVisitante = false;    // true = sin mesa, solo carta de lectura
+let propinaPct = null;        // porcentaje de propina elegido (5/10/15) o null
+let propinaCustom = null;     // importe personalizado de propina (€) o null
 
 /* ══════════════════════════════════════════════════
    UTILIDADES
@@ -2566,6 +2699,9 @@ function connectFirebase() {
         // Borrar nodo de Firebase una sola vez
         rtdb.ref('/pedidosCliente/' + mesaId).remove().catch(() => {});
         cobradoLimpiado = true;
+        // Reiniciar selección de propina para la próxima visita a esta mesa
+        propinaPct = null;
+        propinaCustom = null;
         console.log('[TPV] Mesa', mesaId, '— pedidosCliente limpiados al cobrar');
       }
       pedidosCliente = [];
@@ -3104,7 +3240,7 @@ function renderPedirNav() {
   const wrap = document.getElementById('pedir-nav');
   if (!wrap) return;
 
-  const productos = db.productos || [];
+  const productos = (db.productos || []).filter(_esVisible);
   const categorias = db.categorias || [];
 
   // Contar productos disponibles por tipo
@@ -3316,7 +3452,7 @@ function renderPedirNav() {
    sus pasos y opciones, a modo informativo.
 ══════════════════════════════════════════════════ */
 function buildMenusClienteSection() {
-  const menus = db.menus || [];
+  const menus = (db.menus || []).filter(_esVisible);
   if (!menus.length) return '';
 
   const cardsHTML = menus.map(m => {
@@ -3393,6 +3529,7 @@ function renderProductos() {
 
   // Filtrar por tipo y opcionalmente por subcategoría
   const productos = (db.productos || [])
+    .filter(_esVisible)
     .filter(p => p.tipo === tipoActivo)
     .filter(p => !catActiva || p.catId === catActiva)
     .sort((a, b) => {
@@ -4366,6 +4503,8 @@ const ADMIN_PIN_DEFAULT = '1234'; // PIN por defecto; configurable desde Firebas
 
 let adminFiltroTipo = 'todos';
 let adminEditandoKey = null; // nombre normalizado del producto en edición
+let adminSeccion = 'info';   // 'info' | 'vis'
+let adminVisFiltro = 'todos'; // 'todos' | 'cocina' | 'barra' | 'menus'
 
 function accederAdmin() {
   const overlay = document.getElementById('admin-pin-overlay');
@@ -4398,8 +4537,9 @@ function comprobarPinAdmin() {
 
 async function abrirAdmin() {
   adminFiltroTipo = 'todos';
+  adminVisFiltro = 'todos';
   document.getElementById('admin-search-input').value = '';
-  document.querySelectorAll('.admin-filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#admin-seccion-info .admin-filter-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('admin-filter-todos').classList.add('active');
 
   // Si todavía no tenemos datos de Firebase (p.ej. desde la bienvenida), cargarlos una vez
@@ -4413,12 +4553,31 @@ async function abrirAdmin() {
     }
   }
 
-  renderAdminLista();
+  setAdminSeccion('info');
   document.getElementById('admin-screen').classList.add('show');
 }
 
 function cerrarAdmin() {
   document.getElementById('admin-screen').classList.remove('show');
+}
+
+function setAdminSeccion(seccion) {
+  adminSeccion = seccion;
+  document.getElementById('admin-sec-info').classList.toggle('active', seccion === 'info');
+  document.getElementById('admin-sec-vis').classList.toggle('active', seccion === 'vis');
+  document.getElementById('admin-seccion-info').style.display = seccion === 'info' ? '' : 'none';
+  document.getElementById('admin-seccion-vis').style.display = seccion === 'vis' ? '' : 'none';
+
+  const title = document.getElementById('admin-header-title');
+  const sub = document.getElementById('admin-header-sub');
+  if (seccion === 'info') {
+    title.textContent = 'Ingredientes y alérgenos';
+    renderAdminLista();
+  } else {
+    title.textContent = 'Visibilidad de carta';
+    sub.textContent = 'Elige qué platos, bebidas y menús ve el cliente';
+    renderAdminVisibilidad();
+  }
 }
 
 function setAdminFiltro(tipo) {
@@ -4473,6 +4632,165 @@ function renderAdminLista() {
         <i class="fas fa-chevron-right admin-prod-arrow"></i>
       </div>`;
   }).join('');
+}
+
+/* ══════════════════════════════════════════════════
+   VISIBILIDAD DE CARTA — ocultar/mostrar productos y
+   menús en la carta digital del cliente.
+   Campo: producto.visibleCarta / menu.visibleCarta
+   (ausente o true = visible; false = oculto)
+══════════════════════════════════════════════════ */
+function setAdminVisFiltro(tipo) {
+  adminVisFiltro = tipo;
+  document.querySelectorAll('#admin-seccion-vis .admin-filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('admin-vis-filter-' + tipo).classList.add('active');
+  renderAdminVisibilidad();
+}
+
+function _esVisible(item) {
+  return item.visibleCarta !== false;
+}
+
+function renderAdminVisibilidad() {
+  const lista = document.getElementById('admin-vis-lista');
+  const sub = document.getElementById('admin-header-sub');
+  const query = (document.getElementById('admin-vis-search-input').value || '').toLowerCase().trim();
+
+  if (adminVisFiltro === 'menus') {
+    let menus = (db.menus || []).slice();
+    if (query) menus = menus.filter(m => (m.nombre || '').toLowerCase().includes(query));
+    menus.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+
+    const ocultos = (db.menus || []).filter(m => !_esVisible(m)).length;
+    sub.textContent = `${menus.length} menú${menus.length !== 1 ? 's' : ''}` + (ocultos ? ` · ${ocultos} oculto${ocultos !== 1 ? 's' : ''}` : '');
+
+    if (!menus.length) {
+      lista.innerHTML = `<div class="admin-empty"><i class="fas fa-book-open"></i><p>No hay menús creados todavía.</p></div>`;
+      return;
+    }
+
+    lista.innerHTML = `<div class="vis-group-label"><i class="fas fa-book-open"></i> Menús</div>` +
+      menus.map(m => {
+        const visible = _esVisible(m);
+        const iconoEl = m.imagen ? `<img src="${escHtml(m.imagen)}" alt="">` : (m.icono || '🍽️');
+        return `
+          <div class="vis-row ${visible ? '' : 'hidden-item'}">
+            <div class="vis-row-icon">${iconoEl}</div>
+            <div class="vis-row-info">
+              <div class="vis-row-nombre">${escHtml(m.nombre)}</div>
+              <div class="vis-row-meta">
+                ${formatEur(round2(parseFloat(m.precio)||0))}
+                ${!visible ? `<span class="vis-oculto-tag">Oculto en carta</span>` : ''}
+              </div>
+            </div>
+            <div class="admin-toggle ${visible ? 'on' : ''}" onclick="toggleMenuVisible(this, ${m.id})" title="${visible ? 'Visible en la carta' : 'Oculto para el cliente'}"></div>
+          </div>`;
+      }).join('');
+    return;
+  }
+
+  let productos = (db.productos || []).slice();
+  if (adminVisFiltro !== 'todos') {
+    productos = productos.filter(p => p.tipo === adminVisFiltro);
+  }
+  if (query) {
+    productos = productos.filter(p => (p.nombre || '').toLowerCase().includes(query));
+  }
+  productos.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+
+  const ocultosCount = productos.filter(p => !_esVisible(p)).length;
+  sub.textContent = `${productos.length} producto${productos.length !== 1 ? 's' : ''}` + (ocultosCount ? ` · ${ocultosCount} oculto${ocultosCount !== 1 ? 's' : ''}` : '');
+
+  if (!productos.length) {
+    lista.innerHTML = `<div class="admin-empty"><i class="fas fa-utensils"></i><p>No se encontraron productos con estos filtros.</p></div>`;
+    return;
+  }
+
+  // Agrupar por tipo cuando el filtro es "todos"
+  const grupos = adminVisFiltro === 'todos'
+    ? [
+        { tipo: 'cocina', label: '🍳 Cocina', items: productos.filter(p => p.tipo === 'cocina') },
+        { tipo: 'barra',  label: '🥃 Barra',  items: productos.filter(p => p.tipo === 'barra') }
+      ].filter(g => g.items.length)
+    : [{ tipo: adminVisFiltro, label: adminVisFiltro === 'cocina' ? '🍳 Cocina' : '🥃 Barra', items: productos }];
+
+  lista.innerHTML = grupos.map(g => `
+    <div class="vis-group-label"><span>${g.label}</span></div>
+    ${g.items.map(p => {
+      const visible = _esVisible(p);
+      const iconoEl = p.imagen ? `<img src="${escHtml(p.imagen)}" alt="">` : (p.icono || '🍽️');
+      return `
+        <div class="vis-row ${visible ? '' : 'hidden-item'}">
+          <div class="vis-row-icon">${iconoEl}</div>
+          <div class="vis-row-info">
+            <div class="vis-row-nombre">${escHtml(p.nombre)}</div>
+            <div class="vis-row-meta">
+              ${formatEur(round2(parseFloat(p.precio)||0))}
+              ${!visible ? `<span class="vis-oculto-tag">Oculto en carta</span>` : ''}
+            </div>
+          </div>
+          <div class="admin-toggle ${visible ? 'on' : ''}" onclick="toggleProductoVisible(this, ${p.id})" title="${visible ? 'Visible en la carta' : 'Oculto para el cliente'}"></div>
+        </div>`;
+    }).join('')}
+  `).join('');
+}
+
+/* Alterna visibilidad de un producto y lo guarda directamente en Firebase */
+async function toggleProductoVisible(toggleEl, prodId) {
+  const p = (db.productos || []).find(x => x.id === prodId);
+  if (!p) return;
+  const idx = db.productos.indexOf(p);
+  const nuevoValor = !_esVisible(p);
+
+  // Actualización optimista de UI
+  p.visibleCarta = nuevoValor;
+  toggleEl.classList.toggle('on', nuevoValor);
+  const row = toggleEl.closest('.vis-row');
+  row.classList.toggle('hidden-item', !nuevoValor);
+  const meta = row.querySelector('.vis-row-meta');
+  const tagHTML = !nuevoValor ? `<span class="vis-oculto-tag">Oculto en carta</span>` : '';
+  meta.innerHTML = `${formatEur(round2(parseFloat(p.precio)||0))}${tagHTML}`;
+  toggleEl.title = nuevoValor ? 'Visible en la carta' : 'Oculto para el cliente';
+
+  try {
+    await rtdb.ref('/productos/' + idx + '/visibleCarta').set(nuevoValor);
+    toast(nuevoValor ? `✅ "${p.nombre}" visible en la carta` : `🙈 "${p.nombre}" oculto de la carta`, 'success', nuevoValor ? 'fa-eye' : 'fa-eye-slash');
+    renderAdminVisibilidad();
+  } catch (e) {
+    console.error(e);
+    // Revertir en caso de error
+    p.visibleCarta = !nuevoValor;
+    toast('No se pudo actualizar. Inténtalo de nuevo.', 'danger', 'fa-triangle-exclamation');
+    renderAdminVisibilidad();
+  }
+}
+
+/* Alterna visibilidad de un menú y lo guarda directamente en Firebase */
+async function toggleMenuVisible(toggleEl, menuId) {
+  const m = (db.menus || []).find(x => x.id === menuId);
+  if (!m) return;
+  const idx = db.menus.indexOf(m);
+  const nuevoValor = !_esVisible(m);
+
+  m.visibleCarta = nuevoValor;
+  toggleEl.classList.toggle('on', nuevoValor);
+  const row = toggleEl.closest('.vis-row');
+  row.classList.toggle('hidden-item', !nuevoValor);
+  const meta = row.querySelector('.vis-row-meta');
+  const tagHTML = !nuevoValor ? `<span class="vis-oculto-tag">Oculto en carta</span>` : '';
+  meta.innerHTML = `${formatEur(round2(parseFloat(m.precio)||0))}${tagHTML}`;
+  toggleEl.title = nuevoValor ? 'Visible en la carta' : 'Oculto para el cliente';
+
+  try {
+    await rtdb.ref('/menus/' + idx + '/visibleCarta').set(nuevoValor);
+    toast(nuevoValor ? `✅ Menú "${m.nombre}" visible en la carta` : `🙈 Menú "${m.nombre}" oculto de la carta`, 'success', nuevoValor ? 'fa-eye' : 'fa-eye-slash');
+    renderAdminVisibilidad();
+  } catch (e) {
+    console.error(e);
+    m.visibleCarta = !nuevoValor;
+    toast('No se pudo actualizar. Inténtalo de nuevo.', 'danger', 'fa-triangle-exclamation');
+    renderAdminVisibilidad();
+  }
 }
 
 function abrirEditorProducto(prodId) {
@@ -4640,6 +4958,15 @@ function renderCuentaPage() {
     </div>`).join('');
 
   if (cuentaSolicitada) {
+    const propinaInfo = ticket.propina && ticket.propina.monto > 0
+      ? `<div class="info-card" style="border-color:rgba(201,162,39,0.3);background:rgba(201,162,39,0.06)">
+          <div class="info-card-icon" style="background:rgba(201,162,39,0.15);color:var(--gold)"><i class="fas fa-heart"></i></div>
+          <div class="info-card-text">
+            <div class="info-card-title" style="color:var(--gold)">Gracias por tu propina de ${formatEur(ticket.propina.monto)}</div>
+            <div class="info-card-desc">Coméntaselo al personal al pagar para que puedan añadirla a tu ticket. ¡Significa mucho para el equipo!</div>
+          </div>
+        </div>`
+      : '';
     wrap.innerHTML = `
       <div class="cuenta-summary-card fade-in">
         <div class="cuenta-total-section">
@@ -4648,6 +4975,7 @@ function renderCuentaPage() {
         </div>
         <div class="cuenta-items-section">${lineasHTML}</div>
       </div>
+      ${propinaInfo}
       <div class="info-card" style="border-color:rgba(200,80,42,0.25);background:var(--accent-lt)">
         <div class="info-card-icon" style="background:rgba(200,80,42,0.12);color:var(--accent)">
           <i class="fas fa-bell"></i>
@@ -4668,6 +4996,7 @@ function renderCuentaPage() {
       </div>
       <div class="cuenta-items-section">${lineasHTML}</div>
     </div>
+    ${buildPropinaCard(total)}
     <div class="info-card" style="margin-bottom:16px">
       <div class="info-card-icon info"><i class="fas fa-info-circle"></i></div>
       <div class="info-card-text">
@@ -4682,6 +5011,87 @@ function renderCuentaPage() {
       <i class="fas fa-receipt"></i> Ver detalle completo
     </button>
   `;
+}
+
+/* ══════════════════════════════════════════════════
+   PROPINA SUGERIDA — tarjeta con mensaje y selector
+══════════════════════════════════════════════════ */
+function buildPropinaCard(total) {
+  const opciones = [5, 10, 15];
+  const chipsHTML = opciones.map(pct => {
+    const monto = round2(total * pct / 100);
+    const active = propinaPct === pct;
+    return `<div class="propina-chip ${active ? 'active' : ''}" onclick="seleccionarPropinaPct(${pct})">
+      <div class="propina-chip-pct">${pct}%</div>
+      <div class="propina-chip-eur">${formatEur(monto)}</div>
+    </div>`;
+  }).join('');
+
+  const sinPropinaActive = propinaPct === 0;
+  const chipsConSinPropina = chipsHTML + `
+    <div class="propina-chip ${sinPropinaActive ? 'active' : ''}" onclick="seleccionarPropinaPct(0)">
+      <div class="propina-chip-pct">—</div>
+      <div class="propina-chip-eur">Sin propina</div>
+    </div>`;
+
+  const montoActual = calcularPropina(total);
+  const summaryHTML = `
+    <div class="propina-summary">
+      <span class="propina-summary-label">Propina seleccionada</span>
+      <span class="propina-summary-amount ${montoActual > 0 ? '' : 'zero'}">${montoActual > 0 ? formatEur(montoActual) : 'Ninguna'}</span>
+    </div>`;
+
+  return `<div class="propina-card fade-in">
+    <div class="propina-head">
+      <div class="propina-icon"><i class="fas fa-heart"></i></div>
+      <div class="propina-title">¿Quieres dejar una propina?</div>
+    </div>
+    <div class="propina-msg">
+      Aquí no es costumbre cobrar propina, pero si quieres dejar algo, <strong>todo se destina a celebraciones
+      del equipo, eventos del personal y a apoyar a sus familiares y amigos más cercanos</strong>.
+      Cada céntimo recaudado nos acerca y nos une más como familia. ¡Muchas gracias! 💛
+    </div>
+    <div class="propina-options">${chipsConSinPropina}</div>
+    <div class="propina-custom-wrap">
+      <input type="number" inputmode="decimal" min="0" step="0.50" placeholder="Otra cantidad (€)"
+        id="propina-custom-input" value="${propinaCustom != null ? propinaCustom : ''}"
+        oninput="seleccionarPropinaCustom(this.value)">
+    </div>
+    ${summaryHTML}
+  </div>`;
+}
+
+/* Calcula el importe de propina actualmente seleccionado */
+function calcularPropina(total) {
+  if (propinaCustom != null && propinaCustom > 0) return round2(propinaCustom);
+  if (propinaPct != null && propinaPct > 0) return round2(total * propinaPct / 100);
+  return 0;
+}
+
+function seleccionarPropinaPct(pct) {
+  propinaPct = pct;
+  propinaCustom = null;
+  renderCuentaPage();
+}
+
+function seleccionarPropinaCustom(value) {
+  const v = parseFloat(value);
+  if (isNaN(v) || v <= 0) {
+    propinaCustom = null;
+  } else {
+    propinaCustom = v;
+    propinaPct = null;
+  }
+  // Actualizar solo el resumen y los chips, sin perder el foco del input
+  const ticket = getTicket();
+  const total = calcTotal(ticket?.items || []);
+  document.querySelectorAll('.propina-chip').forEach(el => el.classList.remove('active'));
+  const summary = document.querySelector('.propina-summary-amount');
+  if (summary) {
+    const monto = calcularPropina(total);
+    summary.textContent = monto > 0 ? formatEur(monto) : 'Ninguna';
+    summary.classList.toggle('zero', monto <= 0);
+  }
 }
 
 /* ══════════════════════════════════════════════════
@@ -4728,6 +5138,17 @@ async function solicitarCuenta() {
 
     await rtdb.ref('/tickets/' + ticketKey + '/tiketSolicitadoABarra').set(true);
     await rtdb.ref('/tickets/' + ticketKey + '/tiketSolicitadoHora').set(horaActual());
+
+    // Guardar la propina sugerida por el cliente (si eligió alguna)
+    const totalActual = calcTotal(ticket.items || []);
+    const montoPropina = calcularPropina(totalActual);
+    if (montoPropina > 0) {
+      await rtdb.ref('/tickets/' + ticketKey + '/propina').set({
+        monto: montoPropina,
+        porcentaje: propinaPct,
+        hora: horaActual()
+      });
+    }
 
     toast('🔔 Cuenta solicitada · El personal viene ahora', 'success', 'fa-bell');
     // La UI se actualiza sola vía el listener on('value')
