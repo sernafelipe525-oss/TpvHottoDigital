@@ -276,6 +276,7 @@ body::after {
    ANIMATIONS
 ═══════════════════════════ */
 @keyframes fadeUp   { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideUp  { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
 @keyframes scaleIn  { from { opacity:0; transform:scale(0.93) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
 @keyframes slideRight { from{ opacity:0; transform:translateX(-14px); } to{ opacity:1; transform:translateX(0); } }
@@ -4361,6 +4362,11 @@ function renderMesas() {
         style="color:var(--info);border-color:rgba(74,158,255,0.35)">
         <i class="fas fa-map-location-dot"></i>
       </button>
+      <button class="btn btn-ghost" onclick="mostrarReservasCamarero()" title="Ver reservas de hoy"
+        style="color:var(--barra);border-color:rgba(74,158,255,0.35);position:relative" id="btn-reservas-camarero">
+        <i class="fas fa-calendar-alt"></i>
+        ${(() => { const hoy = new Date().toISOString().split('T')[0]; const n = (db.reservas||[]).filter(r=>r.fecha===hoy).length; return n > 0 ? `<span style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:var(--barra);color:#fff;font-size:0.55rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)">${n}</span>` : ''; })()}
+      </button>
     </div>
     <nav class="salon-tabs" id="salon-tabs-nav">${_buildSalonTabs(mesas)}</nav>
     <div class="mesas-search-wrap">
@@ -4554,7 +4560,7 @@ function buildMesaBtn(id) {
     }
     
     return `<button class="mesa reservada" 
-              onclick="openMesa('${id}')" 
+              onclick="showReservaModal('${id}')" 
               title="Reserva: ${reserva.nombre} a ${reserva.hora}${activa ? ' [ACTIVA]' : ''}"
               style="${activa ? 'background:rgba(0,229,160,0.08);border-color:rgba(0,229,160,0.35)' : ''}">
       <span class="mesa-num">${id}</span>
@@ -4622,11 +4628,16 @@ function showReservaModal(id) {
   const r = getReservaHoy(id);
   if (!r) { openMesa(id); return; }
 
-  // Check if ticket already exists (reservation being attended)
   const existingTicket = (db.tickets||[]).find(t => t.mesa === id);
-
   const clientes = db.clientesHabituales || [];
   const esHabitual = clientes.find(c => c.id === r.clienteId);
+
+  // ── Estado del ticket existente ──
+  // caso A: ticket existe y YA tiene reserva vinculada → mostrar info + ir al ticket
+  // caso B: ticket existe SIN reserva vinculada      → ofrecer vincular o esperar
+  // caso C: sin ticket                               → tomar reserva normal
+  const ticketConReserva = existingTicket && existingTicket.reservaInfo;
+  const ticketSinReserva = existingTicket && !existingTicket.reservaInfo;
 
   const tomadaInfo = r.tomadaPor
     ? `<div style="margin-top:10px;padding:10px 12px;background:rgba(0,229,160,0.07);border:1px solid rgba(0,229,160,0.25);border-radius:var(--r);display:flex;align-items:center;gap:8px">
@@ -4641,6 +4652,51 @@ function showReservaModal(id) {
         <div style="font-size:0.7rem;color:var(--warning);font-weight:600">Pendiente de ser atendida</div>
        </div>`;
 
+  // ── Bloque de aviso ticket existente sin reserva ──
+  const ticketActivoInfo = ticketSinReserva
+    ? `<div style="margin-top:0;margin-bottom:14px;padding:12px 14px;background:rgba(247,201,72,0.06);border:1px solid rgba(247,201,72,0.28);border-radius:var(--r-md);display:flex;align-items:flex-start;gap:10px">
+        <i class="fas fa-triangle-exclamation" style="color:var(--warning);font-size:0.9rem;margin-top:2px;flex-shrink:0"></i>
+        <div>
+          <div style="font-size:0.75rem;font-weight:700;color:var(--warning);margin-bottom:3px">Mesa con ticket abierto</div>
+          <div style="font-size:0.68rem;color:var(--muted);line-height:1.5">Esta mesa tiene un pedido en curso. Puedes vincular la reserva a ese pedido o esperar a que se cierre.</div>
+        </div>
+       </div>`
+    : '';
+
+  // ── Botones de acción según caso ──
+  let accionesHTML = '';
+  if (ticketConReserva) {
+    // Caso A: ya tiene reserva vinculada, solo ir al ticket
+    accionesHTML = `
+      <button class="btn btn-ghost" style="flex:1;min-width:90px" onclick="closeReservaModal()">
+        <i class="fas fa-xmark"></i> Cerrar
+      </button>
+      <button class="btn btn-info" style="flex:2" onclick="closeReservaModal();openMesa('${id}')">
+        <i class="fas fa-eye"></i> Ver pedido
+      </button>`;
+  } else if (ticketSinReserva) {
+    // Caso B: ticket abierto sin reserva → vincular o esperar
+    accionesHTML = `
+      <button class="btn btn-ghost" style="flex:1;min-width:80px" onclick="closeReservaModal()">
+        <i class="fas fa-clock"></i> Esperar
+      </button>
+      <button class="btn btn-info" style="flex:1;min-width:80px" onclick="closeReservaModal();openMesa('${id}')">
+        <i class="fas fa-eye"></i> Ver ticket
+      </button>
+      <button class="btn btn-primary" style="flex:2" onclick="vincularReservaATicket('${id}', ${r.id})">
+        <i class="fas fa-link"></i> Vincular reserva
+      </button>`;
+  } else {
+    // Caso C: mesa libre → tomar reserva normal
+    accionesHTML = `
+      <button class="btn btn-ghost" style="flex:1;min-width:90px" onclick="closeReservaModal()">
+        <i class="fas fa-xmark"></i> Cerrar
+      </button>
+      <button class="btn btn-primary" style="flex:2" onclick="tomarReserva('${id}', ${r.id})">
+        <i class="fas fa-utensils"></i> Tomar pedido
+      </button>`;
+  }
+
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
   modal.id = 'reserva-modal';
@@ -4653,6 +4709,8 @@ function showReservaModal(id) {
         Reserva · Mesa ${id}
         <button onclick="closeReservaModal()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0 4px;line-height:1"><i class="fas fa-xmark"></i></button>
       </div>
+
+      ${ticketActivoInfo}
 
       <!-- Guest info -->
       <div style="background:var(--surface2);border:1px solid rgba(74,158,255,0.2);border-radius:var(--r-md);padding:16px;margin-bottom:14px">
@@ -4694,20 +4752,8 @@ function showReservaModal(id) {
 
       <!-- Actions -->
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost" style="flex:1;min-width:90px" onclick="closeReservaModal()">
-          <i class="fas fa-xmark"></i> Cerrar
-        </button>
-        ${existingTicket
-          ? `<button class="btn btn-info" style="flex:2" onclick="closeReservaModal();openMesa('${id}')">
-               <i class="fas fa-eye"></i> Ver pedido activo
-             </button>`
-          : `<button class="btn btn-primary" style="flex:2" onclick="tomarReserva('${id}', ${r.id})">
-               <i class="fas fa-utensils"></i> Tomar pedido
-             </button>`}
+        ${accionesHTML}
       </div>
-      ${r.tomadaPor && !existingTicket
-        ? `<p style="text-align:center;font-size:0.68rem;color:var(--muted);margin-top:10px"><i class="fas fa-info-circle" style="margin-right:4px"></i>Otro camarero ya está atendiendo esta reserva</p>`
-        : ''}
     </div>`;
 
   document.body.appendChild(modal);
@@ -4716,6 +4762,76 @@ function showReservaModal(id) {
 
 function closeReservaModal() {
   document.getElementById('reserva-modal')?.remove();
+}
+
+/* ════════════════════════════════════
+   PANEL RESERVAS — ACCESO DIRECTO CAMARERO
+════════════════════════════════════ */
+function mostrarReservasCamarero() {
+  document.getElementById('reservas-camarero-panel')?.remove();
+
+  const hoy = new Date().toISOString().split('T')[0];
+  const reservasHoy = (db.reservas||[])
+    .filter(r => r.fecha === hoy)
+    .sort((a,b) => a.hora.localeCompare(b.hora));
+
+  const filas = reservasHoy.length === 0
+    ? `<div style="padding:30px;text-align:center;color:var(--muted);font-size:0.85rem">
+        <i class="fas fa-calendar-xmark" style="font-size:1.6rem;display:block;margin-bottom:10px;opacity:0.3"></i>
+        Sin reservas para hoy
+       </div>`
+    : reservasHoy.map(r => {
+        const activa = isReservaActivaVisualmente(r);
+        const estadoBadge = r.estado === 'tomada'
+          ? `<span style="font-size:0.6rem;background:rgba(0,229,160,0.12);color:var(--success);padding:2px 8px;border-radius:100px;border:1px solid rgba(0,229,160,0.3);font-weight:700">Atendida</span>`
+          : r.estado === 'cerrada'
+          ? `<span style="font-size:0.6rem;background:rgba(255,255,255,0.05);color:var(--muted);padding:2px 8px;border-radius:100px;border:1px solid rgba(255,255,255,0.1);font-weight:700">Cerrada</span>`
+          : activa
+          ? `<span style="font-size:0.6rem;background:rgba(247,201,72,0.12);color:var(--warning);padding:2px 8px;border-radius:100px;border:1px solid rgba(247,201,72,0.3);font-weight:700;animation:pulse 2s infinite">¡Ahora!</span>`
+          : `<span style="font-size:0.6rem;background:rgba(74,158,255,0.1);color:var(--barra);padding:2px 8px;border-radius:100px;border:1px solid rgba(74,158,255,0.25);font-weight:700">Pendiente</span>`;
+        return `
+        <div onclick="cerrarPanelReservasCamarero();showReservaModal('${r.mesa}')"
+             style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--r);background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:background 0.15s;margin-bottom:8px"
+             onmouseenter="this.style.background='var(--surface3)'" onmouseleave="this.style.background='var(--surface2)'">
+          <div style="width:38px;height:38px;border-radius:8px;background:rgba(74,158,255,0.12);border:1px solid rgba(74,158,255,0.25);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+            <span style="font-size:0.58rem;font-weight:800;color:var(--barra);font-family:var(--fh);letter-spacing:0.5px">MESA</span>
+            <span style="font-size:0.9rem;font-weight:800;color:var(--text);line-height:1">${r.mesa}</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:0.82rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(r.nombre)}</div>
+            <div style="font-size:0.68rem;color:var(--muted);margin-top:2px;display:flex;gap:8px;align-items:center">
+              <span><i class="fas fa-clock" style="color:var(--barra);margin-right:3px;font-size:0.6rem"></i>${r.hora}</span>
+              <span><i class="fas fa-users" style="margin-right:3px;font-size:0.6rem"></i>${r.personas} pers.</span>
+              ${r.telefono ? `<span><i class="fas fa-phone" style="margin-right:3px;font-size:0.6rem"></i>${escHtml(r.telefono)}</span>` : ''}
+            </div>
+            ${r.nota ? `<div style="font-size:0.62rem;color:var(--warning);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><i class="fas fa-thumbtack" style="margin-right:3px;font-size:0.55rem"></i>${escHtml(r.nota)}</div>` : ''}
+          </div>
+          <div style="flex-shrink:0">${estadoBadge}</div>
+          <i class="fas fa-chevron-right" style="color:var(--muted);font-size:0.7rem;flex-shrink:0"></i>
+        </div>`;
+      }).join('');
+
+  const panel = document.createElement('div');
+  panel.id = 'reservas-camarero-panel';
+  panel.style.cssText = 'position:fixed;inset:0;z-index:9000;display:flex;align-items:flex-end;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)';
+  panel.innerHTML = `
+    <div style="width:100%;max-width:520px;margin:0 auto;background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:20px 16px 32px;max-height:80vh;display:flex;flex-direction:column;animation:slideUp 0.25s ease both">
+      <div style="width:36px;height:4px;border-radius:2px;background:var(--border-hi);margin:0 auto 18px"></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(74,158,255,0.12);color:var(--barra);display:flex;align-items:center;justify-content:center;font-size:0.85rem"><i class="fas fa-calendar-alt"></i></div>
+        <span style="font-size:1rem;font-weight:800;font-family:var(--fh)">Reservas de hoy</span>
+        ${reservasHoy.length > 0 ? `<span style="margin-left:auto;font-size:0.68rem;background:rgba(74,158,255,0.1);color:var(--barra);padding:3px 10px;border-radius:100px;border:1px solid rgba(74,158,255,0.25);font-weight:700">${reservasHoy.length} reserva${reservasHoy.length>1?'s':''}</span>` : ''}
+      </div>
+      <div style="overflow-y:auto;flex:1">
+        ${filas}
+      </div>
+    </div>`;
+  panel.addEventListener('click', e => { if (e.target === panel) cerrarPanelReservasCamarero(); });
+  document.body.appendChild(panel);
+}
+
+function cerrarPanelReservasCamarero() {
+  document.getElementById('reservas-camarero-panel')?.remove();
 }
 
 function tomarReserva(mesaId, reservaId) {
@@ -4736,6 +4852,28 @@ function tomarReserva(mesaId, reservaId) {
   toast(`Reserva de ${r?.nombre||''} tomada`, 'success', 'fa-calendar-check');
   sync();
   sync();
+}
+
+// 🔗 Vincular una reserva a un ticket ya abierto en esa mesa
+function vincularReservaATicket(mesaId, reservaId) {
+  const r = (db.reservas||[]).find(x => x.id === reservaId);
+  const t = (db.tickets||[]).find(x => x.mesa === mesaId);
+  if (!r || !t) {
+    toast('No se pudo vincular la reserva', 'danger');
+    return;
+  }
+  // Vincular info de reserva al ticket existente
+  t.reservaInfo = { nombre: r.nombre, personas: r.personas, hora: r.hora, nota: r.nota || '', telefono: r.telefono || '', id: r.id, estado: 'tomada' };
+  // Marcar reserva como tomada
+  r.tomadaPor  = session.user;
+  r.tomadaHora = new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  r.estado = 'tomada';
+  closeReservaModal();
+  sync();
+  // Abrir el ticket de la mesa para que el camarero pueda añadir pedidos
+  session.mesa = mesaId;
+  render();
+  toast(`Reserva de ${r.nombre} vinculada al ticket · Mesa ${mesaId}`, 'success', 'fa-link');
 }
 
 // 🎯 Confirmar que se está atendiendo la reserva
