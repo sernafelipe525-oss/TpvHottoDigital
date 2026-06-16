@@ -2150,6 +2150,151 @@ input[type="file"]:hover { border-color: rgba(255,107,53,0.4); }
   color: var(--accent); white-space: nowrap;
 }
 .variante-opt-price.free { color: var(--muted); font-weight: 500; }
+
+/* ════════════════════════════════════
+   CROQUIS DE SALÓN — Editor y Vista
+════════════════════════════════════ */
+.croquis-wrap {
+  position: relative;
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px
+  ),
+  repeating-linear-gradient(
+    90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px
+  );
+  background-color: var(--surface);
+  cursor: default;
+  touch-action: none;
+  min-height: 400px;
+}
+.croquis-canvas {
+  position: relative;
+  width: 1200px;
+  min-height: 700px;
+}
+.cq-mesa {
+  position: absolute;
+  width: 56px; height: 56px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  font-family: var(--fh);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #fff;
+  cursor: grab;
+  user-select: none;
+  transition: box-shadow 0.15s, transform 0.1s;
+  border: 2px solid rgba(255,255,255,0.12);
+  z-index: 2;
+}
+.cq-mesa:active { cursor: grabbing; }
+.cq-mesa.round  { border-radius: 50%; }
+.cq-mesa.rect   { width: 80px; height: 48px; border-radius: 8px; }
+.cq-mesa.selected {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(255,107,53,0.7);
+  transform: scale(1.06);
+  z-index: 10;
+}
+.cq-mesa.ocupada { filter: brightness(1.25); }
+.cq-mesa .cq-num { font-size: 0.82rem; line-height: 1; }
+.cq-mesa .cq-sub { font-size: 0.5rem; font-weight: 600; opacity: 0.75; margin-top: 2px; }
+/* Círculo de estado dentro de la mesa en vista camarero */
+.cq-mesa .cq-dot {
+  position: absolute;
+  top: 4px; right: 5px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.3);
+}
+/* Mesa sin colocar — lista de arrastre */
+.cq-pool-item {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  border-radius: 9px;
+  font-family: var(--fh); font-size: 0.7rem; font-weight: 800;
+  color: #fff; cursor: grab;
+  border: 2px dashed rgba(255,255,255,0.25);
+  transition: all 0.15s;
+  user-select: none;
+  flex-shrink: 0;
+}
+.cq-pool-item:hover { border-style: solid; transform: scale(1.08); }
+.cq-toolbar {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 10px;
+}
+.cq-shape-btn {
+  padding: 6px 12px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--surface3);
+  color: var(--text2);
+  font-family: var(--fh); font-size: 0.7rem; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.cq-shape-btn.active,
+.cq-shape-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(255,107,53,0.08); }
+.cq-salon-switcher {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.cq-salon-btn {
+  padding: 7px 16px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  font-family: var(--fh); font-size: 0.73rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.cq-salon-btn.active { color: #fff; border-color: var(--accent); background: rgba(255,107,53,0.12); }
+/* Vista camarero — overlay salones */
+.cq-view-wrap {
+  position: relative;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 39px, rgba(255,255,255,0.025) 39px, rgba(255,255,255,0.025) 40px
+  ),
+  repeating-linear-gradient(
+    90deg, transparent, transparent 39px, rgba(255,255,255,0.025) 39px, rgba(255,255,255,0.025) 40px
+  );
+  background-color: var(--surface);
+  max-height: 70vh;
+}
+.cq-view-canvas {
+  position: relative;
+  width: 1200px;
+  min-height: 700px;
+}
+.cq-view-mesa {
+  position: absolute;
+  width: 56px; height: 56px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  font-family: var(--fh); font-size: 0.7rem; font-weight: 800;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  z-index: 2;
+}
+.cq-view-mesa:hover { transform: scale(1.08); z-index: 5; }
+.cq-view-mesa.round { border-radius: 50%; }
+.cq-view-mesa.rect  { width: 80px; height: 48px; border-radius: 8px; }
+.cq-view-mesa.libre   { opacity: 0.55; }
+.cq-view-mesa.ocupada { box-shadow: 0 0 0 2px rgba(255,255,255,0.3), 0 4px 16px rgba(0,0,0,0.5); }
+.cq-view-mesa.por-entregar { animation: listo-pulse 1.8s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -3482,6 +3627,30 @@ rtdb.ref('/').on('value', (snapshot) => {
         _ttsAnunciadoTiket.delete('pedicli_' + mesa);
       }
     });
+
+    // ── Detección de platos listos para recoger (cocina avisó al camarero) ──
+    (db.tickets||[]).forEach(t => {
+      (t.items||[]).filter(i => i.listoParaRecoger && !i.entregado).forEach(i => {
+        const key = 'listo_' + i.uid;
+        if (!_ttsAnunciadoTiket.has(key)) {
+          _ttsAnunciadoTiket.add(key);
+          chime.play().catch(()=>{});
+          if (window.speechSynthesis) {
+            const utt = new SpeechSynthesisUtterance(`Plato listo, mesa ${t.mesa}`);
+            utt.lang = 'es-ES'; utt.rate = 0.92; utt.volume = 1;
+            speechSynthesis.speak(utt);
+          }
+        }
+      });
+    });
+    // Limpiar snapshots de items ya entregados
+    _ttsAnunciadoTiket.forEach(key => {
+      if (key.startsWith('listo_')) {
+        const uid = key.replace('listo_', '');
+        const entregado = (db.tickets||[]).some(t => (t.items||[]).some(i => i.uid === uid && i.entregado));
+        if (entregado) _ttsAnunciadoTiket.delete(key);
+      }
+    });
   }
 
   /* Sync badge — actualizar solo UNA VEZ (la primera conexión).
@@ -4188,6 +4357,10 @@ function renderMesas() {
       <button class="btn btn-ghost" style="margin-left:auto" onclick="init()">
         <i class="fas fa-right-from-bracket"></i> Salir
       </button>
+      <button class="btn btn-ghost" onclick="mostrarCroquisCamarero()" title="Ver mapa del salón"
+        style="color:var(--info);border-color:rgba(74,158,255,0.35)">
+        <i class="fas fa-map-location-dot"></i>
+      </button>
     </div>
     <nav class="salon-tabs" id="salon-tabs-nav">${_buildSalonTabs(mesas)}</nav>
     <div class="mesas-search-wrap">
@@ -4621,13 +4794,45 @@ function marcarEntregado(uid) {
   const it = t.items.find(i=>i.uid==uid);
   if (!it || it.entregado) return;
   it.entregado = true;
+  it.listoParaRecoger = false;
   it.horaEntrega = new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
   it.entregadoPor = session.user;
+
+  // ── Registrar despacho ──────────────────────────────
+  if (!db.despachos) db.despachos = [];
+  const ahora = new Date();
+  db.despachos.push({
+    uid:        it.uid,
+    nombre:     it.nombre,
+    icono:      it.icono || '🍽️',
+    imagen:     it.imagen || null,
+    zona:       it.tipo === 'barra' ? 'barra' : 'cocina',
+    precio:     parseFloat(it.precio) || 0,
+    cantidad:   parseInt(it.cantidad) || 1,
+    mesa:       session.mesa,
+    hora:       ahora.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+    fecha:      ahora.toISOString().split('T')[0],
+    ts:         ahora.getTime()
+  });
+  // ───────────────────────────────────────────────────
+
   sync();
   _refreshTicketInPlace(t);
-  // Si no quedan pendientes de entrega, notificar
+
+  // Comprobar si quedan platos pendientes
   const restantes = (t.items||[]).filter(i => i.enviado && !i.entregado).length;
-  if (restantes === 0) {
+  if (restantes === 0 && t.cobrado === true) {
+    // Todo entregado Y ya cobrado — cerrar el ticket
+    const reservaHoy = getReservaHoy(session.mesa);
+    if (reservaHoy && reservaHoy.estado === 'tomada') {
+      db.reservas = (db.reservas||[]).filter(r => r.id !== reservaHoy.id);
+    }
+    db.tickets = (db.tickets||[]).filter(x => x.mesa !== session.mesa);
+    sync();
+    toast(`✓ Todo entregado · Mesa ${session.mesa} cerrada`, 'success', 'fa-circle-check');
+    session.mesa = null;
+    renderMesas();
+  } else if (restantes === 0) {
     toast(`✓ Todo entregado en mesa ${session.mesa}`, 'success', 'fa-circle-check');
   } else {
     toast(`✓ Entregado · Faltan ${restantes}`, 'success', 'fa-check');
@@ -4640,11 +4845,28 @@ function marcarTodosEntregados() {
   if (!t) return;
   const pendientes = (t.items||[]).filter(i => i.enviado && !i.entregado);
   if (pendientes.length === 0) return;
-  const ahora = new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const ahora = new Date();
+  const horaStr = ahora.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
   pendientes.forEach(i => {
     i.entregado = true;
-    i.horaEntrega = ahora;
+    i.listoParaRecoger = false;
+    i.horaEntrega = horaStr;
     i.entregadoPor = session.user;
+    // ── Registrar despacho ──────────────────────────────
+    if (!db.despachos) db.despachos = [];
+    db.despachos.push({
+      uid:        i.uid,
+      nombre:     i.nombre,
+      icono:      i.icono || '🍽️',
+      imagen:     i.imagen || null,
+      zona:       i.tipo === 'barra' ? 'barra' : 'cocina',
+      precio:     parseFloat(i.precio) || 0,
+      cantidad:   parseInt(i.cantidad) || 1,
+      mesa:       session.mesa,
+      hora:       ahora.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+      fecha:      ahora.toISOString().split('T')[0],
+      ts:         ahora.getTime()
+    });
   });
   sync();
   _refreshTicketInPlace(t);
@@ -4682,7 +4904,9 @@ function renderTicket(t) {
             ${!i.enviado ? '' :
               estaEntregado
                 ? `<span class="item-entregado-badge"><i class="fas fa-circle-check"></i> Entregado ${i.horaEntrega||''}</span>`
-                : `<span class="item-enviado">✓ Listo</span>`}
+                  : i.listoParaRecoger
+                    ? `<span style="font-size:0.62rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(247,201,72,0.18);color:var(--warning);border:1px solid rgba(247,201,72,0.45);display:inline-flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite"><i class="fas fa-bell" style="font-size:0.55rem"></i> ¡Listo! Recoger en cocina</span>`
+                    : `<span class="item-enviado">✓ En preparación</span>`}
             ${!i.enviado ? `<button class="nota-tag" onclick="setNota('${i.uid}')">${escHtml(i.nota)||'+ Nota'}</button>` : ''}
             ${i.nota && i.enviado ? `<span style="font-size:0.6rem;color:var(--muted);font-style:italic">${escHtml(i.nota)}</span>` : ''}
           </div>
@@ -5808,8 +6032,9 @@ function _refreshTicketInPlace(t) {
             ${!i.enviado ? '' :
               estaEntregado
                 ? `<span class="item-entregado-badge"><i class="fas fa-circle-check"></i> Entregado ${i.horaEntrega||''}</span>`
-                : `<span class="item-enviado">✓ Listo</span>`}
-            ${!i.enviado ? `<button class="nota-tag" onclick="setNota('${i.uid}')">${escHtml(i.nota)||'+ Nota'}</button>` : ''}
+                : i.listoParaRecoger
+                  ? `<span style="font-size:0.62rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(247,201,72,0.18);color:var(--warning);border:1px solid rgba(247,201,72,0.45);display:inline-flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite"><i class="fas fa-bell" style="font-size:0.55rem"></i> ¡Listo! Recoger en cocina</span>`
+                  : `<span class="item-enviado">✓ En preparación</span>`}
             ${i.nota && i.enviado ? `<span style="font-size:0.6rem;color:var(--muted);font-style:italic">${escHtml(i.nota)}</span>` : ''}
           </div>
         </div>
@@ -5998,6 +6223,7 @@ function renderMonitor(z) {
   let totalPending = 0;
 
   (db.tickets||[]).forEach(t => {
+    // Pendientes = enviados, no entregados (incluye listoParaRecoger y en preparación)
     const pen = (t.items||[]).filter(i=>i.tipo===z && i.enviado && !i.entregado);
     if (!pen.length) return;
     totalPending += pen.length;
@@ -6005,8 +6231,12 @@ function renderMonitor(z) {
     const esVD      = t.mesa && t.mesa.startsWith('VD');
     const esTiketSol = t.tiketSolicitadoABarra === true && !esCobrado;
 
+    // Separar en preparación vs listos para recoger
+    const enPrep   = pen.filter(i => !i.listoParaRecoger);
+    const listos   = pen.filter(i =>  i.listoParaRecoger);
+
     cards += `
-      <div class="monitor-card" style="${esCobrado ? 'border-color:rgba(0,229,160,0.4);' : esTiketSol ? 'border-color:rgba(255,107,53,0.45);' : ''}">
+      <div class="monitor-card" style="${esCobrado ? 'border-color:rgba(0,229,160,0.4);' : esTiketSol ? 'border-color:rgba(255,107,53,0.45);' : listos.length > 0 && enPrep.length === 0 ? 'border-color:rgba(247,201,72,0.55);' : ''}">
         <div class="monitor-card-header">
           <span class="monitor-mesa-tag">
             <i class="fas fa-location-dot"></i> ${esVD ? '🍷 Barra Directa' : 'Mesa ' + t.mesa}
@@ -6014,12 +6244,14 @@ function renderMonitor(z) {
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
             ${esCobrado ? `<span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(0,229,160,0.15);color:var(--success);border:1px solid rgba(0,229,160,0.4);font-family:var(--fh);letter-spacing:0.3px;display:flex;align-items:center;gap:4px"><i class="fas fa-circle-check" style="font-size:0.55rem"></i>COBRADO</span>` : ''}
             ${esTiketSol ? `<span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(255,107,53,0.15);color:var(--accent);border:1px solid rgba(255,107,53,0.4);font-family:var(--fh);letter-spacing:0.3px;display:flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite"><i class="fas fa-file-invoice-dollar" style="font-size:0.55rem"></i>TIKET SOLICITADO</span>` : ''}
+            ${listos.length > 0 ? `<span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(247,201,72,0.18);color:var(--warning);border:1px solid rgba(247,201,72,0.45);font-family:var(--fh);letter-spacing:0.3px;display:flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite"><i class="fas fa-bell" style="font-size:0.55rem"></i>CAMARERO AVISADO</span>` : ''}
             <span class="monitor-count">${pen.length} pendiente${pen.length>1?'s':''}</span>
           </div>
         </div>
         ${esCobrado ? `<div style="padding:8px 16px;background:rgba(0,229,160,0.05);border-bottom:1px solid rgba(0,229,160,0.15);font-size:0.7rem;color:var(--success);font-weight:600;display:flex;align-items:center;gap:6px"><i class="fas fa-info-circle" style="font-size:0.62rem"></i>Pago recibido · Despacha los platos al cliente</div>` : ''}
         ${esTiketSol ? `<div style="padding:8px 16px;background:rgba(255,107,53,0.05);border-bottom:1px solid rgba(255,107,53,0.2);font-size:0.7rem;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:6px"><i class="fas fa-bell" style="font-size:0.62rem"></i>Tiket solicitado · ${t.tiketSolicitadoHora||''}</div>` : ''}
-        ${pen.map(i=>`
+
+        ${enPrep.map(i=>`
           <div class="monitor-item">
             <div class="mon-icon">
               ${i.imagen ? `<img src="${i.imagen}" style="width:100%;height:100%;object-fit:cover;border-radius:9px">` : (i.icono||'🍽️')}
@@ -6041,6 +6273,29 @@ function renderMonitor(z) {
               </button>` : ''}
             </div>
           </div>`).join('')}
+
+        ${listos.length > 0 ? `
+          <div style="padding:6px 16px;background:rgba(247,201,72,0.07);border-top:1px solid rgba(247,201,72,0.2);border-bottom:1px solid rgba(247,201,72,0.2);font-size:0.62rem;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--warning);display:flex;align-items:center;gap:6px">
+            <i class="fas fa-bell" style="font-size:0.65rem"></i> Esperando camarero
+          </div>
+          ${listos.map(i=>`
+          <div class="monitor-item" style="background:rgba(247,201,72,0.04)">
+            <div class="mon-icon" style="opacity:0.7">
+              ${i.imagen ? `<img src="${i.imagen}" style="width:100%;height:100%;object-fit:cover;border-radius:9px">` : (i.icono||'🍽️')}
+            </div>
+            <div class="mon-info">
+              <div class="mon-name" style="color:var(--warning)">${i.cantidad}× ${i.nombre}</div>
+              ${i.variante ? `<div style="margin-bottom:2px"><span class="variante-badge"><i class="fas fa-circle-dot" style="font-size:0.5rem"></i> ${escHtml(i.variante)}</span></div>` : ''}
+              <div class="mon-qty">${esVD ? '🍷 Barra Directa' : 'Mesa ' + t.mesa} · listo ${i.horaListo||''}</div>
+              ${i.nota ? `<div class="mon-nota"><i class="fas fa-thumbtack" style="font-size:0.6rem"></i> ${i.nota}</div>` : ''}
+            </div>
+            <div style="display:flex;gap:6px;flex-direction:column;flex-shrink:0">
+              <span style="font-size:0.62rem;font-weight:800;padding:6px 10px;border-radius:var(--r);background:rgba(247,201,72,0.13);color:var(--warning);border:1px solid rgba(247,201,72,0.35);white-space:nowrap;display:flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite">
+                <i class="fas fa-clock" style="font-size:0.6rem"></i> En camino
+              </span>
+            </div>
+          </div>`).join('')}
+        ` : ''}
       </div>`;
   });
 
@@ -6156,62 +6411,14 @@ function marcarListo(mesa, uid) {
   if (!t) return;
   const it = t.items.find(i=>i.uid==uid);
   if (!it) return;
-  it.entregado = true;
 
-  // ── Registrar despacho ──────────────────────────────
-  if (!db.despachos) db.despachos = [];
-  const ahora = new Date();
-  db.despachos.push({
-    uid:        it.uid,
-    nombre:     it.nombre,
-    icono:      it.icono || '🍽️',
-    imagen:     it.imagen || null,
-    zona:       it.tipo === 'barra' ? 'barra' : 'cocina',
-    precio:     parseFloat(it.precio) || 0,
-    cantidad:   parseInt(it.cantidad) || 1,
-    mesa:       mesa,
-    hora:       ahora.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
-    fecha:      ahora.toISOString().split('T')[0],
-    ts:         ahora.getTime()
-  });
-  // ───────────────────────────────────────────────────
+  // ── Nuevo flujo: marcar como "listo para recoger" (camarero debe confirmar entrega) ──
+  it.listoParaRecoger = true;
+  it.horaListo = new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  // (NO se pone entregado=true aquí; eso lo hará el camarero al entregar en mesa)
 
-  // Para tickets VD: comprobar si quedan platos pendientes en ESTE ticket concreto
-  if (mesa && mesa.startsWith('VD')) {
-    const aun = (t.items||[]).filter(i => i.tipo==='cocina' && i.enviado && !i.entregado);
-    if (aun.length === 0 && t.cobrado === true) {
-      // Todos despachados Y cobrado — eliminar SOLO este ticket VD (no los demás)
-      db.tickets = (db.tickets||[]).filter(x => x.mesa !== mesa);
-      sync();
-      toast('✓ Todos los platos entregados · Ticket VD cerrado', 'success', 'fa-check-double');
-    } else if (aun.length === 0 && !t.cobrado) {
-      // Platos listos pero pendiente de cobro
-      sync();
-      toast('✓ Plato entregado · Pendiente de cobro en barra', 'info', 'fa-clock');
-    } else {
-      sync();
-      toast(`Plato entregado · ${aun.length} pendiente${aun.length>1?'s':''}`, 'success');
-    }
-  } else {
-    // Mesa de salón: comprobar si hay platos aún pendientes
-    const aun = (t.items||[]).filter(i => i.enviado && !i.entregado);
-    if (aun.length === 0 && t.cobrado === true) {
-      // Todo entregado Y ya cobrado — cerrar el ticket
-      const reservaHoy = getReservaHoy(mesa);
-      if (reservaHoy && reservaHoy.estado === 'tomada') {
-        db.reservas = (db.reservas||[]).filter(r => r.id !== reservaHoy.id);
-      }
-      db.tickets = (db.tickets||[]).filter(x => x.mesa !== mesa);
-      sync();
-      toast(`✓ Todos los platos entregados · Mesa ${mesa} cerrada`, 'success', 'fa-check-double');
-    } else if (aun.length === 0 && !t.cobrado) {
-      sync();
-      toast('✓ Todo entregado · Pendiente de cobro', 'info', 'fa-clock');
-    } else {
-      sync();
-      toast('Marcado como listo', 'success');
-    }
-  }
+  sync();
+  toast(`🔔 Camarero avisado · Mesa ${mesa}`, 'success', 'fa-bell');
 }
 /* ════════════════════════════════════
    PERSONALIZACIÓN DE COLORES DE LETRAS
@@ -7430,6 +7637,9 @@ function renderAdmin() {
       <button class="admin-tab ${adminTab==='m'?'active':''}" id="tab-m" onclick="tab('m')">
         <i class="fas fa-chairs"></i> Mesas
       </button>
+      <button class="admin-tab ${adminTab==='cq'?'active':''}" id="tab-cq" onclick="tab('cq')">
+        <i class="fas fa-map-location-dot"></i> Croquis
+      </button>
       <button class="admin-tab ${adminTab==='rm'?'active':''}" id="tab-rm" onclick="tab('rm')">
         <i class="fas fa-trophy"></i> Ranking
       </button>
@@ -7482,6 +7692,10 @@ function tab(mode) {
 
   else if (mode === 'm') {
     renderMesasAdmin(c);
+  }
+
+  else if (mode === 'cq') {
+    renderCroquisAdmin(c);
   }
 
   else if (mode === 'rm') {
@@ -12246,6 +12460,410 @@ function ejecutarMoverMesa(mesaDestino) {
 
 function closeMoverModal() {
   document.getElementById('mover-modal')?.remove();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CROQUIS DE SALÓN — Editor (Admin) + Vista (Camarero)
+   Los datos se guardan en salon.croquis = [{uid, mesaId, x, y, forma}]
+   "forma" puede ser 'cuad' | 'round' | 'rect'
+================================================================ */
+
+// ── Estado del editor ──────────────────────────────────────────
+let _cqState = {
+  salonId: null,
+  dragging: null,          // { uid, startX, startY, origX, origY }
+  dragFromPool: null,      // mesaId que se está arrastrando desde la pool
+  selected: null,          // uid de la mesa seleccionada
+  forma: 'cuad',           // forma por defecto para nuevas mesas
+  poolDrag: null,
+};
+
+// ── Utilidades ─────────────────────────────────────────────────
+function _cqGetSalon(id) {
+  return (db.mesas?.salones || []).find(s => s.id === id);
+}
+function _cqActiveSalon() {
+  return _cqGetSalon(_cqState.salonId);
+}
+function _cqSalonMesaIds(salon) {
+  // Todos los IDs de mesa de este salón: prefijo + 1..cantidad
+  const ids = [];
+  for (let i = 1; i <= salon.cantidad; i++) ids.push(salon.prefijo + i);
+  return ids;
+}
+function _cqColocadas(salon) {
+  return salon.croquis || [];
+}
+function _cqSinColocar(salon) {
+  const colocadas = new Set(_cqColocadas(salon).map(m => m.mesaId));
+  return _cqSalonMesaIds(salon).filter(id => !colocadas.has(id));
+}
+function _cqColor(salon) {
+  return salon.color || '#ff6b35';
+}
+function _cqSave() {
+  // guardar croquis del salón activo en Firebase
+  sync();
+}
+function _cqMesaClass(forma) {
+  if (forma === 'round') return 'cq-mesa round';
+  if (forma === 'rect')  return 'cq-mesa rect';
+  return 'cq-mesa';
+}
+function _cqMesaStyle(mesa, color) {
+  const bg = color + 'cc';
+  return `left:${mesa.x}px;top:${mesa.y}px;background:${bg};box-shadow:0 4px 16px ${color}55;`;
+}
+
+// ── RENDER PRINCIPAL DEL EDITOR ────────────────────────────────
+function renderCroquisAdmin(container) {
+  const salones = db.mesas?.salones || [];
+  if (salones.length === 0) {
+    container.innerHTML = `<div class="monitor-empty"><div class="empty-icon">🏠</div><p>No hay salones</p><small>Crea salones en la pestaña Mesas primero.</small></div>`;
+    return;
+  }
+  if (!_cqState.salonId || !salones.find(s => s.id === _cqState.salonId)) {
+    _cqState.salonId = salones[0].id;
+  }
+
+  const salon = _cqActiveSalon();
+  const color = _cqColor(salon);
+  const colocadas = _cqColocadas(salon);
+  const sinColocar = _cqSinColocar(salon);
+
+  // ── Switcher de salones ──
+  const salonSwitcher = salones.map(s => `
+    <button class="cq-salon-btn${s.id === _cqState.salonId ? ' active' : ''}"
+      style="${s.id === _cqState.salonId ? 'border-color:'+_cqColor(s)+';color:'+_cqColor(s)+';background:'+_cqColor(s)+'18' : ''}"
+      onclick="_cqSwitchSalon('${s.id}')">
+      ${escHtml(s.nombre)}
+    </button>`).join('');
+
+  // ── Pool de mesas sin colocar ──
+  const poolHTML = sinColocar.length === 0
+    ? `<span style="font-size:0.72rem;color:var(--success);display:flex;align-items:center;gap:5px"><i class="fas fa-circle-check"></i> Todas las mesas colocadas</span>`
+    : sinColocar.map(id => `
+        <div class="cq-pool-item" id="pool-${id}"
+          style="background:${color}88;border-color:${color}"
+          draggable="true"
+          ondragstart="_cqPoolDragStart(event,'${id}')"
+          title="Arrastrar al plano">
+          ${id}
+        </div>`).join('');
+
+  // ── Mesas colocadas en el canvas ──
+  const mesasHTML = colocadas.map(m => `
+    <div id="cqm-${m.uid}"
+      class="${_cqMesaClass(m.forma)}${_cqState.selected === m.uid ? ' selected' : ''}"
+      style="${_cqMesaStyle(m, color)}"
+      draggable="true"
+      ondragstart="_cqDragStart(event,'${m.uid}')"
+      onclick="_cqSelectMesa('${m.uid}',event)">
+      <span class="cq-num">${m.mesaId}</span>
+    </div>`).join('');
+
+  // ── Barra de herramientas ──
+  const formas = [
+    {id:'cuad', icon:'fa-square', label:'Cuadrada'},
+    {id:'round',icon:'fa-circle', label:'Redonda'},
+    {id:'rect', icon:'fa-rectangle-wide', label:'Rectangular'},
+  ];
+  const formasBtns = formas.map(f => `
+    <button class="cq-shape-btn${_cqState.forma===f.id?' active':''}"
+      onclick="_cqSetForma('${f.id}')"
+      title="Nueva mesa: ${f.label}">
+      <i class="fas ${f.icon}"></i> ${f.label}
+    </button>`).join('');
+
+  const selInfo = _cqState.selected
+    ? (() => {
+        const m = colocadas.find(x => x.uid === _cqState.selected);
+        if (!m) return '';
+        const formaActual = formas.find(f => f.id === (m.forma||'cuad'));
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.3);border-radius:var(--r);font-size:0.72rem;color:var(--accent)">
+          <i class="fas fa-circle-dot" style="font-size:0.65rem"></i>
+          <strong>${m.mesaId}</strong>
+          ${formas.map(f => `<button class="cq-shape-btn${(m.forma||'cuad')===f.id?' active':''}" style="padding:4px 8px;font-size:0.62rem" onclick="_cqChangeForma('${m.uid}','${f.id}')"><i class="fas ${f.icon}"></i></button>`).join('')}
+          <button onclick="_cqRemoveMesa('${m.uid}')" style="margin-left:4px;padding:4px 10px;background:rgba(255,59,92,0.12);border:1px solid rgba(255,59,92,0.35);color:var(--danger);border-radius:var(--r);font-family:var(--fh);font-size:0.65rem;font-weight:700;cursor:pointer">
+            <i class="fas fa-arrow-left"></i> Quitar
+          </button>
+        </div>`;
+      })()
+    : '';
+
+  container.innerHTML = `
+    <div class="card" style="animation:fadeUp 0.3s ease both">
+      <div class="card-title">
+        <div class="ct-icon" style="background:rgba(74,158,255,0.12);color:var(--info)"><i class="fas fa-map-location-dot"></i></div>
+        Editor de Croquis
+        <span style="margin-left:auto;font-size:0.68rem;color:var(--muted);font-weight:400">Arrastra las mesas al plano</span>
+      </div>
+
+      <!-- Switcher salones -->
+      <div class="cq-salon-switcher" style="margin-bottom:12px">${salonSwitcher}</div>
+
+      <!-- Toolbar -->
+      <div class="cq-toolbar">
+        <span style="font-size:0.62rem;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase">Forma por defecto</span>
+        ${formasBtns}
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          ${selInfo}
+          <button class="btn btn-ghost" style="font-size:0.7rem;padding:6px 12px" onclick="_cqLimpiarTodo()" title="Quitar todas las mesas del plano">
+            <i class="fas fa-eraser"></i> Limpiar plano
+          </button>
+          <button class="btn btn-success" style="font-size:0.7rem;padding:6px 14px" onclick="_cqGuardar()">
+            <i class="fas fa-floppy-disk"></i> Guardar croquis
+          </button>
+        </div>
+      </div>
+
+      <!-- Pool de mesas sin colocar -->
+      ${sinColocar.length > 0 ? `
+      <div style="margin-bottom:10px;padding:10px 12px;background:var(--surface2);border:1px dashed var(--border-hi);border-radius:var(--r-md)">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.8px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+          <i class="fas fa-hand-pointer" style="font-size:0.65rem"></i>
+          Mesas sin colocar (arrastra al plano)
+          <span style="background:var(--surface3);padding:1px 7px;border-radius:100px;font-size:0.58rem">${sinColocar.length}</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${poolHTML}</div>
+      </div>` : `<div style="margin-bottom:10px;padding:8px 12px;background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:var(--r-md);font-size:0.72rem;color:var(--success);display:flex;align-items:center;gap:6px">
+        <i class="fas fa-circle-check"></i> Todas las mesas están colocadas en el plano
+      </div>`}
+
+      <!-- Canvas del plano -->
+      <div class="croquis-wrap" id="cq-canvas-wrap"
+        ondragover="_cqDragOver(event)"
+        ondrop="_cqDrop(event)"
+        onclick="_cqDeselect(event)">
+        <div class="croquis-canvas" id="cq-canvas">
+          ${mesasHTML}
+        </div>
+      </div>
+
+      <div style="margin-top:8px;font-size:0.65rem;color:var(--muted);display:flex;align-items:center;gap:6px">
+        <i class="fas fa-info-circle"></i>
+        Arrastra mesas desde el listado al plano · Selecciona una mesa para cambiar su forma · El plano se puede desplazar horizontalmente
+      </div>
+    </div>`;
+}
+
+// ── Acciones del editor ────────────────────────────────────────
+
+function _cqSwitchSalon(id) {
+  _cqState.salonId = id;
+  _cqState.selected = null;
+  const c = document.getElementById('adm-c');
+  if (c) renderCroquisAdmin(c);
+}
+
+function _cqSetForma(f) {
+  _cqState.forma = f;
+  const c = document.getElementById('adm-c');
+  if (c) renderCroquisAdmin(c);
+}
+
+function _cqSelectMesa(uid, e) {
+  e.stopPropagation();
+  _cqState.selected = _cqState.selected === uid ? null : uid;
+  const c = document.getElementById('adm-c');
+  if (c) renderCroquisAdmin(c);
+}
+
+function _cqDeselect(e) {
+  if (e.target.id === 'cq-canvas-wrap' || e.target.id === 'cq-canvas') {
+    if (_cqState.selected) {
+      _cqState.selected = null;
+      const c = document.getElementById('adm-c');
+      if (c) renderCroquisAdmin(c);
+    }
+  }
+}
+
+function _cqChangeForma(uid, forma) {
+  const salon = _cqActiveSalon();
+  if (!salon?.croquis) return;
+  const m = salon.croquis.find(x => x.uid === uid);
+  if (m) { m.forma = forma; _cqGuardar(false); }
+}
+
+function _cqRemoveMesa(uid) {
+  const salon = _cqActiveSalon();
+  if (!salon?.croquis) return;
+  salon.croquis = salon.croquis.filter(x => x.uid !== uid);
+  _cqState.selected = null;
+  _cqGuardar(false);
+}
+
+function _cqLimpiarTodo() {
+  const salon = _cqActiveSalon();
+  if (!salon) return;
+  if (!confirm(`¿Quitar todas las mesas del plano de "${salon.nombre}"?\nNo se borrará ninguna mesa, solo su posición.`)) return;
+  salon.croquis = [];
+  _cqState.selected = null;
+  _cqGuardar(false);
+}
+
+function _cqGuardar(showToast = true) {
+  sync();
+  if (showToast) toast('Croquis guardado', 'success', 'fa-floppy-disk');
+  const c = document.getElementById('adm-c');
+  if (c) renderCroquisAdmin(c);
+}
+
+// ── Drag & Drop desde pool ─────────────────────────────────────
+function _cqPoolDragStart(e, mesaId) {
+  _cqState.poolDrag = mesaId;
+  _cqState.dragging = null;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', 'pool:' + mesaId);
+}
+
+// ── Drag & Drop de mesas ya en el canvas ──────────────────────
+function _cqDragStart(e, uid) {
+  _cqState.dragging = uid;
+  _cqState.poolDrag = null;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', 'canvas:' + uid);
+  // Guardar offset del click dentro del elemento
+  const el = document.getElementById('cqm-' + uid);
+  if (el) {
+    const r = el.getBoundingClientRect();
+    e._cqOffX = e.clientX - r.left;
+    e._cqOffY = e.clientY - r.top;
+    e.dataTransfer.setData('cq-offx', e.clientX - r.left);
+    e.dataTransfer.setData('cq-offy', e.clientY - r.top);
+  }
+}
+
+function _cqDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function _cqDrop(e) {
+  e.preventDefault();
+  const raw = e.dataTransfer.getData('text/plain');
+  if (!raw) return;
+
+  const wrap = document.getElementById('cq-canvas-wrap');
+  if (!wrap) return;
+  const wrapRect = wrap.getBoundingClientRect();
+  const scrollX = wrap.scrollLeft;
+  const scrollY = wrap.scrollTop;
+
+  const offX = parseFloat(e.dataTransfer.getData('cq-offx') || '0') || 28;
+  const offY = parseFloat(e.dataTransfer.getData('cq-offy') || '0') || 28;
+
+  // Snap a rejilla de 20px
+  const snap = v => Math.round(v / 20) * 20;
+  const x = snap(Math.max(0, e.clientX - wrapRect.left + scrollX - offX));
+  const y = snap(Math.max(0, e.clientY - wrapRect.top  + scrollY - offY));
+
+  const salon = _cqActiveSalon();
+  if (!salon) return;
+  if (!salon.croquis) salon.croquis = [];
+
+  if (raw.startsWith('pool:')) {
+    const mesaId = raw.replace('pool:', '');
+    // Añadir nueva mesa al croquis
+    salon.croquis.push({ uid: 'cqm_' + Date.now(), mesaId, x, y, forma: _cqState.forma });
+  } else if (raw.startsWith('canvas:')) {
+    const uid = raw.replace('canvas:', '');
+    const m = salon.croquis.find(x => x.uid === uid);
+    if (m) { m.x = x; m.y = y; }
+  }
+
+  _cqGuardar(false);
+}
+
+// ── VISTA CAMARERO (modal sobre la vista de mesas) ─────────────
+function mostrarCroquisCamarero() {
+  const salones = db.mesas?.salones || [];
+  const salonesConCroquis = salones.filter(s => (s.croquis||[]).length > 0);
+
+  if (salonesConCroquis.length === 0) {
+    toast('El administrador aún no ha dibujado ningún croquis', 'info', 'fa-map-location-dot');
+    return;
+  }
+
+  let salonActivo = salonesConCroquis[0].id;
+
+  function buildModalHTML(actId) {
+    const salon = salonesConCroquis.find(s => s.id === actId) || salonesConCroquis[0];
+    const color = salon.color || '#ff6b35';
+    const colocadas = salon.croquis || [];
+
+    const switcherHTML = salonesConCroquis.map(s => `
+      <button class="cq-salon-btn${s.id === actId ? ' active' : ''}"
+        style="${s.id === actId ? 'border-color:'+_cqColor(s)+';color:'+_cqColor(s)+';background:'+_cqColor(s)+'18' : ''}"
+        onclick="_cqCamareroSwitch('${s.id}')">
+        ${escHtml(s.nombre)}
+      </button>`).join('');
+
+    const mesasHTML = colocadas.map(m => {
+      const ticket = (db.tickets||[]).find(t => t.mesa === m.mesaId);
+      const ocupada = ticket && (ticket.items||[]).some(i => i.enviado);
+      const porEntregar = ticket && (ticket.items||[]).some(i => i.enviado && !i.entregado);
+      const dotColor = porEntregar ? 'var(--warning)' : ocupada ? 'var(--danger)' : 'var(--success)';
+      const clsExtra = porEntregar ? ' por-entregar' : ocupada ? ' ocupada' : ' libre';
+      const bgAlpha = ocupada ? 'ee' : '77';
+      const tot = ticket ? calcTotal(ticket.items||[]) : 0;
+
+      return `<div class="cq-view-mesa${(m.forma==='round'?' round':m.forma==='rect'?' rect':'')}${clsExtra}"
+          style="left:${m.x}px;top:${m.y}px;background:${color}${bgAlpha};box-shadow:0 4px 14px ${color}44"
+          onclick="document.getElementById('croquis-modal')?.remove();openMesa('${m.mesaId}')"
+          title="${m.mesaId}${ocupada ? ' · €'+tot.toFixed(2) : ' · Libre'}">
+        <span class="cq-dot" style="background:${dotColor}"></span>
+        <span class="cq-num" style="font-size:0.75rem;font-weight:800">${m.mesaId}</span>
+        ${ocupada ? `<span class="cq-sub" style="font-size:0.5rem">€${tot.toFixed(0)}</span>` : ''}
+      </div>`;
+    }).join('');
+
+    return `
+      <div class="modal-box" style="max-width:900px;width:calc(100vw - 32px);padding:0;overflow:hidden">
+        <!-- Header -->
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)">
+          <div style="width:34px;height:34px;border-radius:9px;background:rgba(74,158,255,0.12);color:var(--info);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">
+            <i class="fas fa-map-location-dot"></i>
+          </div>
+          <div style="font-family:var(--fh);font-weight:700;font-size:1rem;color:#fff">Mapa del salón</div>
+          <!-- Leyenda -->
+          <div style="display:flex;gap:10px;align-items:center;margin-left:auto;font-size:0.62rem;font-weight:700;color:var(--muted)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:50%;background:var(--success);display:inline-block"></span>Libre</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:50%;background:var(--danger);display:inline-block"></span>Ocupada</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:50%;background:var(--warning);display:inline-block"></span>Por entregar</span>
+          </div>
+          <button onclick="document.getElementById('croquis-modal')?.remove()"
+            style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:0 4px;flex-shrink:0;margin-left:8px">
+            <i class="fas fa-xmark"></i>
+          </button>
+        </div>
+        <!-- Switcher salones -->
+        ${salonesConCroquis.length > 1 ? `<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap">${switcherHTML}</div>` : ''}
+        <!-- Canvas -->
+        <div class="cq-view-wrap" id="cq-view-scroll">
+          <div class="cq-view-canvas">${mesasHTML}</div>
+        </div>
+        <div style="padding:8px 16px;font-size:0.63rem;color:var(--muted);border-top:1px solid var(--border);display:flex;align-items:center;gap:5px">
+          <i class="fas fa-hand-pointer" style="font-size:0.65rem"></i> Toca una mesa para abrirla directamente
+        </div>
+      </div>`;
+  }
+
+  // Crear modal
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'croquis-modal';
+  modal.innerHTML = buildModalHTML(salonActivo);
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+
+  // Función para cambiar salón dentro del modal
+  window._cqCamareroSwitch = function(id) {
+    salonActivo = id;
+    modal.innerHTML = buildModalHTML(id);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  };
 }
 </script>
 </body>
