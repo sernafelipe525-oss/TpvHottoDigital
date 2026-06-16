@@ -914,6 +914,7 @@ input[type="file"]:hover { border-color: rgba(255,107,53,0.4); }
 }
 @keyframes mesa-throb { 0%,100%{ border-color: rgba(255,107,53,0.25); } 50%{ border-color: rgba(255,107,53,0.5); } }
 @keyframes mesa-entrega-throb { 0%,100%{ border-color: rgba(247,201,72,0.45); box-shadow: none; } 50%{ border-color: rgba(247,201,72,0.75); box-shadow: 0 0 18px rgba(247,201,72,0.2); } }
+@keyframes mesa-cliente-throb { 0%,100%{ border-color: rgba(74,158,255,0.45); box-shadow: none; } 50%{ border-color: rgba(74,158,255,0.8); box-shadow: 0 0 18px rgba(74,158,255,0.25); } }
 .mesa.ocupada:hover { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.5); transform: translateY(-3px); box-shadow: var(--glow-a); animation: none; }
 .mesa.reservada {
   background: rgba(74,158,255,0.07);
@@ -4516,10 +4517,16 @@ function buildMesaBtn(id) {
   const t = mesaOcupada(id);
   const reserva = getReservaHoy(id);
 
-  // ── Pedidos del cliente pendientes para esta mesa ──
+  // ── Pedidos del cliente pendientes para esta mesa (siempre, independiente del ticket) ──
   const pedidosMesaObj = db.pedidosCliente ? (db.pedidosCliente[id] || {}) : {};
   const pedidosMesaList = Array.isArray(pedidosMesaObj) ? pedidosMesaObj : Object.values(pedidosMesaObj);
   const pedidosClientePend = pedidosMesaList.filter(p => p.estado === 'pendiente').length;
+  const badgeCliente = pedidosClientePend > 0
+    ? `<span class="mesa-entrega-badge" style="right:4px;left:auto;top:4px;background:var(--info);box-shadow:0 2px 8px rgba(74,158,255,0.5)"><i class="fas fa-mobile-screen" style="font-size:0.55rem"></i> ${pedidosClientePend}</span>`
+    : '';
+  const estiloCliente = pedidosClientePend > 0 && !t
+    ? 'background:rgba(74,158,255,0.08);border-color:rgba(74,158,255,0.45);animation:mesa-cliente-throb 1.8s ease-in-out infinite'
+    : '';
 
   if (t) {
     const tot = calcTotal(t.items||[]);
@@ -4532,7 +4539,7 @@ function buildMesaBtn(id) {
         : '';
     return `<button class="mesa ocupada" onclick="openMesa('${id}')" style="${estiloMesa}">
       ${pendientesEntrega > 0 ? `<span class="mesa-entrega-badge">${pendientesEntrega}</span>` : ''}
-      ${pedidosClientePend > 0 ? `<span class="mesa-entrega-badge" style="right:4px;left:auto;top:4px;background:var(--info);box-shadow:0 2px 8px rgba(74,158,255,0.5)"><i class="fas fa-mobile-screen" style="font-size:0.55rem"></i> ${pedidosClientePend}</span>` : ''}
+      ${badgeCliente}
       <span class="mesa-num">${id}</span>
       <span class="mesa-total">€${tot.toFixed(2)}</span>
       <span class="mesa-label">${(t.items||[]).length} art.</span>
@@ -4546,7 +4553,9 @@ function buildMesaBtn(id) {
     if (!activa) {
       // ── Reserva futura: mesa libre con indicador visual discreto ──
       return `<button class="mesa libre" onclick="openMesa('${id}')"
+                style="${estiloCliente}"
                 title="Libre · Reserva a las ${reserva.hora} (${reserva.nombre})">
+        ${badgeCliente}
         <span class="mesa-num">${id}</span>
         <span class="mesa-label">Libre</span>
         <span style="position:absolute;top:4px;right:4px;font-size:0.6rem;background:rgba(74,158,255,0.18);color:var(--barra);padding:1px 5px;border-radius:4px;font-weight:700;font-family:var(--fh)">${reserva.hora}</span>
@@ -4558,13 +4567,15 @@ function buildMesaBtn(id) {
               onclick="showReservaModal('${id}')" 
               title="¡Reserva activa! ${reserva.nombre} a las ${reserva.hora}"
               style="background:rgba(0,229,160,0.08);border-color:rgba(0,229,160,0.35)">
+      ${badgeCliente}
       <span class="mesa-num">${id}</span>
       <span class="mesa-total" style="font-size:0.68rem;color:var(--success)">${reserva.hora}</span>
       <span class="mesa-label">${primerNombre}</span>
       <span style="position:absolute;top:4px;right:4px;width:10px;height:10px;background:var(--success);border-radius:50%;box-shadow:0 0 10px rgba(0,229,160,0.8);animation:pulse-dot 2s ease-in-out infinite"></span>
     </button>`;
   }
-  return `<button class="mesa libre" onclick="openMesa('${id}')">
+  return `<button class="mesa libre" onclick="openMesa('${id}')" style="${estiloCliente}">
+    ${badgeCliente}
     <span class="mesa-num">${id}</span>
     <span class="mesa-label">Libre</span>
   </button>`;
