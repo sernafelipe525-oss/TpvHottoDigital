@@ -2230,6 +2230,7 @@ let cobradoLimpiado = false;  // flag: evita llamar remove() en cada tick del li
 let modoVisitante = false;    // true = sin mesa, solo carta de lectura
 let propinaPct = null;        // porcentaje de propina elegido (5/10/15) o null
 let propinaCustom = null;     // importe personalizado de propina (€) o null
+let sesionInicializada = false; // limpieza inicial ejecutada una sola vez (al conectar con Firebase)
 
 /* ══════════════════════════════════════════════════
    UTILIDADES
@@ -2582,7 +2583,6 @@ function volverABienvenida() {
 /* ══════════════════════════════════════════════════
    FIREBASE — listener en tiempo real
 ══════════════════════════════════════════════════ */
-let sesionInicializada = false; // limpieza inicial ejecutada una sola vez
 
 function connectFirebase() {
   // 🧹 LIMPIEZA AL INICIO DE SESIÓN — borrar TODO /pedidosCliente/{mesa}
