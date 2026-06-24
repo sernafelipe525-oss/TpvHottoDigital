@@ -1194,7 +1194,7 @@ body {
   white-space: nowrap;
 }
 
-/* ── Acciones QR y manual ── */
+/* ── Acciones QR ── */
 .welcome-actions {
   display: flex; flex-direction: column; gap: 10px;
 }
@@ -1973,15 +1973,11 @@ body {
         <div class="welcome-divider-line"></div>
       </div>
 
-      <!-- Acciones QR / manual -->
+      <!-- Acciones QR -->
       <div class="welcome-actions">
         <button class="welcome-btn-primary" onclick="iniciarEscaner()">
           <i class="fas fa-qrcode"></i>
           Escanear QR de mi mesa
-        </button>
-        <button class="welcome-btn-secondary" onclick="mostrarEntradaManual()">
-          <i class="fas fa-keyboard"></i>
-          Introducir número de mesa
         </button>
       </div>
 
@@ -2004,32 +2000,6 @@ body {
     </div>
 
   </div><!-- /welcome-inner -->
-</div>
-
-<!-- MODAL ENTRADA MANUAL -->
-<div id="manual-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.45);align-items:flex-end;justify-content:center">
-  <div style="background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px;animation:slideUp 0.3s cubic-bezier(.34,1.56,.64,1)">
-    <div style="width:40px;height:4px;border-radius:2px;background:var(--border2);margin:0 auto 18px"></div>
-    <div style="font-family:var(--fh);font-size:1.15rem;font-weight:600;margin-bottom:5px;color:var(--text)">Número de mesa</div>
-    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:18px">Introduce el número o código de tu mesa.</div>
-    <input id="manual-mesa-input" type="text" placeholder="Ej: 5 o A3"
-      style="width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--r-lg);
-             font-family:var(--ff);font-size:1rem;background:var(--bg);color:var(--text);outline:none;
-             margin-bottom:14px;box-sizing:border-box"
-      oninput="this.style.borderColor='var(--accent)'"
-      onkeydown="if(event.key==='Enter')confirmarMesaManual()">
-    <button onclick="confirmarMesaManual()"
-      style="width:100%;padding:16px;background:var(--accent);color:#fff;border:none;border-radius:var(--r-xl);
-             font-family:var(--ff);font-size:0.9rem;font-weight:700;cursor:pointer;
-             box-shadow:0 6px 20px rgba(200,80,42,0.3);margin-bottom:10px">
-      <i class="fas fa-arrow-right" style="margin-right:6px"></i>Ir a mi mesa
-    </button>
-    <button onclick="cerrarManualModal()"
-      style="width:100%;padding:14px;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);
-             border-radius:var(--r-xl);font-family:var(--ff);font-size:0.85rem;font-weight:600;cursor:pointer">
-      Cancelar
-    </button>
-  </div>
 </div>
 
 <!-- LOADING -->
@@ -2355,17 +2325,17 @@ function iniciarEscaner() {
     Html5Qrcode.getCameras().then(cameras => {
       if (!cameras || cameras.length === 0) {
         cancelarEscaner();
-        mostrarEntradaManual();
+        toast('⚠️ No se detectó cámara. Activa los permisos o avisa a un camarero.', 'warning', 'fa-triangle-exclamation');
         return;
       }
       const cam = cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
       html5QrScanner.start(cam.id, config, onQRScaneado, () => {}).catch(() => {
         cancelarEscaner();
-        mostrarEntradaManual();
+        toast('⚠️ No se pudo acceder a la cámara. Avisa a un camarero.', 'warning', 'fa-triangle-exclamation');
       });
     }).catch(() => {
       cancelarEscaner();
-      mostrarEntradaManual();
+      toast('⚠️ No se pudo acceder a la cámara. Avisa a un camarero.', 'warning', 'fa-triangle-exclamation');
     });
   });
 }
@@ -2423,22 +2393,6 @@ function onQRScaneado(decodedText) {
   connectFirebase();
 }
 
-function mostrarEntradaManual() {
-  if (html5QrScanner) {
-    html5QrScanner.stop().catch(() => {});
-  }
-  const modal = document.getElementById('manual-modal');
-  if (modal) modal.style.display = 'flex';
-  setTimeout(() => document.getElementById('manual-mesa-input')?.focus(), 300);
-}
-
-function cerrarManualModal() {
-  const modal = document.getElementById('manual-modal');
-  if (modal) modal.style.display = 'none';
-  // Volver a la pantalla de bienvenida (sin relanzar el escáner)
-  cancelarEscaner();
-}
-
 /* ── Modal QR desde modo visitante (carta) ─────────── */
 function abrirModalQR() {
   // Cerrar si ya existe
@@ -2461,9 +2415,6 @@ function abrirModalQR() {
           Apunta la cámara al código QR de la mesa.<br>
           <strong style="color:var(--accent)">Mantén quieto unos segundos.</strong>
         </div>
-        <button onclick="mostrarEntradaManualDesdeVisitante()" style="background:none;border:none;font-size:0.75rem;color:var(--muted);text-decoration:underline;cursor:pointer;font-family:var(--ff)">
-          <i class="fas fa-keyboard" style="margin-right:4px"></i>Introducir número manualmente
-        </button>
       </div>
     </div>`;
 
@@ -2484,7 +2435,7 @@ function abrirModalQR() {
   Html5Qrcode.getCameras().then(cameras => {
     if (!cameras || !cameras.length) {
       cerrarModalQR();
-      mostrarEntradaManualDesdeVisitante();
+      toast('⚠️ No se detectó cámara. Activa los permisos o avisa a un camarero.', 'warning', 'fa-triangle-exclamation');
       return;
     }
     const cam = cameras.find(c => /back|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
@@ -2519,11 +2470,11 @@ function abrirModalQR() {
       connectFirebase();
     }, () => {}).catch(() => {
       cerrarModalQR();
-      mostrarEntradaManualDesdeVisitante();
+      toast('⚠️ No se pudo acceder a la cámara. Avisa a un camarero.', 'warning', 'fa-triangle-exclamation');
     });
   }).catch(() => {
     cerrarModalQR();
-    mostrarEntradaManualDesdeVisitante();
+    toast('⚠️ No se pudo acceder a la cámara. Avisa a un camarero.', 'warning', 'fa-triangle-exclamation');
   });
 }
 
@@ -2532,14 +2483,6 @@ function cerrarModalQR() {
   if (!overlay) return;
   if (overlay._scanner) overlay._scanner.stop().catch(() => {});
   overlay.remove();
-}
-
-function mostrarEntradaManualDesdeVisitante() {
-  cerrarModalQR();
-  // Reutilizar el modal manual existente
-  const modal = document.getElementById('manual-modal');
-  if (modal) modal.style.display = 'flex';
-  setTimeout(() => document.getElementById('manual-mesa-input')?.focus(), 300);
 }
 
 function entrarModoVisitante() {
@@ -2596,20 +2539,6 @@ function volverABienvenida() {
 
   // Mostrar pantalla de bienvenida de nuevo
   document.getElementById('qr-scan-screen').classList.add('show');
-}
-
-function confirmarMesaManual() {
-  const val = (document.getElementById('manual-mesa-input')?.value || '').trim();
-  if (!val) {
-    document.getElementById('manual-mesa-input').style.borderColor = 'var(--danger)';
-    return;
-  }
-  mesaId = val;
-  const modal = document.getElementById('manual-modal');
-  if (modal) modal.style.display = 'none';
-  document.getElementById('qr-scan-screen').classList.remove('show');
-  document.getElementById('loading-screen').classList.remove('hidden');
-  connectFirebase();
 }
 
 /* ══════════════════════════════════════════════════
@@ -2702,6 +2631,8 @@ function connectFirebase() {
         // Reiniciar selección de propina para la próxima visita a esta mesa
         propinaPct = null;
         propinaCustom = null;
+        // Llevar al cliente a la pantalla de total pagado
+        currentTab = 'cuenta';
         console.log('[TPV] Mesa', mesaId, '— pedidosCliente limpiados al cobrar');
       }
       pedidosCliente = [];
@@ -3594,14 +3525,17 @@ function buildAvisoSuplementoTerraza() {
   if (tipoActivo !== 'barra') return '';
   const salones = db.mesas?.salones || [];
   const salon = salones.find(s => String(mesaId||'').startsWith(s.prefijo));
-  const extra = Number(salon?.precio_extra || 0);
-  if (!(extra > 0)) return '';
+  // Mostrar siempre que sea barra; usar precio_extra configurado o 0,20 € por defecto
+  const extra = Number(salon?.precio_extra || 0.20);
+  const esTerrazaOExtraConfig = (salon?.precio_extra > 0) || (salon && (salon.nombre||'').toLowerCase().includes('terraza'));
+  if (!esTerrazaOExtraConfig) return '';
   const extraStr = extra.toFixed(2).replace('.', ',');
+  const nombreSalon = escHtml(salon?.nombre || 'Terraza');
   return `<div class="info-card" style="margin-top:14px;border-color:rgba(183,120,26,0.25);background:var(--warning-lt)">
     <div class="info-card-icon warning"><i class="fas fa-circle-info"></i></div>
     <div class="info-card-text">
-      <div class="info-card-title" style="color:var(--warning)">Aviso · Consumiciones en ${escHtml(salon.nombre||'Terraza')}</div>
-      <div class="info-card-desc">Los productos de <strong>barra</strong> consumidos en ${escHtml(salon.nombre||'Terraza')} tienen un suplemento de <strong>${extraStr}&nbsp;€</strong> por consumición.</div>
+      <div class="info-card-title" style="color:var(--warning)">Suplemento terraza · Productos de barra</div>
+      <div class="info-card-desc">Las consumiciones de <strong>barra</strong> en <strong>${nombreSalon}</strong> tienen un coste adicional de <strong>+${extraStr}&nbsp;€</strong> por consumición.</div>
     </div>
   </div>`;
 }
@@ -4920,13 +4854,20 @@ function renderCuentaPage() {
   const cuentaSolicitada = ticket?.tiketSolicitadoABarra === true;
 
   if (esCobrado) {
+    // Calcular total pagado antes de que el ticket desaparezca
+    const totalPagado = total > 0 ? total : (() => {
+      // Intentar recuperar del histórico local si el ticket ya se eliminó
+      const itemsHistorial = historialLocal.flatMap(p => p.items || []);
+      return itemsHistorial.reduce((s, i) => s + (Number(i.precio)||0) * (Number(i.cantidad)||1), 0);
+    })();
     wrap.innerHTML = `
-      <div class="info-card fade-in" style="border-color:rgba(45,122,95,0.25);background:var(--success-lt)">
-        <div class="info-card-icon success"><i class="fas fa-circle-check"></i></div>
-        <div class="info-card-text">
-          <div class="info-card-title" style="color:var(--success)">Tu cuenta ya fue saldada</div>
-          <div class="info-card-desc">El pago ha sido registrado. Gracias por tu visita, ¡hasta pronto!</div>
+      <div class="fade-in" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:32px 16px">
+        <div style="width:72px;height:72px;border-radius:50%;background:rgba(45,122,95,0.15);border:2px solid rgba(45,122,95,0.35);display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+          <i class="fas fa-circle-check" style="font-size:2rem;color:var(--success)"></i>
         </div>
+        <div style="font-size:0.8rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Total pagado</div>
+        <div style="font-size:3rem;font-weight:800;color:var(--success);font-family:var(--fh);line-height:1;margin-bottom:16px">${formatEur(totalPagado)}</div>
+        <div style="font-size:0.9rem;color:var(--muted);max-width:260px;line-height:1.5">¡Gracias por tu visita! Esperamos verte pronto.</div>
       </div>`;
     return;
   }
