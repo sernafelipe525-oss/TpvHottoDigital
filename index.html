@@ -4590,7 +4590,8 @@ function openMesa(id) {
       mesa: id, 
       user: session.user, 
       items: [], 
-      abierto: new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})
+      abierto: new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}),
+      qrToken: genUID()   // 🔒 token de sesión Nivel 2 — atado al QR mientras la mesa esté abierta
     }; 
     db.tickets.push(t); 
     // 🎯 Cargar automáticamente info de reserva si existe
@@ -11470,8 +11471,19 @@ function mostrarQRCamarero(mesa) {
     if (mesas.some(m => String(m.id||m) === String(mesa))) { salonNombre = s.nombre || ''; break; }
   }
 
+  // 🔒 Token de sesión Nivel 2 — el QR del camarero va atado al ticket activo,
+  // así se invalida solo cuando la mesa se cobra/cierra. Si el ticket es de
+  // antes de este parche y aún no tiene token, se le genera uno ahora.
+  const ticket = (db.tickets||[]).find(t => String(t.mesa) === String(mesa));
+  let qrTokenMesa = ticket?.qrToken || null;
+  if (ticket && !qrTokenMesa) {
+    qrTokenMesa = genUID();
+    ticket.qrToken = qrTokenMesa;
+    sync();
+  }
+
   // Llamar a la misma función que usa el admin — ya gestiona token, QR y modal
-  generarQRMesa(String(mesa), salonNombre);
+  generarQRMesa(String(mesa), salonNombre, qrTokenMesa);
 }
 
 /* ════════════════════════════════════
@@ -11604,13 +11616,14 @@ let _qrActualURL = '';
 let _qrActualMesa = '';
 let _qrActualSalon = '';
 
-function generarQRMesa(mesaId, salonNombre) {
+function generarQRMesa(mesaId, salonNombre, token = null) {
   const baseURL = localStorage.getItem('qrClienteURL') || '';
   if (!baseURL) {
     toast('Primero configura la URL de la página del cliente', 'warning', 'fa-triangle-exclamation');
     return;
   }
-  const url = baseURL.replace(/\?.*$/, '') + '?mesa=' + encodeURIComponent(mesaId);
+  let url = baseURL.replace(/\?.*$/, '') + '?mesa=' + encodeURIComponent(mesaId);
+  if (token) url += '&token=' + encodeURIComponent(token); // 🔒 token de sesión Nivel 2
   _qrActualURL  = url;
   _qrActualMesa = mesaId;
   _qrActualSalon = salonNombre;
