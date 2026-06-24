@@ -2176,7 +2176,7 @@ body {
    un error con botón de reintentar en vez de dejar al
    cliente mirando el loader para siempre.
 ══════════════════════════════════════════════════ */
-function _mostrarErrorCargaFatal(desc) {
+function _mostrarErrorCargaFatal(desc, detalleTecnico) {
   try {
     document.getElementById('main-app')?.classList.remove('show');
     document.getElementById('qr-scan-screen')?.classList.remove('show');
@@ -2188,16 +2188,20 @@ function _mostrarErrorCargaFatal(desc) {
     const d = document.getElementById('error-desc');
     const r = document.getElementById('error-retry-btn');
     if (t) t.textContent = 'No se pudo cargar la app';
-    if (d) d.textContent = desc;
+    if (d) d.textContent = desc + (detalleTecnico ? ('  [DEBUG: ' + detalleTecnico + ']') : '');
     if (r) r.style.display = 'inline-flex';
   } catch (_) {}
 }
-window.addEventListener('error', () => _mostrarErrorCargaFatal(
-  'Hubo un problema al cargar. Comprueba tu conexión a internet y vuelve a intentarlo.'
+window.addEventListener('error', (e) => _mostrarErrorCargaFatal(
+  'Hubo un problema al cargar. Comprueba tu conexión a internet y vuelve a intentarlo.',
+  (e?.message || 'sin mensaje') + ' — ' + (e?.filename ? e.filename.split('/').pop() : '?') + ':' + (e?.lineno || '?')
 ), { once: true });
 const _watchdogCargaInicial = setTimeout(() => {
   if (typeof firebase === 'undefined') {
-    _mostrarErrorCargaFatal('La conexión está tardando demasiado en cargar los recursos necesarios. Comprueba tu conexión a internet y vuelve a intentarlo.');
+    _mostrarErrorCargaFatal(
+      'La conexión está tardando demasiado en cargar los recursos necesarios. Comprueba tu conexión a internet y vuelve a intentarlo.',
+      'firebase undefined tras 8s (CDN no cargó)'
+    );
   }
 }, 8000);
 
