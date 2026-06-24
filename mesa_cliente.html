@@ -2169,12 +2169,46 @@ body {
 
 <script>
 /* ══════════════════════════════════════════════════
+   RED DE SEGURIDAD — evita pantallas de carga infinitas
+   Si Firebase/html5-qrcode no llegan a cargar (wifi del
+   local lenta/bloqueada, CDN caído) o hay un error JS no
+   capturado en la inicialización, este vigilante muestra
+   un error con botón de reintentar en vez de dejar al
+   cliente mirando el loader para siempre.
+══════════════════════════════════════════════════ */
+function _mostrarErrorCargaFatal(desc) {
+  try {
+    document.getElementById('main-app')?.classList.remove('show');
+    document.getElementById('qr-scan-screen')?.classList.remove('show');
+    document.getElementById('loading-screen')?.classList.add('hidden');
+    const err = document.getElementById('error-screen');
+    if (!err) return;
+    err.classList.add('show');
+    const t = document.getElementById('error-title');
+    const d = document.getElementById('error-desc');
+    const r = document.getElementById('error-retry-btn');
+    if (t) t.textContent = 'No se pudo cargar la app';
+    if (d) d.textContent = desc;
+    if (r) r.style.display = 'inline-flex';
+  } catch (_) {}
+}
+window.addEventListener('error', () => _mostrarErrorCargaFatal(
+  'Hubo un problema al cargar. Comprueba tu conexión a internet y vuelve a intentarlo.'
+), { once: true });
+const _watchdogCargaInicial = setTimeout(() => {
+  if (typeof firebase === 'undefined') {
+    _mostrarErrorCargaFatal('La conexión está tardando demasiado en cargar los recursos necesarios. Comprueba tu conexión a internet y vuelve a intentarlo.');
+  }
+}, 8000);
+
+/* ══════════════════════════════════════════════════
    CONFIGURACIÓN FIREBASE
 ══════════════════════════════════════════════════ */
 const _FB_URL_DEFAULT = "https://tpv-hottodigital-default-rtdb.europe-west1.firebasedatabase.app/";
 const firebaseConfig = { databaseURL: _FB_URL_DEFAULT };
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb = firebase.database();
+clearTimeout(_watchdogCargaInicial);
 
 /* ══════════════════════════════════════════════════
    ESTADO
