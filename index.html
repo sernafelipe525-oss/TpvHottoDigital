@@ -6904,15 +6904,18 @@ function syncVDTicket() {
   // Firebase por cocina/barra (marcados listos, despachados, entregados...).
   // La copia local (session.ventaDirectaItems) no se entera de esos cambios
   // en tiempo real, así que NUNCA debemos pisar el estado remoto de un ítem
-  // ya enviado con la copia local desactualizada — o un plato ya despachado
-  // "revive" como pendiente cada vez que se añade un producto nuevo.
-  // Solo los ítems que aún no se han enviado se sincronizan desde local.
+  // que YA estaba enviado en Firebase — o un plato ya despachado "revive"
+  // como pendiente cada vez que se añade un producto nuevo.
+  // Ojo: hay que mirar si el ítem YA estaba enviado en el REMOTO (no el
+  // flag local), para no bloquear el propio envío de un producto nuevo
+  // (que pasa de enviado:false a enviado:true localmente).
   const remotosPorUid = new Map((vd.items||[]).map(i => [i.uid, i]));
   vd.items = (session.ventaDirectaItems || []).map(i => {
-    if (i.enviado && remotosPorUid.has(i.uid)) {
-      return { ...remotosPorUid.get(i.uid) }; // conservar estado remoto intacto
+    const remoto = remotosPorUid.get(i.uid);
+    if (remoto && remoto.enviado) {
+      return { ...remoto }; // ya estaba enviado remotamente: conservar su estado intacto
     }
-    return { ...i };
+    return { ...i }; // aún no enviado remotamente: sincronizar normalmente desde local
   });
 
   if (session.user) vd.user = session.user;
