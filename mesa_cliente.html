@@ -2772,6 +2772,18 @@ function connectFirebase() {
       db.tickets = [];
     }
 
+    // 🔒 MARCA PERSISTENTE DE MESA CERRADA — máxima prioridad, por delante
+    // de cualquier otra validación (token, ticket, etc). Si el personal
+    // cerró esta mesa (cobro sin platos pendientes, o eliminación manual
+    // desde administración), el cliente NUNCA debe poder seguir pidiendo,
+    // ni siquiera accediendo con la URL sin token o desde otro dispositivo.
+    if (db.mesasCerradas && db.mesasCerradas[mesaId]) {
+      rtdb.ref('/').off(); // dejar de escuchar cambios de esta mesa
+      try { sessionStorage.setItem('hd_despedida_' + mesaId + '_' + (qrToken||'x'), '1'); } catch(e) {}
+      mostrarDespedida();
+      return;
+    }
+
     // Validar que la mesa existe en la configuración
     // Las mesas no se guardan como array (salon.mesas); se generan a partir
     // de salon.prefijo + número (1..salon.cantidad), igual que en el TPV.
