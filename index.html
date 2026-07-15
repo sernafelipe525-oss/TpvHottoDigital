@@ -6542,7 +6542,7 @@ function renderMonitor(z) {
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
             ${esCobrado ? `<span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(0,229,160,0.15);color:var(--success);border:1px solid rgba(0,229,160,0.4);font-family:var(--fh);letter-spacing:0.3px;display:flex;align-items:center;gap:4px"><i class="fas fa-circle-check" style="font-size:0.55rem"></i>COBRADO</span>` : ''}
             ${esTiketSol ? `<span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(255,107,53,0.15);color:var(--accent);border:1px solid rgba(255,107,53,0.4);font-family:var(--fh);letter-spacing:0.3px;display:flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite"><i class="fas fa-file-invoice-dollar" style="font-size:0.55rem"></i>TIKET SOLICITADO</span>` : ''}
-            ${listos.length > 0 ? `<span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(247,201,72,0.18);color:var(--warning);border:1px solid rgba(247,201,72,0.45);font-family:var(--fh);letter-spacing:0.3px;display:flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite"><i class="fas fa-bell" style="font-size:0.55rem"></i>CAMARERO AVISADO</span>` : ''}
+            ${listos.length > 0 ? `<span style="font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:100px;background:rgba(247,201,72,0.18);color:var(--warning);border:1px solid rgba(247,201,72,0.45);font-family:var(--fh);letter-spacing:0.3px;display:flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite"><i class="fas fa-bell" style="font-size:0.55rem"></i>${esVD ? 'LISTO PARA DESPACHAR' : 'CAMARERO AVISADO'}</span>` : ''}
             <span class="monitor-count">${pen.length} pendiente${pen.length>1?'s':''}</span>
           </div>
         </div>
@@ -6574,7 +6574,7 @@ function renderMonitor(z) {
 
         ${listos.length > 0 ? `
           <div style="padding:6px 16px;background:rgba(247,201,72,0.07);border-top:1px solid rgba(247,201,72,0.2);border-bottom:1px solid rgba(247,201,72,0.2);font-size:0.62rem;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--warning);display:flex;align-items:center;gap:6px">
-            <i class="fas fa-bell" style="font-size:0.65rem"></i> Esperando camarero
+            <i class="fas fa-bell" style="font-size:0.65rem"></i> ${esVD ? 'Listo · despachar directamente' : 'Esperando camarero'}
           </div>
           ${listos.map(i=>`
           <div class="monitor-item" style="background:rgba(247,201,72,0.04)">
@@ -6588,9 +6588,13 @@ function renderMonitor(z) {
               ${i.nota ? `<div class="mon-nota"><i class="fas fa-thumbtack" style="font-size:0.6rem"></i> ${i.nota}</div>` : ''}
             </div>
             <div style="display:flex;gap:6px;flex-direction:column;flex-shrink:0">
+              ${esVD ? `
+              <button class="btn-listo" onclick="despacharDirecto('${t.mesa}','${i.uid}')" style="box-shadow:0 4px 16px rgba(247,201,72,0.4);background:var(--warning)">
+                <i class="fas fa-box-open"></i> Despachar
+              </button>` : `
               <span style="font-size:0.62rem;font-weight:800;padding:6px 10px;border-radius:var(--r);background:rgba(247,201,72,0.13);color:var(--warning);border:1px solid rgba(247,201,72,0.35);white-space:nowrap;display:flex;align-items:center;gap:4px;animation:pulse 2s ease-in-out infinite">
                 <i class="fas fa-clock" style="font-size:0.6rem"></i> En camino
-              </span>
+              </span>`}
             </div>
           </div>`).join('')}
         ` : ''}
@@ -6714,13 +6718,65 @@ function marcarListo(mesa, uid) {
   const it = t.items.find(i=>i.uid==uid);
   if (!it) return;
 
-  // ── Nuevo flujo: marcar como "listo para recoger" (camarero debe confirmar entrega) ──
+  // ── Venta Directa: no existe camarero que libere el plato (no hay mesa
+  // asignada), así que se despacha directamente al marcarlo listo, sin
+  // pasar por el estado intermedio "esperando camarero". ──
+  if (mesa && mesa.startsWith('VD')) {
+    despacharDirecto(mesa, uid);
+    return;
+  }
+
+  // ── Flujo normal (mesas con camarero): "listo para recoger" (el camarero debe confirmar entrega) ──
   it.listoParaRecoger = true;
   it.horaListo = new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
   // (NO se pone entregado=true aquí; eso lo hará el camarero al entregar en mesa)
 
   sync();
   toast(`🔔 Camarero avisado · Mesa ${mesa}`, 'success', 'fa-bell');
+}
+
+/* Despachar un ítem de Venta Directa (Barra Directa) sin intervención de
+   camarero — quien atiende la barra/cocina entrega el plato directamente
+   al cliente que ya está presente. */
+function despacharDirecto(mesa, uid) {
+  const t = (db.tickets||[]).find(x=>x.mesa===mesa);
+  if (!t) return;
+  const it = t.items.find(i=>i.uid==uid);
+  if (!it || it.entregado) return;
+
+  it.entregado = true;
+  it.listoParaRecoger = false;
+  it.horaEntrega = new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  it.entregadoPor = session.user;
+
+  // ── Registrar despacho ──────────────────────────────
+  if (!db.despachos) db.despachos = [];
+  const ahora = new Date();
+  db.despachos.push({
+    uid:        it.uid,
+    nombre:     it.nombre,
+    icono:      it.icono || '🍽️',
+    imagen:     it.imagen || null,
+    zona:       it.tipo === 'barra' ? 'barra' : 'cocina',
+    precio:     parseFloat(it.precio) || 0,
+    cantidad:   parseInt(it.cantidad) || 1,
+    mesa:       mesa,
+    hora:       ahora.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+    fecha:      ahora.toISOString().split('T')[0],
+    ts:         ahora.getTime()
+  });
+  // ───────────────────────────────────────────────────
+
+  // Si ya está todo entregado y ya fue cobrado, el ticket se cierra solo
+  const restantes = (t.items||[]).filter(i => i.enviado && !i.entregado).length;
+  if (restantes === 0 && t.cobrado === true) {
+    db.tickets = (db.tickets||[]).filter(x => x.mesa !== mesa);
+    sync();
+    toast(`✓ Despachado · Barra Directa completa`, 'success', 'fa-circle-check');
+  } else {
+    sync();
+    toast(`✓ Despachado · Barra Directa`, 'success', 'fa-check');
+  }
 }
 /* ════════════════════════════════════
    PERSONALIZACIÓN DE COLORES DE LETRAS
