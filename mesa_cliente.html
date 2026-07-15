@@ -117,6 +117,61 @@ body {
 }
 #error-screen p { font-size: 0.9rem; color: var(--text2); max-width: 280px; line-height: 1.6; }
 
+/* ── DESPEDIDA (sesión cerrada tras cobrar la mesa) ─── */
+#despedida-screen {
+  display: none;
+  position: fixed; inset: 0;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 14px;
+  padding: 32px 24px; text-align: center;
+  background: var(--bg);
+  z-index: 2000;
+}
+#despedida-screen.show { display: flex; }
+.despedida-logo {
+  width: 50px; height: 50px;
+  border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  overflow: hidden;
+  margin-bottom: 2px;
+  background: var(--accent);
+}
+.despedida-logo img { width: 100%; height: 100%; object-fit: cover; }
+.despedida-icon {
+  font-size: 2.1rem;
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  background: var(--success-lt);
+  color: var(--success);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+  animation: despedida-pop 0.5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes despedida-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+#despedida-screen h2 {
+  font-family: var(--fh);
+  font-size: 1.55rem;
+  color: var(--text);
+}
+#despedida-screen p {
+  font-size: 0.92rem;
+  color: var(--text2);
+  max-width: 300px;
+  line-height: 1.65;
+}
+.despedida-nombre {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: -6px;
+}
+
 /* ── MAIN LAYOUT ─────────────────────────────────── */
 #main-app { display: none; }
 #main-app.show { display: block; }
@@ -490,18 +545,45 @@ body {
 
 /* ── BREADCRUMB ───────────────────────────────────── */
 .nav-breadcrumb {
-  display: flex; align-items: center; gap: 6px;
-  margin-bottom: 14px;
-  font-size: 0.75rem; color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 18px;
+  font-size: 0.98rem; color: var(--muted);
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 8px 10px;
+  box-shadow: var(--shadow-sm);
+}
+.bc-icon-frame {
+  width: 34px; height: 34px; flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
 }
 .nav-breadcrumb .bc-link {
-  color: var(--accent); font-weight: 600; cursor: pointer;
-  background: none; border: none; padding: 0;
-  font-family: var(--ff); font-size: 0.75rem;
-  text-decoration: underline;
+  color: var(--accent); font-weight: 700; cursor: pointer;
+  background: var(--accent-lt); border: none;
+  padding: 9px 16px; border-radius: 100px;
+  font-family: var(--ff); font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px;
+  transition: all 0.15s ease;
 }
-.nav-breadcrumb .bc-sep { opacity: 0.4; }
-.nav-breadcrumb .bc-current { color: var(--text); font-weight: 600; }
+.nav-breadcrumb .bc-link:hover, .nav-breadcrumb .bc-link:active {
+  background: var(--accent); color: #fff;
+}
+.nav-breadcrumb .bc-sep { opacity: 0.45; font-size: 1.1rem; }
+.nav-breadcrumb .bc-current {
+  color: var(--text); font-weight: 700;
+  font-size: 0.98rem;
+  padding: 9px 4px;
+  display: inline-flex; align-items: center;
+  min-height: 40px;
+}
 
 /* ── SECTION HEADING dentro de productos ─────────── */
 .prod-section-label {
@@ -601,6 +683,47 @@ body {
   transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
 }
 #cart-bar.visible { transform: translateY(0); }
+
+/* ── QR SCAN FLOTANTE (modo visitante) ── */
+#qr-scan-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  padding: 12px 20px 20px;
+  background: linear-gradient(to top, var(--bg) 80%, transparent);
+  transform: translateY(120%);
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+#qr-scan-bar.visible { transform: translateY(0); }
+.qr-scan-fab {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dk));
+  color: #fff;
+  border: none;
+  border-radius: var(--r-xl);
+  padding: 14px 18px;
+  font-family: var(--ff);
+  cursor: pointer;
+  width: 100%; max-width: 440px; margin: 0 auto;
+  box-shadow: 0 10px 32px rgba(255,106,53,0.35);
+  transition: all 0.2s ease;
+  animation: qr-fab-pulse 2.6s ease-in-out infinite;
+}
+.qr-scan-fab:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(255,106,53,0.42); }
+@keyframes qr-fab-pulse {
+  0%, 100% { box-shadow: 0 10px 32px rgba(255,106,53,0.35); }
+  50% { box-shadow: 0 10px 32px rgba(255,106,53,0.55), 0 0 0 8px rgba(255,106,53,0.08); }
+}
+.qr-scan-fab-icon {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem;
+}
+.qr-scan-fab-text { flex: 1; min-width: 0; text-align: left; }
+.qr-scan-fab-title { display: block; font-size: 0.9rem; font-weight: 700; }
+.qr-scan-fab-sub { display: block; font-size: 0.72rem; opacity: 0.85; margin-top: 2px; }
+.qr-scan-fab-arrow { font-size: 0.85rem; flex-shrink: 0; opacity: 0.8; }
+
 .cart-btn {
   display: flex; align-items: center; justify-content: space-between;
   background: var(--text);
@@ -2021,6 +2144,15 @@ body {
   </button>
 </div>
 
+<!-- DESPEDIDA: pantalla única tras cobrar la mesa, sin acceso a pedir -->
+<div id="despedida-screen">
+  <div class="despedida-logo" id="despedida-logo">🔥</div>
+  <div class="despedida-nombre" id="despedida-nombre">Hotto Digital</div>
+  <div class="despedida-icon"><i class="fas fa-heart"></i></div>
+  <h2>¡Gracias por tu visita!</h2>
+  <p>Tu cuenta ha sido cobrada. Esperamos volver a verte muy pronto.</p>
+</div>
+
 <!-- ADMIN: PIN GATE -->
 <div id="admin-pin-overlay" class="admin-pin-overlay" style="display:none">
   <div class="admin-pin-card">
@@ -2161,6 +2293,18 @@ body {
       <span class="cart-total-label">Ver mi pedido</span>
     </div>
     <span class="cart-price" id="cart-total-pill">€0.00</span>
+  </button>
+</div>
+
+<!-- QR SCAN FLOATING BAR (modo visitante) -->
+<div id="qr-scan-bar">
+  <button class="qr-scan-fab" onclick="abrirModalQR()">
+    <span class="qr-scan-fab-icon"><i class="fas fa-qrcode"></i></span>
+    <span class="qr-scan-fab-text">
+      <span class="qr-scan-fab-title">Escanear QR de mi mesa</span>
+      <span class="qr-scan-fab-sub">Para poder hacer pedidos</span>
+    </span>
+    <i class="fas fa-chevron-right qr-scan-fab-arrow"></i>
   </button>
 </div>
 
@@ -2505,6 +2649,7 @@ function abrirModalQR() {
       document.getElementById('tab-cuenta').style.display    = '';
       document.getElementById('cart-bar').style.display      = '';
       document.getElementById('header-total').style.display  = '';
+      document.getElementById('qr-scan-bar').classList.remove('visible');
       switchTab('ticket');
       connectFirebase();
     }, () => {}).catch(() => {
@@ -2559,6 +2704,7 @@ function volverABienvenida() {
   // Ocultar app principal y pantalla de error si estaba visible
   document.getElementById('main-app').classList.remove('show');
   document.getElementById('error-screen').classList.remove('show');
+  document.getElementById('despedida-screen').classList.remove('show');
   document.getElementById('loading-screen').classList.add('hidden');
 
   // Restaurar tabs y elementos ocultos en modo visitante
@@ -2566,6 +2712,7 @@ function volverABienvenida() {
   document.getElementById('tab-historial').style.display = '';
   document.getElementById('tab-cuenta').style.display    = '';
   document.getElementById('cart-bar').style.display      = '';
+  document.getElementById('qr-scan-bar').classList.remove('visible');
   document.getElementById('header-back-btn').classList.remove('show');
 
   // Volver al tab inicial por defecto
@@ -2669,15 +2816,17 @@ function connectFirebase() {
         // Reiniciar selección de propina para la próxima visita a esta mesa
         propinaPct = null;
         propinaCustom = null;
-        // Llevar al cliente a la pantalla de total pagado
-        currentTab = 'cuenta';
         console.log('[TPV] Mesa', mesaId, '— pedidosCliente limpiados al cobrar');
       }
       pedidosCliente = [];
+      mostrarDespedida();
+      return; // No renderizar el resto de la app: la despedida es la única pantalla
     } else if (!ticketActualEstado && cobradoLimpiado) {
       // El ticket fue eliminado tras cobrar (flujo normal del TPV)
-      // El nodo ya fue limpiado, nada más que hacer
+      // El nodo ya fue limpiado; mantener la pantalla de despedida.
       pedidosCliente = [];
+      mostrarDespedida();
+      return;
     } else {
       // Leer pedidos del cliente para esta mesa (sesión actual — ya limpiada al conectar)
       const rawNode = db.pedidosCliente ? db.pedidosCliente[mesaId] : null;
@@ -2716,6 +2865,7 @@ function connectFirebaseVisitante() {
     document.getElementById('tab-historial').style.display = 'none';
     document.getElementById('tab-cuenta').style.display    = 'none';
     document.getElementById('cart-bar').style.display      = 'none';
+    document.getElementById('qr-scan-bar').classList.add('visible');
     // Cambiar tab inicial a pedir
     switchTab('pedir');
     updateHeaderVisitante();
@@ -2772,6 +2922,39 @@ function showError(title, desc, mostrarReintentar = false) {
   document.getElementById('error-desc').textContent = desc;
   const retryBtn = document.getElementById('error-retry-btn');
   if (retryBtn) retryBtn.style.display = mostrarReintentar ? 'inline-flex' : 'none';
+}
+
+/* Pantalla única de despedida tras cobrar la mesa: bloquea cualquier
+   acceso a pedir, carrito, ticket o admin. Es la única vista posible
+   hasta que el cliente escanee un nuevo QR (nueva sesión). */
+function mostrarDespedida() {
+  // Cerrar cualquier modal que pudiera estar abierto (carrito, admin, QR)
+  try { closeCartModal(); } catch(e) {}
+  try { cerrarAdmin(); } catch(e) {}
+  try { cerrarModalQR(); } catch(e) {}
+
+  document.getElementById('loading-screen').classList.add('hidden');
+  document.getElementById('error-screen').classList.remove('show');
+  document.getElementById('main-app').classList.remove('show');
+
+  // Personalizar con nombre/logo del restaurante si está disponible
+  const cfg = db.config || {};
+  const nombreEl = document.getElementById('despedida-nombre');
+  if (nombreEl) nombreEl.textContent = cfg.nombreRestaurante || 'Hotto Digital';
+  const logoEl = document.getElementById('despedida-logo');
+  if (logoEl) {
+    if (cfg.logo) {
+      logoEl.innerHTML = `<img src="${cfg.logo}" alt="Logo">`;
+      logoEl.style.background = cfg.logoBgColor || cfg.colorAccent || 'var(--accent)';
+    } else {
+      logoEl.innerHTML = '🔥';
+      logoEl.style.background = cfg.logoBgColor || cfg.colorAccent || 'var(--accent)';
+      logoEl.style.color = cfg.logoFgColor || '#ffffff';
+    }
+  }
+
+  document.getElementById('despedida-screen').classList.add('show');
+  document.title = 'Gracias por tu visita';
 }
 
 /* ══════════════════════════════════════════════════
@@ -3190,17 +3373,7 @@ function renderPedirPage() {
   if (!modoVisitante) renderPedidoOkBanner();
   else {
     const wrap = document.getElementById('pedido-ok-wrap');
-    if (wrap) wrap.innerHTML = `
-      <div class="visitor-banner fade-in">
-        <i class="fas fa-eye"></i>
-        <div class="visitor-banner-text" style="flex:1">
-          <div class="vb-title">Solo carta · Sin mesa</div>
-          <div class="vb-sub">Escanea el QR de tu mesa para hacer pedidos.</div>
-        </div>
-        <button onclick="abrirModalQR()" style="flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:100px;font-family:var(--ff);font-size:0.75rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(200,80,42,0.3);white-space:nowrap">
-          <i class="fas fa-qrcode"></i> Escanear QR
-        </button>
-      </div>`;
+    if (wrap) wrap.innerHTML = '';
   }
 }
 
@@ -3368,16 +3541,18 @@ function renderPedirNav() {
   }
 
   // ── NIVEL 2: subcategorías del tipo activo ──
-  const tipoLabel = tipoActivo === 'barra' ? '🥃 Barra' : '🍳 Cocina';
+  const tipoIcon = tipoActivo === 'barra' ? '🥃' : '🍳';
+  const tipoText = tipoActivo === 'barra' ? 'Barra' : 'Cocina';
   const catsDelTipo = categorias.filter(c => c.tipo === tipoActivo && productos.some(p => p.catId === c.id && p.tipo === tipoActivo));
 
   // Breadcrumb
   const catLabel = catActiva ? (categorias.find(c => c.id === catActiva)?.label || '') : '';
   let breadcrumbHTML = `
     <div class="nav-breadcrumb">
-      <button class="bc-link" onclick="volverTipos()">Carta</button>
+      <div class="bc-icon-frame">${tipoIcon}</div>
+      <button class="bc-link" onclick="volverTipos()"><i class="fas fa-arrow-left"></i> Carta</button>
       <span class="bc-sep">›</span>
-      <span class="bc-current">${tipoLabel}</span>
+      <span class="bc-current">${tipoText}</span>
       ${catActiva ? `<span class="bc-sep">›</span><span class="bc-current">${catLabel}</span>` : ''}
     </div>`;
 
@@ -4417,6 +4592,14 @@ function modalQtyChange(prodId, delta) {
 async function enviarPedido() {
   const items = Object.values(carrito);
   if (!items.length) return;
+
+  // 🛡️ Salvaguarda: si la mesa ya fue cobrada (p.ej. el cobro llegó justo
+  // mientras el cliente pulsaba enviar), no permitir el envío.
+  const ticketActual = getTicket();
+  if (ticketActual?.cobrado === true) {
+    mostrarDespedida();
+    return;
+  }
 
   const btn = document.getElementById('btn-enviar-pedido');
   if (btn) {
