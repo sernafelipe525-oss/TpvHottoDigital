@@ -6899,7 +6899,22 @@ function syncVDTicket() {
     };
     db.tickets.push(vd);
   }
-  vd.items = (session.ventaDirectaItems || []).map(i => ({...i}));
+
+  // ⚠️ IMPORTANTE: los ítems ya enviados pueden haber sido modificados en
+  // Firebase por cocina/barra (marcados listos, despachados, entregados...).
+  // La copia local (session.ventaDirectaItems) no se entera de esos cambios
+  // en tiempo real, así que NUNCA debemos pisar el estado remoto de un ítem
+  // ya enviado con la copia local desactualizada — o un plato ya despachado
+  // "revive" como pendiente cada vez que se añade un producto nuevo.
+  // Solo los ítems que aún no se han enviado se sincronizan desde local.
+  const remotosPorUid = new Map((vd.items||[]).map(i => [i.uid, i]));
+  vd.items = (session.ventaDirectaItems || []).map(i => {
+    if (i.enviado && remotosPorUid.has(i.uid)) {
+      return { ...remotosPorUid.get(i.uid) }; // conservar estado remoto intacto
+    }
+    return { ...i };
+  });
+
   if (session.user) vd.user = session.user;
   sync();
 }
