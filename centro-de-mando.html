@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Centro de Mando · HOTTO DIGITAL</title>
+<meta name="theme-color" content="#05070d">
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{
+  --bg:#05070d; --bg2:#080b14; --panel:#0d111d;
+  --surface:rgba(255,255,255,0.035); --surface2:rgba(255,255,255,0.06); --surface3:rgba(255,255,255,0.09);
+  --border:rgba(255,255,255,0.08);
+  --text:#e8edf8; --text2:#a8b3cc; --muted:#6b7690;
+  --accent:#ff6b35; --accent-dk:#c94d1f;
+  --camarero:#a78bfa; --cocina:#ff6b35; --barra:#4a9eff; --admin:#e8c96a;
+  --on:#00e5a0; --off:#ff4d6d;
+  --f:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:radial-gradient(ellipse at top,#0b0f1c 0%,var(--bg) 55%);
+  color:var(--text); font-family:var(--f); min-height:100vh;
+  display:flex; align-items:flex-start; justify-content:center; padding:24px;
+}
+#gate{width:100%;max-width:380px;text-align:center;margin:auto}
+#gate .icon{
+  width:64px;height:64px;border-radius:18px;margin:0 auto 20px;
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dk));
+  box-shadow:0 12px 32px -8px rgba(255,107,53,0.5);
+}
+#gate h1{font-size:1.2rem;font-weight:700;margin-bottom:6px}
+#gate p{color:var(--text2);font-size:0.82rem;margin-bottom:22px;line-height:1.5}
+#gate input{
+  width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-family:var(--f);font-size:0.95rem;
+  text-align:center;letter-spacing:2px;margin-bottom:12px;outline:none;
+}
+#gate input:focus{border-color:var(--accent)}
+#gate button{
+  width:100%;padding:13px;border-radius:12px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dk));color:#fff;
+  font-family:var(--f);font-weight:700;font-size:0.88rem;letter-spacing:0.3px;
+  transition:transform .15s;
+}
+#gate button:active{transform:scale(0.97)}
+#gate .err{color:var(--off);font-size:0.78rem;margin-top:10px;min-height:16px}
+
+#app{width:100%;max-width:520px;display:none;padding-bottom:60px}
+.head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.head .logo{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dk));
+  display:flex;align-items:center;justify-content:center;font-size:19px;
+}
+.head h1{font-size:1.02rem;font-weight:700}
+.head .sub{font-size:0.72rem;color:var(--text2);display:flex;align-items:center;gap:6px;margin-top:2px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.dot.live{background:var(--on);box-shadow:0 0 8px var(--on);animation:pulse 2s infinite}
+.dot.dead{background:var(--off)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.summary{display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:2px}
+.summary .chip{
+  flex-shrink:0; padding:8px 13px; border-radius:11px; background:var(--surface);
+  border:1px solid var(--border); font-size:0.68rem; font-weight:700; color:var(--text2);
+  display:flex; align-items:center; gap:6px; white-space:nowrap;
+}
+.summary .chip b{color:var(--text);font-size:0.78rem}
+
+.panel{
+  background:linear-gradient(180deg,var(--panel),#0a0d17);
+  border:1px solid var(--border); border-radius:20px; padding:20px;
+  margin-bottom:16px; position:relative; overflow:hidden;
+}
+.panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+}
+.panel-label{
+  font-size:0.62rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.master-row{display:flex;gap:10px}
+.master-btn{
+  flex:1;padding:11px;border-radius:11px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text2);font-family:var(--f);
+  font-size:0.72rem;font-weight:700;letter-spacing:0.4px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .15s;
+}
+.master-btn:hover{background:var(--surface2);color:var(--text)}
+.master-btn:active{transform:scale(0.97)}
+.master-btn.on:hover{border-color:rgba(0,229,160,0.4);color:var(--on)}
+.master-btn.off:hover{border-color:rgba(255,77,109,0.4);color:var(--off)}
+
+.role-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  margin-bottom:12px; overflow:hidden; transition:border-color .2s;
+}
+.role-card.active{border-color:var(--rc,var(--border))}
+.role-head{display:flex; align-items:center; gap:13px; padding:14px 14px; cursor:pointer}
+.r-icon{
+  width:42px;height:42px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  background:var(--rc-bg); color:var(--rc); border:1px solid var(--rc-brd);
+}
+.r-info{flex:1;min-width:0}
+.r-name{font-size:0.9rem;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.r-count{
+  font-size:0.58rem;font-weight:800;padding:2px 8px;border-radius:100px;
+  background:var(--surface3);color:var(--text2);letter-spacing:0.3px;
+}
+.r-state{font-size:0.65rem;margin-top:2px;font-weight:700;display:flex;align-items:center;gap:5px}
+.chev{color:var(--muted);font-size:0.75rem;transition:transform .25s;flex-shrink:0}
+.role-card.expanded .chev{transform:rotate(180deg)}
+
+.switch{
+  width:46px;height:27px;border-radius:8px;background:#151a29;
+  border:1px solid var(--border); position:relative; cursor:pointer;
+  flex-shrink:0; transition:all .2s;
+}
+.switch .knob{
+  position:absolute;top:2.5px;left:2.5px;width:20px;height:20px;border-radius:6px;
+  background:linear-gradient(180deg,#3a4258,#252b3d);
+  transition:all .25s cubic-bezier(.4,0,.2,1); box-shadow:0 2px 4px rgba(0,0,0,0.3);
+}
+.switch.on{background:rgba(0,229,160,0.12);border-color:rgba(0,229,160,0.4)}
+.switch.on .knob{transform:translateX(19px);background:linear-gradient(180deg,#00e5a0,#00b880)}
+.switch.sm{width:38px;height:22px}
+.switch.sm .knob{width:16px;height:16px;top:2px;left:2px}
+.switch.sm.on .knob{transform:translateX(16px)}
+
+.sub-list{max-height:0; overflow:hidden; transition:max-height .3s ease}
+.role-card.expanded .sub-list{max-height:900px}
+.sub-inner{padding:2px 14px 14px}
+.sub-item{
+  display:flex; align-items:center; gap:12px; padding:10px 10px;
+  border-radius:11px; margin-bottom:6px; background:rgba(255,255,255,0.02);
+  transition:opacity .2s;
+}
+.sub-item:last-child{margin-bottom:0}
+.sub-item.disabled-parent{opacity:0.4}
+.sub-icon{width:26px;text-align:center;color:var(--muted);font-size:0.8rem;flex-shrink:0}
+.sub-info{flex:1;min-width:0}
+.sub-name{font-size:0.78rem;font-weight:600}
+.sub-desc{font-size:0.64rem;color:var(--muted);margin-top:1px;line-height:1.3}
+
+.footer-row{display:flex;justify-content:space-between;align-items:center;padding:0 4px;font-size:0.66rem;color:var(--muted);margin-top:4px}
+.footer-row button{
+  background:none;border:none;color:var(--muted);font-family:var(--f);
+  font-size:0.66rem;cursor:pointer;text-decoration:underline;
+}
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#12172a;border:1px solid var(--border);padding:10px 18px;border-radius:100px;
+  font-size:0.76rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;
+  display:flex;align-items:center;gap:8px; z-index:50; max-width:88vw;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast i{color:var(--on)}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="icon">📡</div>
+  <h1>Centro de Mando</h1>
+  <p>Introduce la clave de administrador para acceder al control remoto del TPV.</p>
+  <input type="password" id="gate-pw" placeholder="••••••••" autocomplete="off">
+  <button onclick="tryEnter()">Acceder</button>
+  <div class="err" id="gate-err"></div>
+</div>
+
+<div id="app">
+  <div class="head">
+    <div class="logo">🔥</div>
+    <div>
+      <h1 id="rest-name">HOTTO DIGITAL</h1>
+      <div class="sub"><span class="dot" id="conn-dot"></span><span id="conn-txt">Conectando…</span></div>
+    </div>
+  </div>
+
+  <div class="summary" id="summary-chips"></div>
+
+  <div class="panel">
+    <div class="panel-label"><i class="fas fa-bolt"></i> Interruptor general</div>
+    <div class="master-row">
+      <button class="master-btn on" onclick="setAllRoles(true)"><i class="fas fa-power-off"></i> Encender todo</button>
+      <button class="master-btn off" onclick="setAllRoles(false)"><i class="fas fa-power-off"></i> Apagar todo</button>
+    </div>
+  </div>
+
+  <div id="roles-mount"></div>
+
+  <div class="footer-row">
+    <span id="fb-url-short"></span>
+    <button onclick="changeDB()">Cambiar base de datos</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<script>
+const ROLES = [
+  {
+    key:'camarero', label:'Camarero', icon:'fa-utensils',
+    color:'#a78bfa', bg:'rgba(167,139,250,0.12)', brd:'rgba(167,139,250,0.3)',
+    children:[
+      { key:'mapa',        label:'Mapa de salón',        icon:'fa-map-location-dot', desc:'Vista de croquis del salón para ubicar mesas' },
+      { key:'reservas',    label:'Reservas del día',     icon:'fa-calendar-alt',     desc:'Ver y gestionar reservas desde la pantalla de mesas' },
+      { key:'compartirQR', label:'Compartir QR cliente', icon:'fa-qrcode',           desc:'Generar QR para que el cliente pida desde el móvil' },
+      { key:'moverMesa',   label:'Mover mesa',           icon:'fa-right-left',       desc:'Transferir un ticket entre mesas' },
+    ]
+  },
+  {
+    key:'cocina', label:'Monitor de Cocina', icon:'fa-fire-burner',
+    color:'#ff6b35', bg:'rgba(255,107,53,0.12)', brd:'rgba(255,107,53,0.3)',
+    children:[
+      { key:'voz',           label:'Aviso por voz',              icon:'fa-volume-high',          desc:'Anuncia en voz alta los pedidos nuevos' },
+      { key:'reportarStock', label:'Reportar producto agotando', icon:'fa-triangle-exclamation', desc:'Avisar al admin cuando falta un ingrediente' },
+    ]
+  },
+  {
+    key:'barra', label:'Monitor de Barra', icon:'fa-wine-glass',
+    color:'#4a9eff', bg:'rgba(74,158,255,0.12)', brd:'rgba(74,158,255,0.3)',
+    children:[
+      { key:'voz',           label:'Aviso por voz',              icon:'fa-volume-high',          desc:'Anuncia en voz alta los pedidos nuevos' },
+      { key:'reportarStock', label:'Reportar producto agotando', icon:'fa-triangle-exclamation', desc:'Avisar al admin cuando falta un ingrediente' },
+      { key:'ventaDirecta',  label:'Venta directa',              icon:'fa-cart-plus',            desc:'Vender en mostrador sin abrir una mesa' },
+    ]
+  },
+  {
+    key:'administrador', label:'Administración', icon:'fa-user-shield',
+    color:'#e8c96a', bg:'rgba(232,201,106,0.12)', brd:'rgba(232,201,106,0.3)',
+    children:[
+      { key:'ventas',     label:'Ventas y estadísticas', icon:'fa-chart-line',           desc:'Histórico de ventas e informes' },
+      { key:'mesas',      label:'Gestión de mesas',      icon:'fa-chairs',               desc:'Configurar salones, mesas y precios' },
+      { key:'croquis',    label:'Croquis del salón',     icon:'fa-map-location-dot',     desc:'Editor visual de la disposición de mesas' },
+      { key:'ranking',    label:'Ranking de camareros',  icon:'fa-trophy',               desc:'Clasificación de rendimiento del equipo' },
+      { key:'eliminados', label:'Productos eliminados',  icon:'fa-trash-can',            desc:'Historial de productos anulados y pérdidas' },
+      { key:'carta',      label:'Carta / Productos',     icon:'fa-book-open',            desc:'Alta y edición de productos del menú' },
+      { key:'categorias', label:'Categorías',            icon:'fa-tags',                 desc:'Organización de categorías de la carta' },
+      { key:'personal',   label:'Personal',              icon:'fa-users',                desc:'Altas, PINs y fotos del equipo' },
+      { key:'reservas',   label:'Reservas',              icon:'fa-calendar-alt',         desc:'Gestión de reservas del restaurante' },
+      { key:'config',     label:'Configuración',         icon:'fa-gear',                 desc:'Logo, nombre, colores y ajustes generales' },
+      { key:'menus',      label:'Menús',                 icon:'fa-utensils',             desc:'Menús combinados y menús del día' },
+      { key:'despachos',  label:'Despachos',             icon:'fa-fire-burner',          desc:'Control de comandas despachadas' },
+      { key:'agotando',   label:'Alertas de stock',      icon:'fa-triangle-exclamation', desc:'Avisos de productos que se están agotando' },
+      { key:'qr',         label:'Generador QR mesas',    icon:'fa-qrcode',               desc:'Crear e imprimir QR para cada mesa' },
+      { key:'inventario', label:'Inventario',            icon:'fa-boxes-stacked',        desc:'Acceso al módulo externo de inventario' },
+    ]
+  },
+];
+
+const _FB_URL_DEFAULT = "https://tpv-hottodigital-default-rtdb.europe-west1.firebasedatabase.app/";
+const ADMIN_PW = "Admin88"; // misma clave que el panel de administración del TPV
+
+let rtdb = null;
+let currentFeatures = {};
+
+function tryEnter(){
+  const pw = document.getElementById('gate-pw').value;
+  if (pw === ADMIN_PW){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    boot();
+  } else {
+    document.getElementById('gate-err').textContent = 'Clave incorrecta';
+  }
+}
+document.getElementById('gate-pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryEnter(); });
+
+function boot(){
+  buildSkeleton();
+  const url = localStorage.getItem('firebaseURL') || _FB_URL_DEFAULT;
+  connect(url);
+}
+
+function connect(url){
+  document.getElementById('fb-url-short').textContent = url.replace('https://','').split('.')[0];
+  document.getElementById('conn-txt').textContent = 'Conectando…';
+  document.getElementById('conn-dot').className = 'dot';
+
+  try {
+    const appName = 'centroDeMando';
+    const existing = firebase.apps.find(a => a.name === appName);
+    const fbApp = existing || firebase.initializeApp({ databaseURL: url }, appName);
+    rtdb = fbApp.database();
+
+    rtdb.ref('.info/connected').on('value', snap => {
+      const dot = document.getElementById('conn-dot');
+      const txt = document.getElementById('conn-txt');
+      if (snap.val() === true){ dot.className = 'dot live'; txt.textContent = 'Conectado en tiempo real'; }
+      else { dot.className = 'dot dead'; txt.textContent = 'Sin conexión'; }
+    });
+
+    rtdb.ref('config/nombreRestaurante').on('value', snap => {
+      document.getElementById('rest-name').textContent = snap.val() || 'HOTTO DIGITAL';
+    });
+
+    rtdb.ref('config/features').on('value', snap => {
+      currentFeatures = snap.val() || {};
+      renderAll();
+    });
+  } catch(e){
+    document.getElementById('conn-txt').textContent = 'Error de conexión';
+    document.getElementById('conn-dot').className = 'dot dead';
+  }
+}
+
+function changeDB(){
+  const current = localStorage.getItem('firebaseURL') || _FB_URL_DEFAULT;
+  const url = prompt('URL del Realtime Database del TPV:', current);
+  if (url && url.trim()){
+    localStorage.setItem('firebaseURL', url.trim());
+    location.reload();
+  }
+}
+
+function isOn(roleKey, childKey){
+  const r = currentFeatures[roleKey];
+  if (!r) return true;
+  return r[childKey] !== false;
+}
+function roleOn(roleKey){ return isOn(roleKey, 'enabled'); }
+
+function buildSkeleton(){
+  const mount = document.getElementById('roles-mount');
+  mount.innerHTML = ROLES.map(r => `
+    <div class="role-card" id="card-${r.key}" style="--rc:${r.color};--rc-bg:${r.bg};--rc-brd:${r.brd}">
+      <div class="role-head" onclick="toggleExpand('${r.key}')">
+        <div class="r-icon"><i class="fas ${r.icon}"></i></div>
+        <div class="r-info">
+          <div class="r-name">${r.label} <span class="r-count" id="count-${r.key}"></span></div>
+          <div class="r-state" id="state-${r.key}"></div>
+        </div>
+        <div class="switch" id="sw-${r.key}" onclick="event.stopPropagation();toggleFeature('${r.key}','enabled')">
+          <div class="knob"></div>
+        </div>
+        <i class="fas fa-chevron-down chev"></i>
+      </div>
+      <div class="sub-list">
+        <div class="sub-inner">
+          ${r.children.map(c => `
+          <div class="sub-item" id="sub-${r.key}-${c.key}">
+            <div class="sub-icon"><i class="fas ${c.icon}"></i></div>
+            <div class="sub-info">
+              <div class="sub-name">${c.label}</div>
+              <div class="sub-desc">${c.desc}</div>
+            </div>
+            <div class="switch sm" id="sw-${r.key}-${c.key}" onclick="toggleFeature('${r.key}','${c.key}')">
+              <div class="knob"></div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAll(){
+  const chips = ROLES.map(r => {
+    const total = r.children.length;
+    const activas = r.children.filter(c => isOn(r.key, c.key)).length;
+    return `<div class="chip"><i class="fas ${r.icon}" style="color:${r.color}"></i> ${r.label.split(' ')[0]} <b>${activas}/${total}</b></div>`;
+  }).join('');
+  document.getElementById('summary-chips').innerHTML = chips;
+
+  ROLES.forEach(r => {
+    const on = roleOn(r.key);
+    const card = document.getElementById('card-' + r.key);
+    card.classList.toggle('active', on);
+    document.getElementById('sw-' + r.key).classList.toggle('on', on);
+    const activas = r.children.filter(c => isOn(r.key, c.key)).length;
+    document.getElementById('count-' + r.key).textContent = r.children.length + ' funciones';
+    document.getElementById('state-' + r.key).innerHTML = on
+      ? `<i class="fas fa-circle" style="color:var(--on);font-size:6px"></i> <span style="color:var(--on)">ACTIVO</span> · ${activas}/${r.children.length} funciones encendidas`
+      : `<i class="fas fa-circle" style="color:var(--off);font-size:6px"></i> <span style="color:var(--off)">DESACTIVADO</span>`;
+
+    r.children.forEach(c => {
+      const isChildOn = isOn(r.key, c.key);
+      const sw = document.getElementById('sw-' + r.key + '-' + c.key);
+      const item = document.getElementById('sub-' + r.key + '-' + c.key);
+      sw.classList.toggle('on', isChildOn);
+      item.classList.toggle('disabled-parent', !on);
+    });
+  });
+}
+
+function toggleExpand(key){
+  document.getElementById('card-' + key).classList.toggle('expanded');
+}
+
+function toggleFeature(roleKey, childKey){
+  if (!rtdb) return;
+  const next = !isOn(roleKey, childKey);
+  rtdb.ref('config/features/' + roleKey + '/' + childKey).set(next).then(() => {
+    const role = ROLES.find(r => r.key === roleKey);
+    const label = childKey === 'enabled' ? role.label : (role.children.find(c => c.key === childKey)||{}).label;
+    showToast((next ? 'Activado: ' : 'Desactivado: ') + label);
+  });
+}
+
+function setAllRoles(on){
+  if (!rtdb) return;
+  const updates = {};
+  ROLES.forEach(r => {
+    updates['config/features/' + r.key + '/enabled'] = on;
+    r.children.forEach(c => { updates['config/features/' + r.key + '/' + c.key] = on; });
+  });
+  rtdb.ref().update(updates).then(() => {
+    showToast(on ? 'Todo activado' : 'Todo desactivado');
+  });
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
