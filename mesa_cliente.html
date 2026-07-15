@@ -2428,6 +2428,13 @@ let html5QrScanner = null;
 
   if (mesaId && mesaId.trim()) {
     mesaId = mesaId.trim();
+    // Si venimos del reload automático tras cobrar, mostrar la despedida
+    // al instante (sin el parpadeo de "Cargando tu mesa").
+    try {
+      if (sessionStorage.getItem('hd_despedida_' + mesaId + '_' + (qrToken||'x')) === '1') {
+        mostrarDespedida();
+      }
+    } catch(e) {}
     connectFirebase();
     return;
   }
@@ -2817,6 +2824,23 @@ function connectFirebase() {
         propinaPct = null;
         propinaCustom = null;
         console.log('[TPV] Mesa', mesaId, '— pedidosCliente limpiados al cobrar');
+
+        // ¿Es la primera vez que esta pestaña ve el cobro de esta mesa?
+        // (si ya estaba marcado, es que venimos de un reload automático
+        // previo — no hay que recargar otra vez, para no entrar en bucle)
+        let yaHabiaDespedida = false;
+        try { yaHabiaDespedida = sessionStorage.getItem('hd_despedida_' + mesaId + '_' + (qrToken||'x')) === '1'; } catch(e) {}
+        try { sessionStorage.setItem('hd_despedida_' + mesaId + '_' + (qrToken||'x'), '1'); } catch(e) {}
+
+        mostrarDespedida();
+
+        if (!yaHabiaDespedida) {
+          // 🔄 Recarga automática de la página tras un instante, para que
+          // el cliente quede en un estado totalmente limpio (sin carrito,
+          // sin restos de sesión) mostrando ya la pantalla de despedida.
+          setTimeout(() => { try { location.reload(); } catch(e) {} }, 1800);
+        }
+        return; // No renderizar el resto de la app: la despedida es la única pantalla
       }
       pedidosCliente = [];
       mostrarDespedida();
