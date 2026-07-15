@@ -4657,6 +4657,12 @@ function openMesa(id) {
       qrToken: genUID()   // 🔒 token de sesión Nivel 2 — atado al QR mientras la mesa esté abierta
     }; 
     db.tickets.push(t); 
+    // 🔓 Reabrir mesa para nuevos clientes: limpiar la marca persistente
+    // de "mesa cerrada" (si existía) para que la app del cliente vuelva
+    // a dar acceso normal en vez de la pantalla de despedida.
+    if (db.mesasCerradas && db.mesasCerradas[id]) {
+      delete db.mesasCerradas[id];
+    }
     // 🎯 Cargar automáticamente info de reserva si existe
     const reserva = getReservaHoy(id);
     if (reserva) {
@@ -12115,6 +12121,18 @@ function cobrarConMetodo(mesa, metodo, montoParcial, montoParcial2, metodo2) {
   } else {
     db.tickets.splice(idx, 1);
   }
+
+  // 🔒 Marca persistente de "mesa cerrada": independiente del ticket, para
+  // que la app del cliente (mesa_cliente.html) quede bloqueada en la
+  // pantalla de despedida aunque el ticket se elimine en este mismo
+  // instante (mesa sin platos pendientes) y nunca llegue a ver cobrado:true.
+  // Solo se limpia cuando el personal vuelve a abrir la mesa (openMesa).
+  if (!db.mesasCerradas) db.mesasCerradas = {};
+  db.mesasCerradas[mesa] = {
+    cerrada: true,
+    hora: ahora.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})
+  };
+
   sync();
 
   const iconoPago = metodo === 'tarjeta' ? '💳' : metodo === 'efectivo' ? '💵' : '💰';
@@ -12363,7 +12381,18 @@ function confirmarEliminarTicket(idx, mesa) {
   // Eliminar el ticket
   db.tickets.splice(idx, 1);
   console.log('✅ Ticket eliminado. Tickets restantes:', db.tickets.length);
-  
+
+  // 🔒 Si es una mesa normal (no Venta Directa), marcarla como cerrada de
+  // forma persistente para que el cliente quede bloqueado en la pantalla
+  // de despedida en vez de seguir con acceso a un ticket que ya no existe.
+  if (!String(mesa).startsWith('VD')) {
+    if (!db.mesasCerradas) db.mesasCerradas = {};
+    db.mesasCerradas[mesa] = {
+      cerrada: true,
+      hora: ahora.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})
+    };
+  }
+
   sync();
 
   closeModalEliminarTicket();
