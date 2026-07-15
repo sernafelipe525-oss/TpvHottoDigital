@@ -3310,10 +3310,22 @@ const initialDB = {
   productosEliminados: [],
   menus: [],
   despachos: [],
-  stockAlertas: []
+  stockAlertas: [],
+  escandallos: {},
+  inventarioMovimientos: {}
 };
 
 let db = JSON.parse(JSON.stringify(initialDB));
+
+// ── Centro de Mando: flags de funciones por rol ─────────────────────
+// Lee db.config.features.<rol>.<clave>. Si no existe (instalación sin
+// portal de control, o función nueva), se considera ACTIVADA por defecto,
+// así esto nunca rompe una instalación existente.
+function _featOn(rol, clave) {
+  const f = db.config?.features?.[rol];
+  if (!f) return true;
+  return f[clave] !== false;
+}
 let session = { user:null, role:null, mesa:null, filtroProducto:'barra', prodSearch:'', openCats: null, filtroCamarero: null, ventaDirecta: false, ventaDirectaItems: [], ventaDirectaMesaId: null, activeSalon: null, mesaSearch: '' };
 let lastMonCount = 0;
 let adminTab = 'v';
@@ -3543,7 +3555,17 @@ rtdb.ref('/').on('value', (snapshot) => {
     if (!db.despachos)           db.despachos = [];
     if (!db.pedidosCliente)      db.pedidosCliente = {};
     if (!db.inventario)          db.inventario = {};
-    if (!db.inventarioMovimientos) db.inventarioMovimientos = [];
+    if (!db.escandallos)         db.escandallos = {};
+    // inventarioMovimientos vive como OBJETO con claves push (no array: los
+    // arrays en RTDB son frágiles con escrituras concurrentes). Si llega como
+    // array legado (versiones antiguas de este archivo), se normaliza aquí.
+    if (!db.inventarioMovimientos) {
+      db.inventarioMovimientos = {};
+    } else if (Array.isArray(db.inventarioMovimientos)) {
+      const obj = {};
+      db.inventarioMovimientos.forEach((m, i) => { if (m) obj[m.id || ('legacy_' + i)] = m; });
+      db.inventarioMovimientos = obj;
+    }
   } else {
     rtdb.ref('/').set(initialDB);
   }
@@ -3929,18 +3951,21 @@ function getInvEstado(entry) {
 
 /** Registra un movimiento en el historial de inventario */
 function _registrarMovimientoInv(prodId, prodNombre, tipo, cantidad, motivo) {
-  if (!db.inventarioMovimientos) db.inventarioMovimientos = [];
-  db.inventarioMovimientos.push({
-    id: 'mv_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-    prodId, prodNombre, tipo, // tipo: 'venta' | 'entrada' | 'ajuste'
+  if (!db.inventarioMovimientos || Array.isArray(db.inventarioMovimientos)) db.inventarioMovimientos = {};
+  const key = 'mv_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+  db.inventarioMovimientos[key] = {
+    id: key,
+    prodId, prodNombre, tipo, // tipo: 'venta' | 'entrada' | 'ajuste' | 'merma'
     cantidad,
     motivo: motivo || '',
     fecha: new Date().toISOString(),
     usuario: session?.user || 'Sistema'
-  });
+  };
   // Mantener el log acotado (últimos 500 movimientos)
-  if (db.inventarioMovimientos.length > 500) {
-    db.inventarioMovimientos = db.inventarioMovimientos.slice(-500);
+  const keys = Object.keys(db.inventarioMovimientos);
+  if (keys.length > 500) {
+    const sorted = keys.sort((a, b) => (db.inventarioMovimientos[a]?.fecha || '').localeCompare(db.inventarioMovimientos[b]?.fecha || ''));
+    sorted.slice(0, keys.length - 500).forEach(k => delete db.inventarioMovimientos[k]);
   }
 }
 
@@ -3948,31 +3973,59 @@ function _registrarMovimientoInv(prodId, prodNombre, tipo, cantidad, motivo) {
  * Descuenta stock de inventario para una lista de items recién enviados a cocina/barra.
  * Llama internamente a sync() — debe invocarse DESPUÉS de confirmar el envío.
  * Solo afecta a productos que ya tienen una entrada en /inventario (cantidad > 0 o registrados).
+ *
+ * Si un producto vendido tiene una receta/escandallo definida (en /escandallos, gestionada
+ * desde el panel de inventario), la venta descuenta los ingredientes de esa receta en vez
+ * de descontarse a sí mismo.
  */
 function descontarStockItems(items) {
   if (!items || !items.length) return;
   if (!db.inventario) db.inventario = {};
+  if (!db.escandallos) db.escandallos = {};
   let changed = false;
 
+  // Resolver cada item vendido en una o varias deducciones reales de stock
+  const deducciones = [];
   items.forEach(i => {
-    // Si el producto nunca se ha registrado en inventario, no crear entradas fantasma
-    if (!db.inventario[i.id]) return;
-    const entry = getInvEntry(i.id);
-    const consumo = round2((Number(i.cantidad)||0) * (entry.factorConsumo || 1));
-    if (consumo <= 0) return;
+    const escandallo = db.escandallos[i.id];
+    if (escandallo && escandallo.length) {
+      // Receta: 1 unidad vendida de este plato descuenta varios ingredientes distintos
+      const cantidadVendida = Number(i.cantidad) || 0;
+      escandallo.forEach(ing => {
+        if (ing.ingredienteId == null || !(ing.cantidad > 0)) return;
+        const ingProd = (db.productos || []).find(p => p.id === ing.ingredienteId);
+        deducciones.push({
+          id: ing.ingredienteId,
+          nombre: ingProd?.nombre || '',
+          consumo: round2(cantidadVendida * ing.cantidad)
+        });
+      });
+    } else {
+      // Consumo simple: el propio producto se descuenta según su factor de consumo
+      if (!db.inventario[i.id]) return; // no crear entradas fantasma
+      const entry = getInvEntry(i.id);
+      const consumo = round2((Number(i.cantidad) || 0) * (entry.factorConsumo || 1));
+      if (consumo > 0) deducciones.push({ id: i.id, nombre: i.nombre, consumo });
+    }
+  });
 
+  deducciones.forEach(({ id, nombre, consumo }) => {
+    if (!db.inventario[id]) return; // el ingrediente tampoco se gestiona en inventario
+    if (consumo <= 0) return;
+    const entry = getInvEntry(id);
     const estadoAntes = getInvEstado(entry);
     entry.cantidad = round2(Math.max(0, entry.cantidad - consumo));
     entry.actualizado = new Date().toISOString();
     changed = true;
 
-    _registrarMovimientoInv(i.id, i.nombre, 'venta', -consumo, `Pedido${session?.mesa ? ' mesa ' + session.mesa : ''}`);
+    _registrarMovimientoInv(id, nombre, 'venta', -consumo, `Pedido${session?.mesa ? ' mesa ' + session.mesa : ''}`);
 
     // Auto-generar alerta de stock si cruza a "bajo" o "agotado"
     const estadoDespues = getInvEstado(entry);
     if (estadoDespues !== 'ok' && estadoAntes !== estadoDespues) {
-      const zona = i.tipo === 'cocina' ? 'cocina' : 'barra';
-      addStockAlerta(i.nombre, i.icono, estadoDespues === 'agotado' ? 'Sin stock' : 'Stock bajo', zona);
+      const prod = (db.productos || []).find(p => p.id === id);
+      const zona = prod?.tipo === 'cocina' ? 'cocina' : 'barra';
+      addStockAlerta(nombre, prod?.icono, estadoDespues === 'agotado' ? 'Sin stock' : 'Stock bajo', zona);
     }
   });
 
@@ -4016,27 +4069,35 @@ function init() {
         <p>Selecciona tu puesto para acceder</p>
       </div>
       <div class="login-grid">
+        ${_featOn('camarero','enabled') ? `
         <button class="btn-role" data-color="camarero" onclick="login('Camarero')">
           <div class="role-icon"><i class="fas fa-utensils"></i></div>
           <span class="role-label">Camarero</span>
           <div class="role-glow"></div>
-        </button>
+        </button>` : ''}
+        ${_featOn('cocina','enabled') ? `
         <button class="btn-role" data-color="cocina" onclick="login('Cocina')">
           <div class="role-icon"><i class="fas fa-fire-burner"></i></div>
           <span class="role-label">Cocina</span>
           <div class="role-glow"></div>
-        </button>
+        </button>` : ''}
+        ${_featOn('barra','enabled') ? `
         <button class="btn-role" data-color="barra" onclick="login('Barra')">
           <div class="role-icon"><i class="fas fa-wine-glass"></i></div>
           <span class="role-label">Barra</span>
           <div class="role-glow"></div>
-        </button>
+        </button>` : ''}
+        ${_featOn('administrador','enabled') ? `
         <button class="btn-role" data-color="admin" onclick="authAdmin()">
           <div class="role-icon"><i class="fas fa-user-shield"></i></div>
           <span class="role-label">Admin</span>
           <div class="role-glow"></div>
-        </button>
+        </button>` : ''}
       </div>
+      ${(['camarero','cocina','barra','administrador'].every(r => !_featOn(r,'enabled'))) ? `
+      <p style="text-align:center;color:var(--text2);font-size:0.8rem;margin-top:18px">
+        <i class="fas fa-plug-circle-xmark"></i> Todos los accesos están desactivados desde el panel de control.
+      </p>` : ''}
     </div>`;
 }
 
@@ -4359,15 +4420,17 @@ function renderMesas() {
       <button class="btn btn-ghost" style="margin-left:auto" onclick="init()">
         <i class="fas fa-right-from-bracket"></i> Salir
       </button>
+      ${_featOn('camarero','mapa') ? `
       <button class="btn btn-ghost" onclick="mostrarCroquisCamarero()" title="Ver mapa del salón"
         style="color:var(--info);border-color:rgba(74,158,255,0.35)">
         <i class="fas fa-map-location-dot"></i>
-      </button>
+      </button>` : ''}
+      ${_featOn('camarero','reservas') ? `
       <button class="btn btn-ghost" onclick="mostrarReservasCamarero()" title="Ver reservas de hoy"
         style="color:var(--barra);border-color:rgba(74,158,255,0.35);position:relative" id="btn-reservas-camarero">
         <i class="fas fa-calendar-alt"></i>
         ${(() => { const hoy = new Date().toISOString().split('T')[0]; const n = (db.reservas||[]).filter(r=>r.fecha===hoy).length; return n > 0 ? `<span style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:var(--barra);color:#fff;font-size:0.55rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)">${n}</span>` : ''; })()}
-      </button>
+      </button>` : ''}
     </div>
     <nav class="salon-tabs" id="salon-tabs-nav">${_buildSalonTabs(mesas)}</nav>
     <div class="mesas-search-wrap">
@@ -5251,8 +5314,8 @@ function renderTicket(t) {
           ${(db.tickets||[]).find(x=>x.mesa===session.mesa)?.tiketSolicitadoABarra
             ? `<button class="btn btn-success" style="opacity:0.6;cursor:not-allowed" disabled><i class="fas fa-check"></i> Enviado a barra</button>`
             : `<button class="btn btn-success" onclick="solicitarTiketABarra()" id="btn-solicitar-tiket"><i class="fas fa-wine-glass"></i> Solicitar tiket a barra</button>`}
-          <button class="btn btn-ghost" style="border-color:rgba(74,158,255,0.3);color:var(--barra);background:rgba(74,158,255,0.06)" onclick="mostrarQRCamarero('${t.mesa}')"><i class="fas fa-qrcode"></i> Compartir QR</button>
-          ${items.length > 0 ? `<button class="btn btn-ghost" style="grid-column:1/-1;border-color:rgba(167,139,250,0.3);color:var(--purple);background:rgba(167,139,250,0.06)" onclick="showMoverMesaModal()"><i class="fas fa-right-left"></i> Mover mesa</button>` : ''}
+          ${_featOn('camarero','compartirQR') ? `<button class="btn btn-ghost" style="border-color:rgba(74,158,255,0.3);color:var(--barra);background:rgba(74,158,255,0.06)" onclick="mostrarQRCamarero('${t.mesa}')"><i class="fas fa-qrcode"></i> Compartir QR</button>` : ''}
+          ${(items.length > 0 && _featOn('camarero','moverMesa')) ? `<button class="btn btn-ghost" style="grid-column:1/-1;border-color:rgba(167,139,250,0.3);color:var(--purple);background:rgba(167,139,250,0.06)" onclick="showMoverMesaModal()"><i class="fas fa-right-left"></i> Mover mesa</button>` : ''}
         </div>
         ${buildPedidosClientePanel(session.mesa)}
       </div>
@@ -6561,7 +6624,7 @@ function renderMonitor(z) {
   }
   // ────────────────────────────────────────────────────────────
   let barraControls = '';
-  if (z === 'barra') {
+  if (z === 'barra' && _featOn('barra','ventaDirecta')) {
     const vdActivo = (db.tickets||[]).find(t => t.mesa && t.mesa.startsWith('VD') && !t.cobrado);
     const vdItems  = vdActivo ? (vdActivo.items||[]) : [];
     if (vdActivo && vdItems.length > 0) {
@@ -6581,19 +6644,23 @@ function renderMonitor(z) {
       <h2 class="monitor-title">Monitor</h2>
       <span class="monitor-badge ${z}">${label}</span>
       ${totalPending > 0 ? `<span class="monitor-pending-count"><strong>${totalPending}</strong> pendiente${totalPending>1?'s':''}</span>` : ''}
+      <div style="margin-left:auto;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      ${_featOn(z,'voz') ? `
       <button id="btn-tts-toggle" class="btn btn-ghost"
         onclick="toggleTTS()"
-        style="margin-left:auto;${ttsActivo ? 'color:var(--success);border-color:rgba(0,229,160,0.4);background:rgba(0,229,160,0.07)' : 'color:var(--muted)'}"
+        style="${ttsActivo ? 'color:var(--success);border-color:rgba(0,229,160,0.4);background:rgba(0,229,160,0.07)' : 'color:var(--muted)'}"
         title="${ttsActivo ? 'Desactivar voz' : 'Activar voz'}">
         <i class="fas ${ttsActivo ? 'fa-volume-high' : 'fa-volume-xmark'}"></i>
         <span class="d-sm-inline" style="margin-left:4px">Voz</span>
-      </button>
+      </button>` : ''}
+      ${_featOn(z,'reportarStock') ? `
       <button class="btn btn-ghost" style="border-color:rgba(247,201,72,0.35);color:var(--warning)"
         onclick="showStockAlertaModal('${z}')" title="Reportar producto agotando">
         <i class="fas fa-triangle-exclamation"></i>
         <span style="display:none" class="d-sm-inline">Agotando</span>
-      </button>
+      </button>` : ''}
       ${barraControls}
+      </div>
       <button class="btn btn-ghost" onclick="init()">
         <i class="fas fa-right-from-bracket"></i> Salir
       </button>
@@ -7859,65 +7926,60 @@ function limpiarFiltro() {
 /* ════════════════════════════════════
    ADMIN
 ════════════════════════════════════ */
+// ── Centro de Mando: catálogo de módulos del panel de Administración ──
+// clave usada en _featOn('administrador', clave) ↔ código interno de pestaña (mode)
+const ADMIN_MODULES = [
+  { code:'v',  clave:'ventas',      icon:'fa-chart-line',            label:'Ventas' },
+  { code:'m',  clave:'mesas',       icon:'fa-chairs',                label:'Mesas' },
+  { code:'cq', clave:'croquis',     icon:'fa-map-location-dot',      label:'Croquis' },
+  { code:'rm', clave:'ranking',     icon:'fa-trophy',                label:'Ranking' },
+  { code:'d',  clave:'eliminados',  icon:'fa-trash-can',             label:'Eliminados' },
+  { code:'p',  clave:'carta',       icon:'fa-utensils',              label:'Carta' },
+  { code:'k',  clave:'categorias',  icon:'fa-tags',                  label:'Categorías' },
+  { code:'s',  clave:'personal',    icon:'fa-users',                 label:'Personal' },
+  { code:'r',  clave:'reservas',    icon:'fa-calendar-alt',          label:'Reservas' },
+  { code:'c',  clave:'config',      icon:'fa-gear',                  label:'Config' },
+  { code:'mn', clave:'menus',       icon:'fa-book-open',             label:'Menús' },
+  { code:'ds', clave:'despachos',   icon:'fa-fire-burner',           label:'Despachos' },
+  { code:'st', clave:'agotando',    icon:'fa-triangle-exclamation',  label:'Agotando' },
+  { code:'qr', clave:'qr',          icon:'fa-qrcode',                label:'QR Mesas' },
+];
+
 function renderAdmin() {
+  // Si la pestaña activa quedó desactivada desde el panel de control, saltar a la primera disponible
+  const activos = ADMIN_MODULES.filter(m => _featOn('administrador', m.clave));
+  if (!activos.find(m => m.code === adminTab)) {
+    adminTab = activos[0]?.code || null;
+  }
+
+  const tabsHTML = activos.map(m => `
+      <button class="admin-tab ${adminTab===m.code?'active':''}" id="tab-${m.code}" onclick="tab('${m.code}')">
+        <i class="fas ${m.icon}"></i> ${m.label}
+        ${(m.code==='st' && (db.stockAlertas||[]).length > 0) ? `<span style="background:var(--warning);color:#05070d;font-size:0.5rem;font-weight:800;padding:1px 5px;border-radius:100px;margin-left:2px">${(db.stockAlertas||[]).length}</span>` : ''}
+      </button>`).join('');
+
   document.getElementById('app-body').innerHTML = `
     <div class="admin-header">
       <h2>Administración</h2>
       <button class="btn btn-ghost" onclick="init()"><i class="fas fa-right-from-bracket"></i> Salir</button>
     </div>
     <div class="admin-tabs">
-      <button class="admin-tab ${adminTab==='v'?'active':''}" id="tab-v" onclick="tab('v')">
-        <i class="fas fa-chart-line"></i> Ventas
-      </button>
-      <button class="admin-tab ${adminTab==='m'?'active':''}" id="tab-m" onclick="tab('m')">
-        <i class="fas fa-chairs"></i> Mesas
-      </button>
-      <button class="admin-tab ${adminTab==='cq'?'active':''}" id="tab-cq" onclick="tab('cq')">
-        <i class="fas fa-map-location-dot"></i> Croquis
-      </button>
-      <button class="admin-tab ${adminTab==='rm'?'active':''}" id="tab-rm" onclick="tab('rm')">
-        <i class="fas fa-trophy"></i> Ranking
-      </button>
-      <button class="admin-tab ${adminTab==='d'?'active':''}" id="tab-d" onclick="tab('d')">
-        <i class="fas fa-trash-can"></i> Eliminados
-      </button>
-      <button class="admin-tab ${adminTab==='p'?'active':''}" id="tab-p" onclick="tab('p')">
-        <i class="fas fa-utensils"></i> Carta
-      </button>
-      <button class="admin-tab ${adminTab==='k'?'active':''}" id="tab-k" onclick="tab('k')">
-        <i class="fas fa-tags"></i> Categorías
-      </button>
-      <button class="admin-tab ${adminTab==='s'?'active':''}" id="tab-s" onclick="tab('s')">
-        <i class="fas fa-users"></i> Personal
-      </button>
-      <button class="admin-tab ${adminTab==='r'?'active':''}" id="tab-r" onclick="tab('r')">
-        <i class="fas fa-calendar-alt"></i> Reservas
-      </button>
-      <button class="admin-tab ${adminTab==='c'?'active':''}" id="tab-c" onclick="tab('c')">
-        <i class="fas fa-gear"></i> Config
-      </button>
-      <button class="admin-tab ${adminTab==='mn'?'active':''}" id="tab-mn" onclick="tab('mn')">
-        <i class="fas fa-book-open"></i> Menús
-      </button>
-      <button class="admin-tab ${adminTab==='ds'?'active':''}" id="tab-ds" onclick="tab('ds')">
-        <i class="fas fa-fire-burner"></i> Despachos
-      </button>
-      <button class="admin-tab ${adminTab==='st'?'active':''}" id="tab-st" onclick="tab('st')">
-        <i class="fas fa-triangle-exclamation"></i> Agotando
-        ${(db.stockAlertas||[]).length > 0 ? `<span style="background:var(--warning);color:#05070d;font-size:0.5rem;font-weight:800;padding:1px 5px;border-radius:100px;margin-left:2px">${(db.stockAlertas||[]).length}</span>` : ''}
-      </button>
-      <button class="admin-tab ${adminTab==='qr'?'active':''}" id="tab-qr" onclick="tab('qr')">
-        <i class="fas fa-qrcode"></i> QR Mesas
-      </button>
+      ${tabsHTML}
+      ${_featOn('administrador','inventario') ? `
       <a class="admin-tab" href="inventario.html" target="_blank" style="text-decoration:none;display:inline-flex">
         <i class="fas fa-boxes-stacked"></i> Inventario
-      </a>
+      </a>` : ''}
     </div>
-    <div id="adm-c"></div>`;
-  tab(adminTab);
+    <div id="adm-c">${!adminTab ? `
+      <div style="padding:60px 20px;text-align:center;color:var(--text2)">
+        <i class="fas fa-plug-circle-xmark" style="font-size:1.8rem;display:block;margin-bottom:12px;opacity:0.4"></i>
+        Todos los módulos de administración están desactivados desde el panel de control.
+      </div>` : ''}</div>`;
+  if (adminTab) tab(adminTab);
 }
 
 function tab(mode) {
+  if (!_featOn('administrador', (ADMIN_MODULES.find(m=>m.code===mode)||{}).clave)) return;
   adminTab = mode;
   document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
   const btn = document.getElementById('tab-'+mode);
