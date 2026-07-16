@@ -11551,7 +11551,7 @@ async function confirmarPedidoCliente(mesa, pedidoId, _unused) {
       if (exist) {
         exist.cantidad += Number(pi.cantidad);
       } else {
-        ticket.items.push({
+        const nuevoItem = {
           id:        pi.prodId,
           icono:     pi.icono || '\u{1F37D}\uFE0F',
           nombre:    pi.nombre,
@@ -11562,10 +11562,15 @@ async function confirmarPedidoCliente(mesa, pedidoId, _unused) {
           enviado:   false,
           entregado: false,
           uid:       genUID(),
-          nota:      pedido.nota || '',
-          variante:         pi.variante || undefined,
-          nombre_variante:  pi.variante || undefined
-        });
+          nota:      pedido.nota || ''
+        };
+        // OJO: Firebase rechaza valores "undefined" en una escritura (aborta toda la
+        // transacción). Por eso estos campos solo se añaden si hay variante real.
+        if (pi.variante) {
+          nuevoItem.variante = pi.variante;
+          nuevoItem.nombre_variante = pi.variante;
+        }
+        ticket.items.push(nuevoItem);
       }
     });
 
