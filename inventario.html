@@ -732,7 +732,7 @@ const rtdb = firebase.database();
 /* ════════════════════════════════════
    ESTADO LOCAL
 ════════════════════════════════════ */
-let db = { productos: [], categorias: [], inventario: {}, inventarioMovimientos: {}, proveedores: {}, pedidosProveedor: {}, escandallos: {}, stockAlertas: [] };
+let db = { productos: [], categorias: [], inventario: {}, inventarioMovimientos: {}, proveedores: {}, pedidosProveedor: {}, escandallos: {}, escandallosVariante: {}, stockAlertas: [] };
 let _ready = false;
 let activeTab = 'stock'; // stock | productos | proveedores
 let filtroTipo   = 'todos';  // todos | cocina | barra
@@ -741,6 +741,7 @@ let _historialFiltro = 'todos';
 let _prodTipoEnModal = 'cocina'; // tipo seleccionado dentro del formulario de producto
 let _escandalloProdId = null;
 let _escandalloEdit = []; // filas en edición dentro del modal de consumo/receta
+let _escandalloVarianteSel = null; // nombre de la variante en edición dentro del modal (null = producto/receta base)
 
 const UNIDADES = ['ud', 'kg', 'g', 'l', 'ml', 'botella', 'caja', 'paquete', 'barril'];
 
@@ -805,11 +806,16 @@ rtdb.ref('/escandallos').on('value', snap => {
   renderIfReady();
 });
 
+rtdb.ref('/escandallosVariante').on('value', snap => {
+  db.escandallosVariante = snap.val() || {};
+  renderIfReady();
+});
+
 rtdb.ref('.info/connected').on('value', snap => {
   setSyncStatus(snap.val() === true ? 'online' : 'offline');
 });
 
-let _readyFlags = { productos: false, categorias: false, inventario: false, movimientos: false, proveedores: false, pedidos: false, escandallos: false, stockAlertas: false };
+let _readyFlags = { productos: false, categorias: false, inventario: false, movimientos: false, proveedores: false, pedidos: false, escandallos: false, escandallosVariante: false, stockAlertas: false };
 // Marcamos ready cuando lleguen los datos críticos
 rtdb.ref('/productos').once('value',   () => { _readyFlags.productos = true;   trySetReady(); });
 rtdb.ref('/categorias').once('value',  () => { _readyFlags.categorias = true;  trySetReady(); });
@@ -818,10 +824,11 @@ rtdb.ref('/inventarioMovimientos').once('value', () => { _readyFlags.movimientos
 rtdb.ref('/proveedores').once('value', () => { _readyFlags.proveedores = true; trySetReady(); });
 rtdb.ref('/pedidosProveedor').once('value', () => { _readyFlags.pedidos = true; trySetReady(); });
 rtdb.ref('/escandallos').once('value', () => { _readyFlags.escandallos = true; trySetReady(); });
+rtdb.ref('/escandallosVariante').once('value', () => { _readyFlags.escandallosVariante = true; trySetReady(); });
 rtdb.ref('/stockAlertas').once('value', () => { _readyFlags.stockAlertas = true; trySetReady(); });
 
 function trySetReady() {
-  if (_readyFlags.productos && _readyFlags.categorias && _readyFlags.inventario && _readyFlags.movimientos && _readyFlags.proveedores && _readyFlags.pedidos && _readyFlags.escandallos && _readyFlags.stockAlertas) {
+  if (_readyFlags.productos && _readyFlags.categorias && _readyFlags.inventario && _readyFlags.movimientos && _readyFlags.proveedores && _readyFlags.pedidos && _readyFlags.escandallos && _readyFlags.escandallosVariante && _readyFlags.stockAlertas) {
     _ready = true;
     document.getElementById('loading-screen').style.display = 'none';
     setSyncStatus('online');
@@ -906,6 +913,13 @@ function syncEscandallos() {
   rtdb.ref('/escandallos').set(db.escandallos || {}).catch(err => {
     toast('Error al guardar la receta. Comprueba la conexión.', 'danger');
     console.error('[escandallos] sync error:', err);
+  });
+}
+
+function syncEscandallosVariante() {
+  rtdb.ref('/escandallosVariante').set(db.escandallosVariante || {}).catch(err => {
+    toast('Error al guardar la receta de la variante. Comprueba la conexión.', 'danger');
+    console.error('[escandallosVariante] sync error:', err);
   });
 }
 
@@ -1246,29 +1260,56 @@ function confirmReponer(prodId) {
 
 /* ════════════════════════════════════
    MODAL: CONSUMO POR VENTA (simple o receta/escandallo)
+   Si el producto tiene VARIANTES (creadas en el TPV, p.ej. "Coca-Cola"/"Fanta"
+   dentro de un producto "Refresco"), se puede definir además una receta propia
+   por cada variante — así cada una descuenta ingredientes distintos del stock.
+   Si una variante no tiene receta propia, hereda el consumo/receta base del producto.
 ════════════════════════════════════ */
-function showConsumoModal(prodId) {
+function showConsumoModal(prodId, varianteNombre) {
   const p = getProducto(prodId);
   if (!p) return;
-  const entry = getInvEntry(prodId);
-  const escandallo = (db.escandallos && db.escandallos[prodId]) || [];
   _escandalloProdId = prodId;
-  _escandalloEdit = escandallo.map(x => ({ ...x }));
-  const modoInicial = escandallo.length > 0 ? 'receta' : 'simple';
+  _escandalloVarianteSel = varianteNombre || null;
+
+  let modoInicial;
+  if (_escandalloVarianteSel) {
+    const escVar = ((db.escandallosVariante && db.escandallosVariante[prodId]) || {})[_escandalloVarianteSel] || [];
+    _escandalloEdit = escVar.map(x => ({ ...x }));
+    modoInicial = escVar.length > 0 ? 'receta' : 'heredado';
+  } else {
+    const escandallo = (db.escandallos && db.escandallos[prodId]) || [];
+    _escandalloEdit = escandallo.map(x => ({ ...x }));
+    modoInicial = escandallo.length > 0 ? 'receta' : 'simple';
+  }
+
+  const tieneVariantes = (p.variantes || []).length > 0;
+  const variantePills = tieneVariantes ? `
+    <div class="inv-modal-sub" style="margin-bottom:6px">Consumo para:</div>
+    <div class="mov-filter-pills" id="consumo-variante-pills" style="margin-bottom:12px;flex-wrap:wrap">
+      <button class="mov-filter-pill ${!_escandalloVarianteSel ? 'active' : ''}" onclick="showConsumoModal(${prodId}, null)"><i class="fas fa-cube"></i> Producto base</button>
+      ${p.variantes.map(v => `<button class="mov-filter-pill ${_escandalloVarianteSel === v.nombre ? 'active' : ''}" onclick="showConsumoModal(${prodId}, ${JSON.stringify(v.nombre)})"><i class="fas fa-circle-dot" style="font-size:0.55rem"></i> ${escHtml(v.nombre)}</button>`).join('')}
+    </div>` : '';
+
   closeModal();
   createModal(`
     <div class="inv-modal-title"><i class="fas fa-scale-balanced" style="color:var(--purple)"></i> Consumo por venta</div>
     <div class="inv-modal-sub">${escHtml(p.icono || '🍽️')} ${escHtml(p.nombre)}</div>
+    ${variantePills}
     <div class="mov-filter-pills" id="consumo-modo-pills" style="margin-bottom:14px">
-      <button class="mov-filter-pill ${modoInicial === 'simple' ? 'active' : ''}" data-modo="simple" onclick="setConsumoModo('simple')"><i class="fas fa-cube"></i> Consumo simple</button>
-      <button class="mov-filter-pill ${modoInicial === 'receta' ? 'active' : ''}" data-modo="receta" onclick="setConsumoModo('receta')"><i class="fas fa-list-check"></i> Receta (varios ingredientes)</button>
+      ${_escandalloVarianteSel ? `
+        <button class="mov-filter-pill ${modoInicial === 'heredado' ? 'active' : ''}" data-modo="heredado" onclick="setConsumoModo('heredado')"><i class="fas fa-arrow-turn-up"></i> Usar receta base</button>
+        <button class="mov-filter-pill ${modoInicial === 'receta' ? 'active' : ''}" data-modo="receta" onclick="setConsumoModo('receta')"><i class="fas fa-list-check"></i> Receta propia</button>
+      ` : `
+        <button class="mov-filter-pill ${modoInicial === 'simple' ? 'active' : ''}" data-modo="simple" onclick="setConsumoModo('simple')"><i class="fas fa-cube"></i> Consumo simple</button>
+        <button class="mov-filter-pill ${modoInicial === 'receta' ? 'active' : ''}" data-modo="receta" onclick="setConsumoModo('receta')"><i class="fas fa-list-check"></i> Receta (varios ingredientes)</button>
+      `}
     </div>
     <div id="consumo-modo-body"></div>
     <div class="inv-modal-row" style="margin-top:10px">
       <button class="btn-modal ghost" onclick="closeModal()">Cancelar</button>
       <button class="btn-modal primary" onclick="confirmConsumo()"><i class="fas fa-check"></i> Guardar</button>
     </div>
-  `, '440px');
+  `, '460px');
   renderConsumoModoBody(modoInicial);
 }
 
@@ -1291,11 +1332,21 @@ function renderConsumoModoBody(modo) {
       <label class="inv-modal-label">Consumo por venta (${escHtml(entry.unidad)})</label>
       <input type="number" id="factor-valor" class="inv-modal-input" min="0" step="any" value="${entry.factorConsumo}">
     `;
+  } else if (modo === 'heredado') {
+    body.innerHTML = `
+      <p style="font-size:0.72rem;color:var(--text2);line-height:1.5">
+        Esta variante no tiene receta propia: al venderse, se descontará el <strong>consumo o receta base</strong>
+        definido para el producto (pestaña "Producto base").
+      </p>
+    `;
   } else {
     body.innerHTML = `
       <p style="font-size:0.72rem;color:var(--text2);line-height:1.5;margin-bottom:10px">
-        Define los ingredientes que se descuentan de <strong>otros productos</strong> del stock cada vez
-        que se vende 1 unidad de este plato. Esto sustituye al consumo simple.
+        ${_escandalloVarianteSel
+          ? `Ingredientes que se descuentan de <strong>otros productos</strong> del stock cada vez que se vende
+             1 unidad de la variante "<strong>${escHtml(_escandalloVarianteSel)}</strong>". Sustituye a la receta base solo para esta variante.`
+          : `Define los ingredientes que se descuentan de <strong>otros productos</strong> del stock cada vez
+             que se vende 1 unidad de este plato. Esto sustituye al consumo simple.`}
       </p>
       <div id="escandallo-rows"></div>
       <button class="btn-secondary" style="margin-top:8px" onclick="addEscandalloRow()"><i class="fas fa-plus"></i> Añadir ingrediente</button>
@@ -1353,24 +1404,42 @@ function renderEscandalloRows() {
 function confirmConsumo() {
   const activeModo = document.querySelector('#consumo-modo-pills .mov-filter-pill.active')?.dataset.modo || 'simple';
   const prodId = _escandalloProdId;
-  const entry = getInvEntry(prodId);
 
   if (!db.escandallos) db.escandallos = {};
+  if (!db.escandallosVariante) db.escandallosVariante = {};
 
-  if (activeModo === 'simple') {
-    const v = parseFloat(document.getElementById('factor-valor')?.value);
-    if (isNaN(v) || v < 0) { toast('Indica un valor válido', 'danger'); return; }
-    entry.factorConsumo = round2(v);
-    delete db.escandallos[prodId];
-    syncInventario();
-    syncEscandallos();
+  if (_escandalloVarianteSel) {
+    // ── Receta específica de una variante ──
+    if (!db.escandallosVariante[prodId]) db.escandallosVariante[prodId] = {};
+    if (activeModo === 'heredado') {
+      delete db.escandallosVariante[prodId][_escandalloVarianteSel];
+      if (Object.keys(db.escandallosVariante[prodId]).length === 0) delete db.escandallosVariante[prodId];
+    } else {
+      const valid = _escandalloEdit
+        .filter(r => r.ingredienteId != null && r.ingredienteId !== '' && !isNaN(r.cantidad) && r.cantidad > 0)
+        .map(r => ({ ingredienteId: r.ingredienteId, cantidad: round2(r.cantidad), unidad: r.unidad || 'ud' }));
+      if (valid.length === 0) { toast('Añade al menos un ingrediente con cantidad', 'danger'); return; }
+      db.escandallosVariante[prodId][_escandalloVarianteSel] = valid;
+    }
+    syncEscandallosVariante();
   } else {
-    const valid = _escandalloEdit
-      .filter(r => r.ingredienteId != null && r.ingredienteId !== '' && !isNaN(r.cantidad) && r.cantidad > 0)
-      .map(r => ({ ingredienteId: r.ingredienteId, cantidad: round2(r.cantidad), unidad: r.unidad || 'ud' }));
-    if (valid.length === 0) { toast('Añade al menos un ingrediente con cantidad', 'danger'); return; }
-    db.escandallos[prodId] = valid;
-    syncEscandallos();
+    // ── Consumo/receta base del producto ──
+    const entry = getInvEntry(prodId);
+    if (activeModo === 'simple') {
+      const v = parseFloat(document.getElementById('factor-valor')?.value);
+      if (isNaN(v) || v < 0) { toast('Indica un valor válido', 'danger'); return; }
+      entry.factorConsumo = round2(v);
+      delete db.escandallos[prodId];
+      syncInventario();
+      syncEscandallos();
+    } else {
+      const valid = _escandalloEdit
+        .filter(r => r.ingredienteId != null && r.ingredienteId !== '' && !isNaN(r.cantidad) && r.cantidad > 0)
+        .map(r => ({ ingredienteId: r.ingredienteId, cantidad: round2(r.cantidad), unidad: r.unidad || 'ud' }));
+      if (valid.length === 0) { toast('Añade al menos un ingrediente con cantidad', 'danger'); return; }
+      db.escandallos[prodId] = valid;
+      syncEscandallos();
+    }
   }
   closeModal();
   toast('Consumo por venta actualizado', 'success');
@@ -1656,6 +1725,12 @@ function buildCard(p) {
       </button>
       <button class="btn-merma" onclick="showMermaModal(${p.id})" title="Registrar merma"><i class="fas fa-triangle-exclamation"></i></button>
     </div>
+    ${(p.variantes && p.variantes.length) ? (() => {
+      const nVarConReceta = Object.keys((db.escandallosVariante && db.escandallosVariante[p.id]) || {}).length;
+      return `<div class="inv-meta-row" style="margin-top:6px">
+        <span style="font-size:0.65rem;color:var(--muted)"><i class="fas fa-list-ul"></i> ${p.variantes.length} variante${p.variantes.length>1?'s':''}${nVarConReceta ? ` · ${nVarConReceta} con receta propia` : ''}</span>
+      </div>`;
+    })() : ''}
     ${p.costoUnit ? `<div class="inv-cost-line"><span>Costo: <strong>${fmtMoney(p.costoUnit)}</strong>/${escHtml(entry.unidad)}</span><span>Valor: <strong>${fmtMoney(entry.cantidad * p.costoUnit)}</strong></span></div>` : ''}
   </div>`;
 }
@@ -1685,6 +1760,7 @@ function buildProdAdminCard(p) {
   const margin = (hasCosto && hasPrecio) ? round2(p.precio - p.costoUnit) : null;
   const marginPct = (margin != null && p.precio) ? round2((margin / p.precio) * 100) : null;
   const escandallo = (db.escandallos && db.escandallos[p.id]) || [];
+  const nVarConReceta = Object.keys((db.escandallosVariante && db.escandallosVariante[p.id]) || {}).length;
 
   return `<div class="padm-card">
     <div class="padm-icon">${p.imagen ? `<img src="${escHtml(p.imagen)}" loading="lazy">` : `<span>${p.icono || '🍽️'}</span>`}</div>
@@ -1694,6 +1770,7 @@ function buildProdAdminCard(p) {
         <span class="padm-tipo-badge ${p.tipo}">${p.tipo === 'barra' ? 'BARRA' : 'COCINA'}</span>
         ${catLabel ? `<span>${escHtml(catLabel)}</span>` : ''}
         ${escandallo.length ? `<span style="color:var(--purple);font-weight:700">🧾 Receta (${escandallo.length})</span>` : ''}
+        ${(p.variantes && p.variantes.length) ? `<span style="color:var(--info);font-weight:700">🔀 ${p.variantes.length} variantes${nVarConReceta ? ` (${nVarConReceta} c/receta)` : ''}</span>` : ''}
       </div>
       ${(hasCosto || hasPrecio) ? `<div class="padm-price-row">
         ${hasCosto ? `<span>Costo: <strong>${fmtMoney(p.costoUnit)}</strong></span>` : ''}
@@ -1836,10 +1913,22 @@ function confirmDeleteProducto(prodId) {
       if (db.escandallos[pid].length === 0) delete db.escandallos[pid];
     });
   }
+  if (db.escandallosVariante) {
+    delete db.escandallosVariante[prodId];
+    Object.keys(db.escandallosVariante).forEach(pid => {
+      const porVariante = db.escandallosVariante[pid] || {};
+      Object.keys(porVariante).forEach(varNombre => {
+        porVariante[varNombre] = (porVariante[varNombre] || []).filter(ing => String(ing.ingredienteId) !== String(prodId));
+        if (porVariante[varNombre].length === 0) delete porVariante[varNombre];
+      });
+      if (Object.keys(porVariante).length === 0) delete db.escandallosVariante[pid];
+    });
+  }
 
   syncProductos();
   syncInventario();
   syncEscandallos();
+  syncEscandallosVariante();
   closeModal();
   toast('Producto eliminado', 'success');
   renderProductos();
