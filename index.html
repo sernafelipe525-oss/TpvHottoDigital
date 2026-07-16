@@ -3312,6 +3312,7 @@ const initialDB = {
   despachos: [],
   stockAlertas: [],
   escandallos: {},
+  escandallosVariante: {},
   inventarioMovimientos: {}
 };
 
@@ -3556,6 +3557,7 @@ rtdb.ref('/').on('value', (snapshot) => {
     if (!db.pedidosCliente)      db.pedidosCliente = {};
     if (!db.inventario)          db.inventario = {};
     if (!db.escandallos)         db.escandallos = {};
+    if (!db.escandallosVariante) db.escandallosVariante = {};
     // inventarioMovimientos vive como OBJETO con claves push (no array: los
     // arrays en RTDB son frágiles con escrituras concurrentes). Si llega como
     // array legado (versiones antiguas de este archivo), se normaliza aquí.
@@ -3977,19 +3979,26 @@ function _registrarMovimientoInv(prodId, prodNombre, tipo, cantidad, motivo) {
  * Si un producto vendido tiene una receta/escandallo definida (en /escandallos, gestionada
  * desde el panel de inventario), la venta descuenta los ingredientes de esa receta en vez
  * de descontarse a sí mismo.
+ *
+ * Si el item vendido tiene una VARIANTE elegida (i.variante, p.ej. "Fanta" dentro de un
+ * producto "Refresco"), y esa variante tiene su propia receta en /escandallosVariante
+ * (gestionada también desde Inventario), esa receta específica tiene prioridad sobre la
+ * receta base del producto — así cada variante puede descontar ingredientes distintos.
  */
 function descontarStockItems(items) {
   if (!items || !items.length) return;
   if (!db.inventario) db.inventario = {};
   if (!db.escandallos) db.escandallos = {};
+  if (!db.escandallosVariante) db.escandallosVariante = {};
   let changed = false;
 
   // Resolver cada item vendido en una o varias deducciones reales de stock
   const deducciones = [];
   items.forEach(i => {
-    const escandallo = db.escandallos[i.id];
+    const escandalloVariante = i.variante ? (db.escandallosVariante[i.id] || {})[i.variante] : null;
+    const escandallo = (escandalloVariante && escandalloVariante.length) ? escandalloVariante : db.escandallos[i.id];
     if (escandallo && escandallo.length) {
-      // Receta: 1 unidad vendida de este plato descuenta varios ingredientes distintos
+      // Receta: 1 unidad vendida de este plato (o de esta variante) descuenta varios ingredientes distintos
       const cantidadVendida = Number(i.cantidad) || 0;
       escandallo.forEach(ing => {
         if (ing.ingredienteId == null || !(ing.cantidad > 0)) return;
@@ -11454,7 +11463,10 @@ function buildPedidosClientePanel(mesa) {
     const lineas = (p.items||[]).map(i => `
       <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(74,158,255,0.12)">
         <span style="font-size:1rem;width:22px;text-align:center">${i.icono||'🍽️'}</span>
-        <span style="flex:1;font-size:0.82rem;color:var(--text);font-weight:500">${escHtml(i.nombre)}</span>
+        <span style="flex:1;font-size:0.82rem;color:var(--text);font-weight:500">
+          ${escHtml(i.nombre)}
+          ${i.variante ? `<span class="variante-badge" style="margin-left:5px"><i class="fas fa-circle-dot" style="font-size:0.5rem"></i> ${escHtml(i.variante)}</span>` : ''}
+        </span>
         <span style="font-size:0.72rem;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:100px;font-weight:600">${i.cantidad}×</span>
         <span style="font-size:0.82rem;font-weight:700;color:var(--info);min-width:44px;text-align:right">€${(Number(i.precio)*Number(i.cantidad)).toFixed(2)}</span>
       </div>`).join('');
@@ -11535,7 +11547,7 @@ async function confirmarPedidoCliente(mesa, pedidoId, _unused) {
       let precio = Number(pi.precio);
       if (_salon?.precio_extra > 0 && pi.tipo === 'barra') precio += _salon.precio_extra;
 
-      const exist = ticket.items.find(x => x.id === pi.prodId && !x.enviado);
+      const exist = ticket.items.find(x => x.id === pi.prodId && !x.enviado && (x.variante || null) === (pi.variante || null));
       if (exist) {
         exist.cantidad += Number(pi.cantidad);
       } else {
@@ -11550,7 +11562,9 @@ async function confirmarPedidoCliente(mesa, pedidoId, _unused) {
           enviado:   false,
           entregado: false,
           uid:       genUID(),
-          nota:      pedido.nota || ''
+          nota:      pedido.nota || '',
+          variante:         pi.variante || undefined,
+          nombre_variante:  pi.variante || undefined
         });
       }
     });
