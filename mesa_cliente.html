@@ -1696,6 +1696,43 @@ body {
   background: var(--accent-lt); border-color: var(--accent); color: var(--accent);
 }
 
+/* ── VARIANTES DE PRODUCTO (selección cliente) ───── */
+.variante-badge-card {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.6rem; font-weight: 700; color: var(--accent);
+  background: var(--accent-lt); border-radius: 100px;
+  padding: 2px 8px; margin-top: 3px;
+}
+.variante-modal-box {
+  background: var(--surface); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 20px 18px 24px; max-width: 480px; margin: 0 auto;
+}
+.variante-modal-title {
+  font-size: 1rem; font-weight: 800; color: var(--text);
+  display: flex; align-items: center; gap: 8px; margin-bottom: 2px;
+}
+.variante-modal-sub {
+  font-size: 0.74rem; color: var(--muted); margin-bottom: 14px;
+}
+.variante-opt-btn {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 8px;
+  font-size: 0.85rem; font-weight: 600; color: var(--text);
+  cursor: pointer; transition: all 0.15s; text-align: left;
+}
+.variante-opt-btn:hover, .variante-opt-btn:active {
+  border-color: var(--accent); background: var(--accent-lt); color: var(--accent-dk);
+}
+.variante-opt-price { font-size: 0.8rem; font-weight: 800; color: var(--accent); }
+.variante-opt-price.free { color: var(--muted); font-weight: 500; }
+.ci-variante-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.62rem; font-weight: 700; color: var(--accent);
+  background: var(--accent-lt); border-radius: 100px;
+  padding: 2px 8px; margin-top: 3px; width: fit-content;
+}
+
 /* ── VISITOR BANNER ──────────────────────────────── */
 .visitor-banner {
   background: var(--accent-lt);
@@ -2488,7 +2525,7 @@ clearTimeout(_watchdogCargaInicial);
 let mesaId   = null;          // "5", "3A", etc.
 let qrToken  = null;          // token de sesión del QR (se valida contra Firebase)
 let db       = {};            // snapshot de Firebase
-let carrito  = {};            // { uid: { producto, qty } }
+let carrito  = {};            // { key: { producto, qty, variante:{nombre,precioExtra}|null } } — key = prodId, o prodId::nombreVariante si el producto tiene variantes
 let tipoActivo = null;         // 'barra' | 'cocina' | null = mostrar selector de tipo
 let catActiva = null;          // subcategoría filtrada (catId)
 let pedidoEnviado = false;    // bandera para UI
@@ -2508,6 +2545,14 @@ function round2(n) {
 }
 function toCents(v) {
   return Math.round(Number(v) * 100);
+}
+/** Clave de carrito: por producto, o por producto+variante si tiene variantes elegidas. */
+function carritoKey(prodId, varianteNombre) {
+  return varianteNombre ? (prodId + '::' + varianteNombre) : String(prodId);
+}
+/** Precio unitario real de una línea del carrito (incluye el extra de la variante, si tiene). */
+function precioUnitCarrito(e) {
+  return round2(Number(e.producto.precio) + Number(e.variante?.precioExtra || 0));
 }
 function calcTotal(items) {
   if (!items || !items.length) return 0;
@@ -4579,16 +4624,37 @@ function toggleProductoDetail(prodId) {
 }
 
 function buildProductoCard(p) {
-  const qty = carrito[p.id] ? carrito[p.id].qty : 0;
-  const qtyCtrl = modoVisitante
-    ? `<div class="qty-ctrl"><span style="width:30px"></span></div>`
-    : `<div class="qty-ctrl">
+  const tieneVariantes = (p.variantes || []).length > 0;
+  // Para productos con variantes, la cantidad total suma todas las líneas de carrito
+  // (una por cada variante distinta elegida), ya que cada una se guarda con su propia clave.
+  const lineasVariante = tieneVariantes
+    ? Object.entries(carrito).filter(([k, e]) => e.producto.id === p.id)
+    : [];
+  const qty = tieneVariantes
+    ? lineasVariante.reduce((s, [, e]) => s + e.qty, 0)
+    : (carrito[p.id] ? carrito[p.id].qty : 0);
+
+  let qtyCtrl;
+  if (modoVisitante) {
+    qtyCtrl = `<div class="qty-ctrl"><span style="width:30px"></span></div>`;
+  } else if (tieneVariantes) {
+    // Con variantes: "+" siempre abre el selector; "−" solo actúa directo si hay una única línea.
+    qtyCtrl = `<div class="qty-ctrl">
+        ${qty > 0 ? `
+          <button class="qty-btn" onclick="${lineasVariante.length === 1 ? `quitarLineaVariante('${lineasVariante[0][0]}')` : 'openCartModal()'}" aria-label="Quitar">−</button>
+          <span class="qty-num">${qty}</span>
+        ` : '<span style="width:30px"></span><span style="width:18px"></span>'}
+        <button class="qty-btn add" onclick="abrirVarianteModal(${p.id})" aria-label="Añadir">+</button>
+      </div>`;
+  } else {
+    qtyCtrl = `<div class="qty-ctrl">
         ${qty > 0 ? `
           <button class="qty-btn" onclick="qtyChange(${p.id}, -1)" aria-label="Quitar">−</button>
           <span class="qty-num">${qty}</span>
         ` : '<span style="width:30px"></span><span style="width:18px"></span>'}
         <button class="qty-btn add" onclick="qtyChange(${p.id}, 1)" aria-label="Añadir">+</button>
       </div>`;
+  }
 
   const info = getInfoProducto(p);
   const isExpanded = expandedCards.has(p.id);
@@ -4632,6 +4698,7 @@ function buildProductoCard(p) {
         <div class="p-info">
           <div class="p-nombre">${escHtml(p.nombre)}</div>
           <div class="p-precio">${formatEur(p.precio)}</div>
+          ${tieneVariantes ? `<span class="variante-badge-card"><i class="fas fa-list-ul"></i> ${p.variantes.length} opcion${p.variantes.length>1?'es':''}</span>` : ''}
         </div>
         ${infoBtn}
         ${qtyCtrl}
@@ -4644,9 +4711,81 @@ function qtyChange(prodId, delta) {
   const p = (db.productos||[]).find(x => x.id === prodId);
   if (!p) return;
 
-  if (!carrito[prodId]) carrito[prodId] = { producto: p, qty: 0 };
-  carrito[prodId].qty = Math.max(0, carrito[prodId].qty + delta);
-  if (carrito[prodId].qty === 0) delete carrito[prodId];
+  // Los productos con variantes no usan +/- directo: se gestionan vía el modal de variantes
+  // y la línea del carrito (ver abrirVarianteModal / seleccionarVariante / quitarLineaVariante).
+  if ((p.variantes || []).length > 0) {
+    if (delta > 0) abrirVarianteModal(prodId);
+    return;
+  }
+
+  const key = carritoKey(prodId, null);
+  if (!carrito[key]) carrito[key] = { producto: p, qty: 0, variante: null };
+  carrito[key].qty = Math.max(0, carrito[key].qty + delta);
+  if (carrito[key].qty === 0) delete carrito[key];
+
+  renderProductos();
+  updateCartUI();
+  pedidoEnviado = false;
+}
+
+/* ══════════════════════════════════════════════════
+   VARIANTES DE PRODUCTO — selección del cliente
+   (mismo modelo de datos que crea el camarero en el TPV: p.variantes = [{nombre, precioExtra}])
+══════════════════════════════════════════════════ */
+function abrirVarianteModal(prodId) {
+  const p = (db.productos||[]).find(x => x.id === prodId);
+  if (!p || !(p.variantes || []).length) return;
+  cerrarVarianteModal();
+
+  const opts = p.variantes.map((v, i) => {
+    const priceHTML = v.precioExtra > 0
+      ? `<span class="variante-opt-price">+${formatEur(v.precioExtra)}</span>`
+      : `<span class="variante-opt-price free">${formatEur(p.precio)}</span>`;
+    return `<button class="variante-opt-btn" onclick="seleccionarVariante(${p.id}, ${i})">
+      <span>${escHtml(v.nombre)}</span>${priceHTML}
+    </button>`;
+  }).join('');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'variante-select-modal';
+  overlay.innerHTML = `
+    <div class="variante-modal-box">
+      <div class="variante-modal-title">${p.imagen ? '' : (p.icono||'🍽️')} ${escHtml(p.nombre)}</div>
+      <div class="variante-modal-sub">Elige una opción:</div>
+      ${opts}
+      <button class="btn btn-outline" style="width:100%;margin-top:4px" onclick="cerrarVarianteModal()">Cancelar</button>
+    </div>`;
+  overlay.addEventListener('click', e => { if (e.target === overlay) cerrarVarianteModal(); });
+  document.body.appendChild(overlay);
+}
+
+function cerrarVarianteModal() {
+  document.getElementById('variante-select-modal')?.remove();
+}
+
+function seleccionarVariante(prodId, varianteIdx) {
+  const p = (db.productos||[]).find(x => x.id === prodId);
+  const variante = p && (p.variantes || [])[varianteIdx];
+  cerrarVarianteModal();
+  if (!p || !variante) return;
+
+  const key = carritoKey(prodId, variante.nombre);
+  if (!carrito[key]) {
+    carrito[key] = { producto: p, qty: 0, variante: { nombre: variante.nombre, precioExtra: variante.precioExtra || 0 } };
+  }
+  carrito[key].qty += 1;
+
+  renderProductos();
+  updateCartUI();
+  pedidoEnviado = false;
+}
+
+/** Quita 1 unidad de una línea concreta del carrito (usada para productos con variantes). */
+function quitarLineaVariante(key) {
+  if (!carrito[key]) return;
+  carrito[key].qty = Math.max(0, carrito[key].qty - 1);
+  if (carrito[key].qty === 0) delete carrito[key];
 
   renderProductos();
   updateCartUI();
@@ -4655,7 +4794,7 @@ function qtyChange(prodId, delta) {
 
 function updateCartUI() {
   const items = Object.values(carrito);
-  const total = items.reduce((s, e) => s + toCents(e.producto.precio) * e.qty, 0) / 100;
+  const total = items.reduce((s, e) => s + toCents(precioUnitCarrito(e)) * e.qty, 0) / 100;
   const count = items.reduce((s, e) => s + e.qty, 0);
 
   const bar = document.getElementById('cart-bar');
@@ -4682,23 +4821,27 @@ function openCartModal() {
   if (!Object.keys(carrito).length) return;
   closeCartModal();
 
-  const items = Object.values(carrito);
-  const total = items.reduce((s, e) => s + toCents(e.producto.precio) * e.qty, 0) / 100;
+  const entries = Object.entries(carrito);
+  const total = entries.reduce((s, [, e]) => s + toCents(precioUnitCarrito(e)) * e.qty, 0) / 100;
 
-  const itemsHTML = items.map(e => `
+  const itemsHTML = entries.map(([key, e]) => {
+    const precioUnit = precioUnitCarrito(e);
+    return `
     <div class="cart-item-row">
       <div class="ci-icon">${e.producto.imagen ? `<img src="${escHtml(e.producto.imagen)}">` : (e.producto.icono||'🍽️')}</div>
       <div class="ci-info">
         <div class="ci-nombre">${escHtml(e.producto.nombre)}</div>
-        <div class="ci-precio">${formatEur(e.producto.precio)} c/u</div>
+        <div class="ci-precio">${formatEur(precioUnit)} c/u</div>
+        ${e.variante ? `<span class="ci-variante-tag"><i class="fas fa-circle-dot" style="font-size:0.45rem"></i> ${escHtml(e.variante.nombre)}</span>` : ''}
       </div>
       <div class="ci-qty">
-        <button class="ci-qty-btn" onclick="modalQtyChange(${e.producto.id}, -1)">−</button>
-        <span class="ci-qty-num" id="cqty-${e.producto.id}">${e.qty}</span>
-        <button class="ci-qty-btn" onclick="modalQtyChange(${e.producto.id}, 1)">+</button>
+        <button class="ci-qty-btn" onclick="modalQtyChange('${key}', -1)">−</button>
+        <span class="ci-qty-num" id="cqty-${key}">${e.qty}</span>
+        <button class="ci-qty-btn" onclick="modalQtyChange('${key}', 1)">+</button>
       </div>
-      <div class="ci-subtotal">${formatEur(round2(toCents(e.producto.precio) * e.qty / 100))}</div>
-    </div>`).join('');
+      <div class="ci-subtotal">${formatEur(round2(toCents(precioUnit) * e.qty / 100))}</div>
+    </div>`;
+  }).join('');
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -4739,12 +4882,10 @@ function closeCartModal() {
   document.getElementById('cart-modal')?.remove();
 }
 
-function modalQtyChange(prodId, delta) {
-  const p = (db.productos||[]).find(x => x.id === prodId);
-  if (!p) return;
-  if (!carrito[prodId]) carrito[prodId] = { producto: p, qty: 0 };
-  carrito[prodId].qty = Math.max(0, carrito[prodId].qty + delta);
-  if (carrito[prodId].qty === 0) delete carrito[prodId];
+function modalQtyChange(key, delta) {
+  if (!carrito[key]) return; // la línea ya no existe (no se puede reconstruir sin saber la variante)
+  carrito[key].qty = Math.max(0, carrito[key].qty + delta);
+  if (carrito[key].qty === 0) delete carrito[key];
 
   // Si el carrito queda vacío, cerrar modal
   if (!Object.keys(carrito).length) {
@@ -4755,12 +4896,12 @@ function modalQtyChange(prodId, delta) {
   }
 
   // Actualizar cantidad en el DOM sin re-render completo
-  const numEl = document.getElementById('cqty-' + prodId);
-  if (numEl) numEl.textContent = carrito[prodId]?.qty || 0;
+  const numEl = document.getElementById('cqty-' + key);
+  if (numEl) numEl.textContent = carrito[key]?.qty || 0;
 
   // Recalcular total
   const items2 = Object.values(carrito);
-  const tot2 = items2.reduce((s, e) => s + toCents(e.producto.precio) * e.qty, 0) / 100;
+  const tot2 = items2.reduce((s, e) => s + toCents(precioUnitCarrito(e)) * e.qty, 0) / 100;
   const tv = document.getElementById('modal-total-val');
   if (tv) tv.textContent = formatEur(tot2);
   const btnEnv = document.getElementById('btn-enviar-pedido');
@@ -4796,10 +4937,11 @@ async function enviarPedido() {
     prodId:   e.producto.id,
     nombre:   e.producto.nombre,
     icono:    e.producto.icono || '🍽️',
-    precio:   e.producto.precio,
+    precio:   precioUnitCarrito(e),          // incluye el extra de la variante, si tiene
     tipo:     e.producto.tipo || 'barra',
     catId:    e.producto.catId || '',
-    cantidad: e.qty
+    cantidad: e.qty,
+    variante: e.variante?.nombre || null      // nombre de la variante elegida (o null)
   }));
 
   const pedido = {
@@ -4809,7 +4951,7 @@ async function enviarPedido() {
     items:  pedidoItems,
     nota:   nota,
     estado: 'pendiente',   // 'pendiente' | 'visto' | 'confirmado'
-    total:  round2(items.reduce((s, e) => s + toCents(e.producto.precio) * e.qty, 0) / 100),
+    total:  round2(items.reduce((s, e) => s + toCents(precioUnitCarrito(e)) * e.qty, 0) / 100),
     qrToken: qrToken       // 🔒 Token de sesión para validación
   };
 
@@ -4829,7 +4971,7 @@ async function enviarPedido() {
     toast('❌ Error al enviar el pedido. Inténtalo de nuevo.', 'danger', 'fa-ban');
     if (btn) {
       btn.disabled = false;
-      const tot = items.reduce((s, e) => s + toCents(e.producto.precio) * e.qty, 0) / 100;
+      const tot = items.reduce((s, e) => s + toCents(precioUnitCarrito(e)) * e.qty, 0) / 100;
       btn.innerHTML = `<i class="fas fa-paper-plane"></i> Enviar pedido · ${formatEur(tot)}`;
     }
   }
